@@ -242,7 +242,7 @@ namespace Microsoft.DotNet.Cli.Build
                 Utils.DeleteDirectory(SharedFrameworkNameAndVersionRoot);
             }
 
-            string publishFramework = "dnxcore50"; // Temporary, use "netcoreapp" when we update nuget.
+            string publishFramework = "netcoreapp1.0";
             string publishRuntime;
             if (PlatformServices.Default.Runtime.OperatingSystemPlatform == Platform.Windows)
             {

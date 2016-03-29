@@ -4,11 +4,14 @@
     "emitEntryPoint": true
   },
   "dependencies": {
-    "NETStandard.Library": "1.5.0-rc2-23928",
+    "Microsoft.NETCore.App": {
+      "version": "1.0.0-rc2-23928",
+      "type": "platform"
+    },
     "DependencyContextValidator": "1.0.0-*"
   },
   "frameworks": {
-    "netstandardapp1.5": {
+    "netcoreapp1.0": {
       "imports": "dnxcore50"
     }
   }

@@ -78,11 +78,11 @@ popd
 
 # Publish the builder
 Write-Host "Compiling Build Scripts..."
-dotnet publish "$PSScriptRoot\dotnet-cli-build" -o "$PSScriptRoot/dotnet-cli-build/bin" --framework netstandardapp1.5
+dotnet publish "$PSScriptRoot\dotnet-cli-build" -o "$PSScriptRoot/dotnet-cli-build/bin" --framework netstandard1.5
 if($LASTEXITCODE -ne 0) { throw "Failed to compile build scripts" }
 
 # Run the builder
 Write-Host "Invoking Build Scripts..."
 Write-Host " Configuration: $env:CONFIGURATION"
-& "$PSScriptRoot\dotnet-cli-build\bin\dotnet-cli-build.exe" @Targets
+dotnet "$PSScriptRoot\dotnet-cli-build\bin\dotnet-cli-build.dll" @Targets
 if($LASTEXITCODE -ne 0) { throw "Build failed" }
