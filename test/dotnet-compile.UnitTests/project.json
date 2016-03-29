@@ -20,8 +20,9 @@
     "FluentAssertions": "4.2.2"
   },
   "frameworks": {
-    "netstandardapp1.5": {
+    "netcoreapp1.0": {
       "imports": [
+        "netstandardapp1.5",
         "dnxcore50",
         "portable-net451+win8"
       ]

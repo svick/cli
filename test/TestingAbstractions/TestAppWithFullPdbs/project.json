@@ -4,11 +4,15 @@
     "debugType": "full"
   },
   "dependencies": {
-    "NETStandard.Library": "1.5.0-rc2-23928"
+    "Microsoft.NETCore.App": {
+        "version": "1.0.0-rc2-23928",
+        "type": "platform"
+    }
   },
   "frameworks": {
-    "netstandard1.5": {
+    "netcoreapp1.0": {
       "imports": [
+        "netstandardapp1.5",
         "portable-net45+win8",
         "dnxcore50"
       ]
