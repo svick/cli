@@ -31,6 +31,6 @@
   },
   "testRunner": "xunit",
   "scripts": {
-    "precompile": "dotnet publish ../ArgumentsReflector/project.json --framework netcoreapp1.0 --runtime %compile:RuntimeIdentifier% --output %compile:RuntimeOutputDir%"
+    "precompile": "dotnet publish ../ArgumentsReflector/project.json --framework netcoreapp1.0 --output %compile:RuntimeOutputDir%"
   }
 }

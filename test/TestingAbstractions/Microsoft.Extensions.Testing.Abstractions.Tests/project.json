@@ -2,7 +2,7 @@
   "version": "1.0.0-*",
   "dependencies": {
     "Microsoft.NETCore.App": {
-        "version": "1.0.0-rc2-23928",,
+        "version": "1.0.0-rc2-23928",
         "type": "platform"
     },
     "Microsoft.Extensions.Testing.Abstractions": {
