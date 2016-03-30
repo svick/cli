@@ -1,0 +1,14 @@
+﻿{
+    "version": "1.0.0-*",
+    "compilationOptions": {
+        "emitEntryPoint": true
+    },
+    "dependencies": {
+        "Newtonsoft.Json": "8.0.3"
+    }
+    "frameworks": {
+        "net46": {
+            "dependencies": { } 
+        }
+    }
+}
