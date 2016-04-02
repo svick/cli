@@ -158,6 +158,16 @@ namespace Microsoft.DotNet.Tools.Compiler.Tests
         }
 
         [Fact]
+        public void PortableContextIsValidOnBuild()
+        {
+            var testProjectPath = Path.Combine(RepoRoot, "TestAssets", "TestProjects", "DependencyContextValidator", "TestAppPortable");
+            var testProject = Path.Combine(testProjectPath, "project.json");
+
+            var runCommand = new RunCommand(testProject);
+            runCommand.Execute().Should().Pass();
+        }
+
+        [Fact]
         public void DepsDependencyContextIsValidOnBuild()
         {
                 var testProjectPath = Path.Combine(RepoRoot, "TestAssets", "TestProjects", "DependencyContextValidator", "TestAppDeps");
