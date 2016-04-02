@@ -143,7 +143,7 @@ namespace Microsoft.DotNet.Cli.Build
         [Target(nameof(CompileCoreHost))]
         public static BuildTargetResult PackageCoreHost(BuildTargetContext c)
         {
-            if (!string.Equals(Environment.GetEnvironmentVariable("BUILD_COREHOST_PACKAGES"), "1"))
+            if (string.Equals(Environment.GetEnvironmentVariable("BUILD_COREHOST_PACKAGES"), "0"))
             {
                 return c.Success();
             }
