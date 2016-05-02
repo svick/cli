@@ -221,7 +221,7 @@ namespace Microsoft.DotNet.Tools.Compiler
             }
             else
             {
-                reporter.WriteLine(line);
+                reporter.Write(line);
             }
         }
     }

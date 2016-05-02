@@ -83,7 +83,7 @@ namespace Microsoft.DotNet.Cli.Utils
                 throw new ArgumentNullException(nameof(handler));
             }
 
-            _stdOut.ForwardTo(writeLine: handler);
+            _stdOut.ForwardTo(write: handler);
 
             return this;
         }
@@ -95,7 +95,7 @@ namespace Microsoft.DotNet.Cli.Utils
                 throw new ArgumentNullException(nameof(handler));
             }
 
-            _stdErr.ForwardTo(writeLine: handler);
+            _stdErr.ForwardTo(write: handler);
 
             return this;
         }
