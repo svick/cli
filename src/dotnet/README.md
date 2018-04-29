@@ -13,7 +13,7 @@ dotnet -- General driver for running the command-line commands
 ## DESCRIPTION
 `dotnet` is a generic driver for the Command Line Interface (CLI) toolchain. Invoked on its own, it will give out brief usage instructions. 
 
-Each specific feature is implemented as a command. In order to use the feature, the command is specified after `dotnet`, such as [`dotnet build`](commands/dotnet-build/README.md). All of the arguments following the command are its own arguments. 
+Each specific feature is implemented as a command. In order to use the feature, the command is specified after `dotnet`, such as [`dotnet build`](https://aka.ms/dotnet-build). All of the arguments following the command are its own arguments. 
 
 The only time `dotnet` is used as a command on its own is to run portable apps. Just specify a portable application DLL after the `dotnet` verb to execute the application.    
 
@@ -74,7 +74,7 @@ Runs a portable app named `myapp.dll`.
 
 ## ENVIRONMENT 
 
-`DOTNET_PACKAGES`
+`NUGET_PACKAGES`
 
 The primary package cache. If not set, it defaults to $HOME/.nuget/packages on Unix or %HOME%\NuGet\Packages on Windows.
 

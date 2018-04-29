@@ -1,8 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.2" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 xliff-core-1.2-transitional.xsd">
-  <file datatype="xml" source-language="en" target-language="ko" original="src/Microsoft.DotNet.Cli.Sln.Internal/LocalizableStrings.resx">
+  <file datatype="xml" source-language="en" target-language="ko" original="../LocalizableStrings.resx">
     <body>
-      <group id="src/Microsoft.DotNet.Cli.Sln.Internal/LocalizableStrings.resx" />
       <trans-unit id="GlobalSectionMoreThanOnceError">
         <source>Global section specified more than once</source>
         <target state="translated">전역 섹션이 두 번 이상 지정됨</target>
@@ -14,8 +13,8 @@
         <note />
       </trans-unit>
       <trans-unit id="FileHeaderMissingError">
-        <source>File header is missing</source>
-        <target state="translated">파일 헤더가 누락됨</target>
+        <source>Expected file header not found</source>
+        <target state="translated">필요한 파일 헤더가 없음</target>
         <note />
       </trans-unit>
       <trans-unit id="ProjectSectionNotClosedError">
@@ -51,6 +50,11 @@
       <trans-unit id="InvalidPropertySetFormatString">
         <source>Property set is missing '{0}'</source>
         <target state="translated">속성 설정에 '{0}'이(가) 없습니다.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="FileHeaderMissingVersionError">
+        <source>File header is missing version</source>
+        <target state="translated">파일 헤더에 버전이 없습니다.</target>
         <note />
       </trans-unit>
     </body>

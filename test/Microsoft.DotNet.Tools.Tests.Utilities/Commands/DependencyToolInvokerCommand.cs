@@ -7,10 +7,13 @@ using System.Runtime.InteropServices;
 
 namespace Microsoft.DotNet.Tools.Test.Utilities
 {
-    public class DependencyToolInvokerCommand : TestCommand
+    public class DependencyToolInvokerCommand : DotnetCommand
     {
-        public DependencyToolInvokerCommand()
-            : base("dotnet")
+        public DependencyToolInvokerCommand() : base()
+        {
+        }
+
+        public DependencyToolInvokerCommand(string dotnetUnderTest) : base(dotnetUnderTest)
         {
         }
 

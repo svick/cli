@@ -1,8 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.2" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 xliff-core-1.2-transitional.xsd">
-  <file datatype="xml" source-language="en" target-language="zh-Hans" original="src/dotnet/commands/dotnet-pack/LocalizableStrings.resx">
+  <file datatype="xml" source-language="en" target-language="zh-Hans" original="../LocalizableStrings.resx">
     <body>
-      <group id="src/dotnet/commands/dotnet-pack/LocalizableStrings.resx" />
       <trans-unit id="AppFullName">
         <source>.NET Core NuGet Package Packer</source>
         <target state="translated">.NET Core NuGet 包打包程序</target>
@@ -24,8 +23,8 @@
         <note />
       </trans-unit>
       <trans-unit id="CmdNoBuildOptionDescription">
-        <source>Skip building the project prior to packing. By default, the project will be built.</source>
-        <target state="translated">在打包之前跳过生成项目。默认情况下，将生成项目。</target>
+        <source>Do not build the project before packing. Implies --no-restore.</source>
+        <target state="needs-review-translation">打包之前不要生成项目。Implies --no-restore.</target>
         <note />
       </trans-unit>
       <trans-unit id="CmdIncludeSymbolsDescription">
@@ -36,26 +35,6 @@
       <trans-unit id="CmdIncludeSourceDescription">
         <source>Include PDBs and source files. Source files go into the src folder in the resulting nuget package</source>
         <target state="translated">包括 PDB 和源文件。源文件放入 nuget 结果包的 src 文件夹中</target>
-        <note />
-      </trans-unit>
-      <trans-unit id="CmdConfig">
-        <source>CONFIGURATION</source>
-        <target state="translated">CONFIGURATION</target>
-        <note />
-      </trans-unit>
-      <trans-unit id="CmdConfigDescription">
-        <source>Configuration to use for building the project.  Default for most projects is  "Debug".</source>
-        <target state="translated">用于生成项目的配置。对大多数项目的默认值是 "Debug"。</target>
-        <note />
-      </trans-unit>
-      <trans-unit id="CmdVersionSuffix">
-        <source>VERSION_SUFFIX</source>
-        <target state="translated">VERSION_SUFFIX</target>
-        <note />
-      </trans-unit>
-      <trans-unit id="CmdVersionSuffixDescription">
-        <source>Defines the value for the $(VersionSuffix) property in the project.</source>
-        <target state="translated">定义项目中 $(VersionSuffix) 属性的值。</target>
         <note />
       </trans-unit>
       <trans-unit id="CmdServiceableDescription">

@@ -1,51 +1,25 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.2" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 xliff-core-1.2-transitional.xsd">
-  <file datatype="xml" source-language="en" target-language="pt-BR" original="src/dotnet/commands/dotnet-publish/LocalizableStrings.resx">
+  <file datatype="xml" source-language="en" target-language="pt-BR" original="../LocalizableStrings.resx">
     <body>
-      <group id="src/dotnet/commands/dotnet-publish/LocalizableStrings.resx" />
-      <trans-unit id="AppFullName">
-        <source>.NET Publisher</source>
-        <target state="translated">Editor do .NET</target>
-        <note />
-      </trans-unit>
       <trans-unit id="AppDescription">
         <source>Publisher for the .NET Platform</source>
         <target state="translated">Editor para a Plataforma .NET</target>
         <note />
       </trans-unit>
-      <trans-unit id="ProjectArgument">
-        <source>PROJECT</source>
-        <target state="translated">PROJETO</target>
-        <note />
-      </trans-unit>
-      <trans-unit id="ProjectArgDescription">
-        <source>The MSBuild project file to publish. If a project file is not specified, MSBuild searches the current working directory for a file that has a file extension that ends in `proj` and uses that file.</source>
-        <target state="translated">O arquivo de projeto do MSBuild para publicar. Se não houver arquivo de projeto especificado, o MSBuild pesquisará no diretório de trabalho atual um arquivo que contenha uma extensão de arquivo que termine em "proj" e usará esse arquivo.</target>
-        <note />
-      </trans-unit>
       <trans-unit id="FrameworkOption">
         <source>FRAMEWORK</source>
-        <target state="translated">ESTRUTURA</target>
+        <target state="translated">FRAMEWORK</target>
         <note />
       </trans-unit>
       <trans-unit id="FrameworkOptionDescription">
         <source>Target framework to publish for. The target framework has to be specified in the project file.</source>
-        <target state="translated">A estrutura de destino para a qual publicar. A estrutura de destino deve ser especificada no arquivo de projeto.</target>
-        <note />
-      </trans-unit>
-      <trans-unit id="RuntimeOption">
-        <source>RUNTIME_IDENTIFIER</source>
-        <target state="translated">RUNTIME_IDENTIFIER</target>
-        <note />
-      </trans-unit>
-      <trans-unit id="RuntimeOptionDescription">
-        <source>Publish the project for a given runtime. This is used when creating self-contained deployment. Default is to publish a framework-dependented app.</source>
-        <target state="translated">Publique o projeto para um tempo de execução fornecido. Isso é usado ao criar uma implantação autocontida. O padrão é publicar um aplicativo dependente de estrutura.</target>
+        <target state="translated">Estrutura de destino na qual publicar. A estrutura de destino deve ser especificada no arquivo de projeto.</target>
         <note />
       </trans-unit>
       <trans-unit id="OutputOption">
         <source>OUTPUT_DIR</source>
-        <target state="translated">DIRETÓRIO_DE_SAÍDA</target>
+        <target state="translated">OUTPUT_DIR</target>
         <note />
       </trans-unit>
       <trans-unit id="OutputOptionDescription">
@@ -53,35 +27,25 @@
         <target state="translated">Diretório de saída no qual os artefatos publicados serão colocados.</target>
         <note />
       </trans-unit>
-      <trans-unit id="ConfigurationOption">
-        <source>CONFIGURATION</source>
-        <target state="translated">CONFIGURAÇÃO</target>
+      <trans-unit id="ManifestOption">
+        <source>manifest.xml</source>
+        <target state="translated">manifest.xml</target>
         <note />
       </trans-unit>
-      <trans-unit id="ConfigurationOptionDescription">
-        <source>Configuration to use for building the project.  Default for most projects is  "Debug".</source>
-        <target state="translated">A configuração a ser usada para criar o projeto.  O padrão para a maioria dos projetos é “Depurar”.</target>
+      <trans-unit id="ManifestOptionDescription">
+        <source>The path to a target manifest file that contains the list of packages to be excluded from the publish step.</source>
+        <target state="translated">O caminho para um arquivo de manifesto de destino que contém a lista de pacotes a serem excluídos da etapa de publicação.</target>
         <note />
       </trans-unit>
-      <trans-unit id="VersionSuffixOption">
-        <source>VERSION_SUFFIX</source>
-        <target state="translated">SUFIXO_DA_VERSÃO</target>
+      <trans-unit id="SelfContainedOptionDescription">
+        <source>Publish the .NET Core runtime with your application so the runtime doesn't need to be installed on the target machine. Defaults to 'true' if a runtime identifier is specified.</source>
+        <target state="translated">Publique o tempo de execução .NET Core com seu aplicativo para que o tempo de execução não precise ser instalado no computador de destino. Assumirá 'true' como padrão se um identificador de tempo de execução for especificado.</target>
         <note />
       </trans-unit>
-      <trans-unit id="VersionSuffixOptionDescription">
-        <source>Defines the value for the $(VersionSuffix) property in the project.</source>
-        <target state="translated">Define o valor da propriedade $(VersionSuffix) no projeto.</target>
+      <trans-unit id="NoBuildOptionDescription">
+        <source>Do not build the project before publishing. Implies --no-restore.</source>
+        <target state="new">Do not build the project before publishing. Implies --no-restore.</target>
         <note />
-      </trans-unit>
-      <trans-unit id="FilterProjOption">
-        <source>profile.xml</source>
-        <target state="needs-review-translation">profile.proj</target>
-        <note></note>
-      </trans-unit>
-      <trans-unit id="FilterProjOptionDescription">
-        <source>The XML file that contains the list of packages to be excluded from publish step.</source>
-        <target state="needs-review-translation">The list of packages to be excluded from publish step.</target>
-        <note></note>
       </trans-unit>
     </body>
   </file>

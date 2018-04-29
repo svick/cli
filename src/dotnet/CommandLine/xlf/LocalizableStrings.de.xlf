@@ -1,16 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.2" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 xliff-core-1.2-transitional.xsd">
-  <file datatype="xml" source-language="en" target-language="de" original="src/dotnet/CommandLine/LocalizableStrings.resx">
+  <file datatype="xml" source-language="en" target-language="de" original="../LocalizableStrings.resx">
     <body>
-      <group id="src/dotnet/CommandLine/LocalizableStrings.resx" />
       <trans-unit id="LastArgumentMultiValueError">
         <source>The last argument '{0}' accepts multiple values. No more argument can be added.</source>
-        <target state="translated">Das letzte Argument "{0}" akzeptiert mehrere Werte. Es kann kein weiteres Argument hinzugefügt werden.</target>
+        <target state="translated">Das letzte Argument „{0}“ akzeptiert mehrere Werte. Es kann kein weiteres Argument mehr hinzugefügt werden.</target>
         <note />
       </trans-unit>
       <trans-unit id="UnexpectedValueForOptionError">
         <source>Unexpected value '{0}' for option '{1}'</source>
-        <target state="translated">Unerwarteter Wert "{0}" für Option "{1}".</target>
+        <target state="translated">Unerwarteter Wert „{0}“ für Option „{1}“.</target>
         <note />
       </trans-unit>
       <trans-unit id="UnexpectedArgumentError">
@@ -43,16 +42,6 @@
         <target state="translated">Nutzung:</target>
         <note />
       </trans-unit>
-      <trans-unit id="UsageItemWithoutArgs">
-        <source> {0}</source>
-        <target state="translated"> {0}</target>
-        <note />
-      </trans-unit>
-      <trans-unit id="UsageItemWithArgs">
-        <source> {0} {1}</source>
-        <target state="translated"> {0} {1}</target>
-        <note />
-      </trans-unit>
       <trans-unit id="UsageArgumentsToken">
         <source> [arguments]</source>
         <target state="translated"> [Argumente]</target>
@@ -61,11 +50,6 @@
       <trans-unit id="UsageArgumentsHeader">
         <source>Arguments:</source>
         <target state="translated">Argumente:</target>
-        <note />
-      </trans-unit>
-      <trans-unit id="UsageArgumentItem">
-        <source>  {0}{1}</source>
-        <target state="translated">  {0}{1}</target>
         <note />
       </trans-unit>
       <trans-unit id="UsageOptionsToken">
@@ -78,11 +62,6 @@
         <target state="translated">Optionen:</target>
         <note />
       </trans-unit>
-      <trans-unit id="UsageOptionsItem">
-        <source>  {{0, -{0}}}{{1}}</source>
-        <target state="translated">  {{0, -{0}}}{{1}}</target>
-        <note />
-      </trans-unit>
       <trans-unit id="UsageCommandToken">
         <source> [command]</source>
         <target state="translated"> [Befehl]</target>
@@ -91,11 +70,6 @@
       <trans-unit id="UsageCommandsHeader">
         <source>Commands:</source>
         <target state="translated">Befehle:</target>
-        <note />
-      </trans-unit>
-      <trans-unit id="UsageCommandsItem">
-        <source>  {{0, -{0}}}{{1}}</source>
-        <target state="translated">  {{0, -{0}}}{{1}}</target>
         <note />
       </trans-unit>
       <trans-unit id="UsageCommandsDetailHelp">
@@ -118,21 +92,6 @@
         <target state="translated">Zusätzliche Argumente:</target>
         <note />
       </trans-unit>
-      <trans-unit id="UsageCommandsAdditionalArgsItem">
-        <source> {0}</source>
-        <target state="translated"> {0}</target>
-        <note />
-      </trans-unit>
-      <trans-unit id="CommandItem">
-        <source> {0}</source>
-        <target state="translated"> {0}</target>
-        <note />
-      </trans-unit>
-      <trans-unit id="ShortVersionTemplate">
-        <source>{0} {1}</source>
-        <target state="translated">{0} {1}</target>
-        <note />
-      </trans-unit>
       <trans-unit id="InvalidTemplateError">
         <source>Invalid template pattern '{0}'</source>
         <target state="translated">Ungültiges Vorlagenmuster „{0}“</target>
@@ -140,7 +99,67 @@
       </trans-unit>
       <trans-unit id="MSBuildAdditionalArgsHelpText">
         <source>Any extra options that should be passed to MSBuild. See 'dotnet msbuild -h' for available options.</source>
-        <target state="translated">Alle zusätzlichen Optionen, die MSBuild übergeben werden sollen. Verfügbare Optionen siehe "dotnet msbuild -h".</target>
+        <target state="translated">Alle zusätzlichen Optionen, die MSBuild übergeben werden sollen. Verfügbare Optionen siehe „dotnet msbuild -h“.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="OptionRequiresSingleValueWhichIsMissing">
+        <source>Required value for option '{0}' was not provided.</source>
+        <target state="translated">Der erforderliche Wert für die Option "{0}" wurde nicht angegeben.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="CommandAcceptsOnlyOneArgument">
+        <source>Command '{0}' only accepts a single argument but {1} were provided.</source>
+        <target state="translated">Der Befehl "{0}" akzeptiert nur ein einzelnes Argument, es wurden aber {1} angegeben.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="CommandAcceptsOnlyOneSubcommand">
+        <source>Command '{0}' only accepts a single subcommand but multiple were provided: {1}</source>
+        <target state="translated">Der Befehl "{0}" akzeptiert nur einen einzelnen Unterbefehl, es wurden aber mehrere angegeben: {1}</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="FileDoesNotExist">
+        <source>File does not exist: {0}</source>
+        <target state="translated">Die Datei ist nicht vorhanden: {0}</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="NoArgumentsAllowed">
+        <source>Arguments not allowed for option: {0}</source>
+        <target state="translated">Nicht zulässige Argumente für die Option: {0}</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="OptionAcceptsOnlyOneArgument">
+        <source>Option '{0}' only accepts a single argument but {1} were provided.</source>
+        <target state="translated">Die Option "{0}" akzeptiert nur ein einzelnes Argument, es wurden aber {1} angegeben.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="RequiredArgumentMissingForCommand">
+        <source>Required argument missing for command: {0}</source>
+        <target state="translated">Ein erforderliches Argument fehlt für den Befehl: {0}</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="RequiredArgumentMissingForOption">
+        <source>Required argument missing for option: {0}</source>
+        <target state="translated">Ein erforderliches Argument fehlt für die Option: {0}</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="RequiredCommandWasNotProvided">
+        <source>Required command was not provided.</source>
+        <target state="translated">Der erforderliche Befehl wurde nicht bereitgestellt.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="UnrecognizedArgument">
+        <source>Argument '{0}' not recognized. Must be one of: {1}</source>
+        <target state="translated">Das Argument "{0}" wurde nicht erkannt. Folgendes ist erforderlich: {1}</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="UnrecognizedCommandOrArgument">
+        <source>Unrecognized command or argument '{0}'</source>
+        <target state="translated">Befehl oder Argument "{0}" nicht erkannt</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="UnrecognizedOption">
+        <source>Option '{0}' not recognized. Must be one of: {1}</source>
+        <target state="translated">Die Option "{0}" wurde nicht erkannt. Folgendes ist erforderlich: {1}</target>
         <note />
       </trans-unit>
     </body>

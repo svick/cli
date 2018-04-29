@@ -1,18 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), dir.props))\dir.props" />
+  <Import Project="..\..\build\DependencyVersions.props" />
 
   <PropertyGroup>
     <Description>Updates the repos dependencies</Description>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp1.0</TargetFramework>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <RestoreSources>
+      https://dotnetfeed.blob.core.windows.net/dotnet-core/index.json;
+      https://api.nuget.org/v3/index.json;
+    </RestoreSources>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Microsoft.DotNet.Cli.Utils\Microsoft.DotNet.Cli.Utils.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.NETCore.App" Version="1.0.0" />
     <PackageReference Include="Microsoft.DotNet.VersionTools" Version="$(VersionToolsVersion)" />
   </ItemGroup>
 

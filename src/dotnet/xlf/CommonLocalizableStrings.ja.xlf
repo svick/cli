@@ -1,8 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.2" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 xliff-core-1.2-transitional.xsd">
-  <file datatype="xml" source-language="en" target-language="ja" original="src/dotnet/CommonLocalizableStrings.resx">
+  <file datatype="xml" source-language="en" target-language="ja" original="../CommonLocalizableStrings.resx">
     <body>
-      <group id="src/dotnet/CommonLocalizableStrings.resx" />
       <trans-unit id="CouldNotFindAnyProjectInDirectory">
         <source>Could not find any project in `{0}`.</source>
         <target state="translated">`{0}` にプロジェクトが見つかりませんでした。</target>
@@ -96,11 +95,6 @@
       <trans-unit id="Application">
         <source>Application</source>
         <target state="translated">アプリケーション</target>
-        <note />
-      </trans-unit>
-      <trans-unit id="ReferenceDoesNotExist">
-        <source>Reference {0} does not exist.</source>
-        <target state="translated">参照 {0} は存在しません。</target>
         <note />
       </trans-unit>
       <trans-unit id="ReferenceAddedToTheProject">
@@ -368,11 +362,6 @@
         <target state="translated">追加する参照を少なくとも 1 つ指定する必要があります。</target>
         <note />
       </trans-unit>
-      <trans-unit id="ProjectAlreadyHasAReference">
-        <source>Project {0} already has a reference `{1}`.</source>
-        <target state="translated">プロジェクト {0} には既に参照 `{1}` が指定されています。</target>
-        <note />
-      </trans-unit>
       <trans-unit id="PackageReferenceDoesNotExist">
         <source>Package reference `{0}` does not exist.</source>
         <target state="translated">パッケージ参照 `{0}` は存在しません。</target>
@@ -575,7 +564,7 @@
       </trans-unit>
       <trans-unit id="MoreThanOneSolutionInDirectory">
         <source>Found more than one solution file in {0}. Please specify which one to use.</source>
-        <target state="translated">{0} に複数のソリューション ファイルが見つかりました。使用するものを 1 つ指定してください。</target>
+        <target state="translated">{0} に複数のソリューションが見つかりました。使用するプロジェクトを指定してください。</target>
         <note />
       </trans-unit>
       <trans-unit id="SolutionAlreadyContainsProject">
@@ -595,7 +584,7 @@
       </trans-unit>
       <trans-unit id="ProjectNotCompatibleWithFrameworks">
         <source>Project `{0}` cannot be added due to incompatible targeted frameworks between the two projects. Please review the project you are trying to add and verify that is compatible with the following targets:</source>
-        <target state="translated">2 つのプロジェクト間のターゲット フレームワークに互換性がないため、プロジェクト `{0}` を追加できません。追加しようとしているプロジェクトを確認し、次のターゲットと互換性があることを確認してください。</target>
+        <target state="translated">2 つのプロジェクト間のターゲット フレームワークに互換性がないため、プロジェクト `{0}` を追加できません。追加しようとしているプロジェクトを確認し、次のターゲットと互換性があることを確認してください:</target>
         <note />
       </trans-unit>
       <trans-unit id="ProjectDoesNotTargetFramework">
@@ -605,19 +594,19 @@
       </trans-unit>
       <trans-unit id="ProjectCouldNotBeEvaluated">
         <source>Project `{0}` could not be evaluated. Evaluation failed with following error:
-{1}</source>
+{1}.</source>
         <target state="translated">プロジェクト `{0}` を評価できませんでした。評価は次のエラーにより失敗しました:
-{1}</target>
+{1}。</target>
         <note />
       </trans-unit>
       <trans-unit id="UnsupportedProjectType">
-        <source>Unsupported project type. Please check with your sdk provider.</source>
-        <target state="translated">サポートされていないプロジェクトの種類です。SDK プロバイダーに確認してください。</target>
+        <source>Project '{0}' has an unknown project type and cannot be added to the solution file. Please contact your SDK provider for support.</source>
+        <target state="translated">プロジェクト '{0}' のプロジェクト タイプは不明であるため、ソリューション ファイルに追加することができません。サポートが必要な場合は、SDK プロバイダーにお問い合わせください。</target>
         <note />
       </trans-unit>
       <trans-unit id="InvalidSolutionFormatString">
-        <source>Invalid solution `{0}`. {1}</source>
-        <target state="translated">無効なソリューション `{0}`。{1}</target>
+        <source>Invalid solution `{0}`. {1}.</source>
+        <target state="translated">無効なソリューション `{0}`。{1}。</target>
         <note />
       </trans-unit>
       <trans-unit id="ArgumentsProjectDescription">
@@ -631,13 +620,277 @@
         <note />
       </trans-unit>
       <trans-unit id="CmdSlnFile">
-        <source>&lt;SLN_FILE&gt;</source>
+        <source>SLN_FILE</source>
         <target state="translated">&lt;SLN_FILE&gt;</target>
         <note />
       </trans-unit>
       <trans-unit id="CmdProjectFile">
-        <source>&lt;PROJECT&gt;</source>
-        <target state="translated">&lt;PROJECT&gt;</target>
+        <source>PROJECT</source>
+        <target state="translated">PROJECT</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="InvalidProjectWithExceptionMessage">
+        <source>Invalid project `{0}`. {1}.</source>
+        <target state="translated">無効なプロジェクト `{0}`。{1}。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="VerbosityOptionDescription">
+        <source>Set the verbosity level of the command. Allowed values are q[uiet], m[inimal], n[ormal], d[etailed], and diag[nostic].</source>
+        <target state="translated">コマンドの詳細レベルを設定します。使用可能な値: q[uiet]、m[inimal]、n[ormal]、d[etailed]、diag[nostic]。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="FrameworkOptionDescription">
+        <source>Target framework to publish for. The target framework has to be specified in the project file.</source>
+        <target state="translated">発行用のターゲット フレームワーク。ターゲット フレームワークはプロジェクト ファイルで指定する必要があります。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="RuntimeOptionDescription">
+        <source>Publish the project for a given runtime. This is used when creating self-contained deployment. Default is to publish a framework-dependent app.</source>
+        <target state="translated">指定されたランタイムのプロジェクトを発行します。これは、自己完結型の展開を作成する際に使用します。既定では、フレームワーク依存アプリを発行します。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ConfigurationOptionDescription">
+        <source>Configuration to use for building the project.  Default for most projects is  "Debug".</source>
+        <target state="translated">プロジェクトの構築に使用する構成。ほとんどのプロジェクトで既定は "デバッグ" です。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="CmdVersionSuffixDescription">
+        <source>Defines the value for the $(VersionSuffix) property in the project.</source>
+        <target state="translated">プロジェクトの $(VersionSuffix) プロパティの値を定義します。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ShowHelpDescription">
+        <source>Show help information.</source>
+        <target state="translated">ヘルプ情報を表示します。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="NoRestoreDescription">
+        <source>Does not do an implicit restore when executing the command.</source>
+        <target state="translated">コマンドを実行するときに暗黙的復元を行いません。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ProjectRemovedFromTheSolution">
+        <source>Project `{0}` removed from the solution.</source>
+        <target state="translated">プロジェクト `{0}` がソリューションから削除されました。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ToolSettingsInvalidXml">
+        <source>Invalid XML: {0}</source>
+        <target state="translated">XML が無効です: {0}</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="EnvironmentPathLinuxNeedLogout">
+        <source>Since you just installed the .NET Core SDK, you will need to logout or restart your session before running the tool you installed.</source>
+        <target state="translated">.NET Core SDK をインストールしたばかりなので、インストールしたツールを実行する前に、ログアウトするか、セッションを再起動する必要があります。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="EnvironmentPathOSXNeedReopen">
+        <source>Since you just installed the .NET Core SDK, you will need to reopen terminal before running the tool you installed.</source>
+        <target state="translated">.NET Core SDK をインストールしたばかりなので、インストールしたツールを実行する前に、端末を再び開く必要があります。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="EnvironmentPathWindowsNeedReopen">
+        <source>Since you just installed the .NET Core SDK, you will need to reopen the Command Prompt window before running the tool you installed.</source>
+        <target state="translated">.NET Core SDK をインストールしたばかりなので、インストールしたツールを実行する前に、コマンド プロンプト ウィンドウを再び開く必要があります。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ToolSettingsMissingCommandName">
+        <source>Tool defines a command with a missing name setting.</source>
+        <target state="translated">ツールは、名前設定がないコマンドを定義します。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ToolSettingsMissingEntryPoint">
+        <source>Command '{0}' is missing an entry point setting.</source>
+        <target state="translated">コマンド '{0}' にエントリ ポイント設定がありません。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ToolSettingsInvalidCommandName">
+        <source>Command '{0}' contains one or more of the following invalid characters: {1}.</source>
+        <target state="translated">コマンド '{0}' には次の無効な文字が 1 つまたは複数含まれています: {1}。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ToolSettingsMoreThanOneCommand">
+        <source>More than one command is defined for the tool.</source>
+        <target state="translated">ツールに対して複数のコマンドが定義されています。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ToolSettingsUnsupportedRunner">
+        <source>Command '{0}' uses unsupported runner '{1}'."</source>
+        <target state="translated">コマンド '{0}' はサポートされていないランナー '{1}' を使用します。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ToolPackageConflictPackageId">
+        <source>Tool '{0}' (version '{1}') is already installed.</source>
+        <target state="translated">ツール '{0}' (バージョン '{1}') は既にインストールされています。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ShellShimConflict">
+        <source>Command '{0}' conflicts with an existing command from another tool.</source>
+        <target state="translated">コマンド '{0}' は、別のツールからの既存のコマンドと競合します。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="CannotCreateShimForEmptyExecutablePath">
+        <source>Cannot create shell shim for an empty executable path.</source>
+        <target state="translated">空の実行可能パスにシェル shim を作成できませんでした。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="CannotCreateShimForEmptyCommand">
+        <source>Cannot create shell shim for an empty command.</source>
+        <target state="translated">空のコマンドにシェル shim を作成できませんでした。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="FailedToRetrieveToolConfiguration">
+        <source>Failed to retrieve tool configuration: {0}</source>
+        <target state="translated">ツールの構成を取得できませんでした: {0}</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="EnvironmentPathLinuxManualInstructions">
+        <source>Tools directory '{0}' is not currently on the PATH environment variable.
+If you are using bash, you can add it to your profile by running the following command:
+
+cat &lt;&lt; \EOF &gt;&gt; ~/.bash_profile
+# Add .NET Core SDK tools
+export PATH="$PATH:{0}"
+EOF
+
+You can add it to the current session by running the following command:
+
+export PATH="$PATH:{0}"
+</source>
+        <target state="translated">Tools ディレクトリ '{0}' は現在、PATH 環境変数に含まれていません。
+Bash を使用している場合、次のコマンドを実行して、このディレクトリをプロファイルに追加できます:
+
+cat &lt;&lt; \EOF &gt;&gt; ~/.bash_profile
+# Add .NET Core SDK tools
+export PATH="$PATH:{0}"
+EOF
+
+次のコマンドを実行すると、このディレクトリを現在のセッションに追加できます:
+
+export PATH="$PATH:{0}"
+</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="EnvironmentPathOSXManualInstructions">
+        <source>Tools directory '{0}' is not currently on the PATH environment variable.
+If you are using bash, you can add it to your profile by running the following command:
+
+cat &lt;&lt; \EOF &gt;&gt; ~/.bash_profile
+# Add .NET Core SDK tools
+export PATH="$PATH:{0}"
+EOF
+
+You can add it to the current session by running the following command:
+
+export PATH="$PATH:{0}"
+</source>
+        <target state="translated">Tools ディレクトリ '{0}' は現在、PATH 環境変数に含まれていません。
+Bash を使用している場合、次のコマンドを実行して、このディレクトリをプロファイルに追加できます:
+
+cat &lt;&lt; \EOF &gt;&gt; ~/.bash_profile
+# Add .NET Core SDK tools
+export PATH="$PATH:{0}"
+EOF
+
+次のコマンドを実行すると、このディレクトリを現在のセッションに追加できます:
+
+export PATH="$PATH:{0}"
+</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="EnvironmentPathWindowsManualInstructions">
+        <source>Tools directory '{0}' is not currently on the PATH environment variable.
+
+You can add the directory to the PATH by running the following command:
+
+setx PATH "%PATH%;{0}"
+</source>
+        <target state="translated">Tools ディレクトリ '{0}' は現在、PATH 環境変数に含まれていません。
+
+次のコマンドを実行して、PATH にディレクトリを追加できます:
+
+setx PATH "%PATH%;{0}"
+</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="FailedToCreateShellShim">
+        <source>Failed to create tool shim for command '{0}': {1}</source>
+        <target state="translated">コマンド '{0}' でツール shim を作成できませんでした: {1}</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="FailedToRemoveShellShim">
+        <source>Failed to remove tool shim for command '{0}': {1}</source>
+        <target state="translated">コマンド '{0}' でツール shim を削除できませんでした: {1}</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="FailedSettingShimPermissions">
+        <source>Failed to set user executable permissions for shell shim: {0}</source>
+        <target state="translated">シェル shim で実行可能なユーザー アクセス許可を設定できませんでした: {0}</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="FailedToInstallToolPackage">
+        <source>Failed to install tool package '{0}': {1}</source>
+        <target state="translated">ツール パッケージ '{0}' をインストールできませんでした: {1}</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="FailedToUninstallToolPackage">
+        <source>Failed to uninstall tool package '{0}': {1}</source>
+        <target state="translated">ツール パッケージ '{0}' をアンインストールできませんでした: {1}</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ColumnMaxWidthMustBeGreaterThanZero">
+        <source>Column maximum width must be greater than zero.</source>
+        <target state="translated">列の最大幅はゼロより大きくなければなりません。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="MissingToolEntryPointFile">
+        <source>Entry point file '{0}' for command '{1}' was not found in the package.</source>
+        <target state="translated">コマンド '{1}' のエントリ ポイント ファイル '{0}' がパッケージで見つかりませんでした。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="MissingToolSettingsFile">
+        <source>Settings file 'DotnetToolSettings.xml' was not found in the package.</source>
+        <target state="translated">設定ファイル 'DotnetToolSettings.xml' がパッケージで見つかりませんでした。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="FailedToFindStagedToolPackage">
+        <source>Failed to find staged tool package '{0}'.</source>
+        <target state="translated">ステージング済みのツール パッケージ '{0}' が見つかりませんでした。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ToolSettingsInvalidLeadingDotCommandName">
+        <source>The command name '{0}' cannot begin with a leading dot (.).</source>
+        <target state="translated">コマンド名 '{0}' の先頭にドット (.) を使用することはできません。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="FormatVersionIsHigher">
+        <source>Format version is higher than supported. This tool may not be supported in this SDK version. Please update your SDK.</source>
+        <target state="new">Format version is higher than supported. This tool may not be supported in this SDK version. Please update your SDK.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="FormatVersionIsMalformed">
+        <source>Format version is malformed. This tool may not be supported in this SDK version. Please contact the author of the tool.</source>
+        <target state="new">Format version is malformed. This tool may not be supported in this SDK version. Please contact the author of the tool.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="FormatVersionIsMissing">
+        <source>Format version is missing. This tool may not be supported in this SDK version. Please contact the author of the tool.</source>
+        <target state="new">Format version is missing. This tool may not be supported in this SDK version. Please contact the author of the tool.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="FailedToSetToolsPathEnvironmentVariable">
+        <source>Failed to add '{0}' to the PATH environment variable. Please add this directory to your PATH to use tools installed with 'dotnet tool install'.</source>
+        <target state="new">Failed to add '{0}' to the PATH environment variable. Please add this directory to your PATH to use tools installed with 'dotnet tool install'.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="MoreThanOnePackagedShimAvailable">
+        <source>More than one packaged shim is available: {0}.</source>
+        <target state="new">More than one packaged shim is available: {0}.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="FailedToReadNuGetLockFile">
+        <source>Failed to read NuGet LockFile for tool package '{0}': {1}</source>
+        <target state="new">Failed to read NuGet LockFile for tool package '{0}': {1}</target>
         <note />
       </trans-unit>
     </body>

@@ -24,6 +24,7 @@ namespace Microsoft.DotNet.Tools
 
         private ProjectCollection _projects;
         private List<NuGetFramework> _cachedTfms = null;
+        private IEnumerable<string> cachedRuntimeIdentifiers;
 
         private MsbuildProject(ProjectCollection projects, ProjectRootElement project)
         {
@@ -149,6 +150,12 @@ namespace Microsoft.DotNet.Tools
             return ProjectRootElement.GetAllItemsWithElementType(ProjectItemElementType);
         }
 
+        public IEnumerable<string> GetRuntimeIdentifiers()
+        {
+            return cachedRuntimeIdentifiers ??
+                   (cachedRuntimeIdentifiers = GetEvaluatedProject().GetRuntimeIdentifiers());
+        }
+
         public IEnumerable<NuGetFramework> GetTargetFrameworks()
         {
             if (_cachedTfms != null)
@@ -249,7 +256,7 @@ namespace Microsoft.DotNet.Tools
 
             string fullPath = Path.GetFullPath(reference);
             ret.Add(fullPath);
-            ret.Add(PathUtility.GetRelativePath(ProjectDirectory, fullPath));
+            ret.Add(Path.GetRelativePath(ProjectDirectory, fullPath));
 
             return ret;
         }

@@ -3,6 +3,7 @@
 
 using FluentAssertions;
 using Microsoft.Build.Construction;
+using Microsoft.DotNet.Tools;
 using Microsoft.DotNet.Tools.Test.Utilities;
 using Msbuild.Tests.Utilities;
 using System;
@@ -14,27 +15,36 @@ namespace Microsoft.DotNet.Cli.Add.Reference.Tests
 {
     public class GivenDotnetAddReference : TestBase
     {
-        private const string HelpText = @".NET Add Project to Project reference Command
-
-Usage: dotnet add <PROJECT> reference [options] [args]
+        private const string HelpText = @"Usage: dotnet add <PROJECT> reference [options] <args>
 
 Arguments:
-  <PROJECT>  The project file to operate on. If a file is not specified, the command will search the current directory for one.
+  <PROJECT>   The project file to operate on. If a file is not specified, the command will search the current directory for one.
+  <args>      Project to project references to add
 
 Options:
-  -h|--help                   Show help information
-  -f|--framework <FRAMEWORK>  Add reference only when targeting a specific framework
+  -h, --help                    Show help information.
+  -f, --framework <FRAMEWORK>   Add reference only when targeting a specific framework
+";
 
-Additional Arguments:
- Project to project references to add
+        private const string AddCommandHelpText = @"Usage: dotnet add [options] <PROJECT> [command]
+
+Arguments:
+  <PROJECT>   The project file to operate on. If a file is not specified, the command will search the current directory for one.
+
+Options:
+  -h, --help   Show help information.
+
+Commands:
+  package <PACKAGE_NAME>   .NET Add Package reference Command
+  reference <args>         .NET Add Project to Project reference Command
 ";
 
         const string FrameworkNet451Arg = "-f net451";
         const string ConditionFrameworkNet451 = "== 'net451'";
         const string FrameworkNetCoreApp10Arg = "-f netcoreapp1.0";
         const string ConditionFrameworkNetCoreApp10 = "== 'netcoreapp1.0'";
-        const string ProjectNotCompatibleErrorMessageRegEx = "Project `[^`]*` cannot be added due to incompatible targeted frameworks between the two projects\\. Please review the project you are trying to add and verify that is compatible with the following targets\\:";
-        const string ProjectDoesNotTargetFrameworkErrorMessageRegEx = "Project `[^`]*` does not target framework `[^`]*`.";
+        static readonly string ProjectNotCompatibleErrorMessageRegEx = string.Format(CommonLocalizableStrings.ProjectNotCompatibleWithFrameworks, "[^`]*");
+        static readonly string ProjectDoesNotTargetFrameworkErrorMessageRegEx = string.Format(CommonLocalizableStrings.ProjectDoesNotTargetFramework, "[^`]*", "[^`]*");
         static readonly string[] DefaultFrameworks = new string[] { "netcoreapp1.0", "net451" };
 
         private TestSetup Setup([System.Runtime.CompilerServices.CallerMemberName] string callingMethod = nameof(Setup), string identifier = "")
@@ -58,7 +68,7 @@ Additional Arguments:
 
             try
             {
-                string args = $"classlib -o \"{projDir.Path}\" --debug:ephemeral-hive";
+                string args = $"classlib -o \"{projDir.Path}\" --debug:ephemeral-hive --no-restore";
                 new NewCommandShim()
                     .WithWorkingDirectory(projDir.Path)
                     .ExecuteWithCapturedOutput(args)
@@ -93,7 +103,7 @@ Additional Arguments:
         {
             var cmd = new AddReferenceCommand().Execute(helpArg);
             cmd.Should().Pass();
-            cmd.StdOut.Should().BeVisuallyEquivalentTo(HelpText);
+            cmd.StdOut.Should().BeVisuallyEquivalentToIfNotLocalized(HelpText);
         }
 
         [Theory]
@@ -104,7 +114,8 @@ Additional Arguments:
             var cmd = new DotnetCommand()
                 .ExecuteWithCapturedOutput($"add {commandName}");
             cmd.Should().Fail();
-            cmd.StdErr.Should().Be("Required command was not provided.");
+            cmd.StdErr.Should().Be(CommonLocalizableStrings.RequiredCommandNotPassed);
+            cmd.StdOut.Should().BeVisuallyEquivalentToIfNotLocalized(AddCommandHelpText);
         }
 
         [Fact]
@@ -114,8 +125,8 @@ Additional Arguments:
                     .WithProject("one two three")
                     .Execute("proj.csproj");
             cmd.ExitCode.Should().NotBe(0);
-            cmd.StdErr.Should().Be("Unrecognized command or argument 'two'");
-            cmd.StdOut.Should().Be("Specify --help for a list of available options and commands.");
+            cmd.StdErr.Should().BeVisuallyEquivalentTo($@"{string.Format(CommandLine.LocalizableStrings.UnrecognizedCommandOrArgument, "two")}
+{string.Format(CommandLine.LocalizableStrings.UnrecognizedCommandOrArgument, "three")}");
         }
 
         [Theory]
@@ -130,8 +141,8 @@ Additional Arguments:
                     .WithProject(projName)
                     .Execute($"\"{setup.ValidRefCsprojPath}\"");
             cmd.ExitCode.Should().NotBe(0);
-            cmd.StdErr.Should().Be($"Could not find project or directory `{projName}`.");
-            cmd.StdOut.Should().BeVisuallyEquivalentTo(HelpText);
+            cmd.StdErr.Should().Be(string.Format(CommonLocalizableStrings.CouldNotFindProjectOrDirectory, projName));
+            cmd.StdOut.Should().BeVisuallyEquivalentToIfNotLocalized(HelpText);
         }
 
         [Fact]
@@ -145,8 +156,8 @@ Additional Arguments:
                     .WithProject(projName)
                     .Execute($"\"{setup.ValidRefCsprojPath}\"");
             cmd.ExitCode.Should().NotBe(0);
-            cmd.StdErr.Should().Be("Project `Broken/Broken.csproj` is invalid.");
-            cmd.StdOut.Should().BeVisuallyEquivalentTo(HelpText);
+            cmd.StdErr.Should().Be(string.Format(CommonLocalizableStrings.ProjectIsInvalid, "Broken/Broken.csproj"));
+            cmd.StdOut.Should().BeVisuallyEquivalentToIfNotLocalized(HelpText);
         }
 
         [Fact]
@@ -159,8 +170,8 @@ Additional Arguments:
                     .WithWorkingDirectory(workingDir)
                     .Execute($"\"{setup.ValidRefCsprojRelToOtherProjPath}\"");
             cmd.ExitCode.Should().NotBe(0);
-            cmd.StdErr.Should().Be($"Found more than one project in `{workingDir + Path.DirectorySeparatorChar}`. Please specify which one to use.");
-            cmd.StdOut.Should().BeVisuallyEquivalentTo(HelpText);
+            cmd.StdErr.Should().Be(string.Format(CommonLocalizableStrings.MoreThanOneProjectInDirectory, workingDir + Path.DirectorySeparatorChar));
+            cmd.StdOut.Should().BeVisuallyEquivalentToIfNotLocalized(HelpText);
         }
 
         [Fact]
@@ -172,8 +183,8 @@ Additional Arguments:
                     .WithWorkingDirectory(setup.TestRoot)
                     .Execute($"\"{setup.ValidRefCsprojPath}\"");
             cmd.ExitCode.Should().NotBe(0);
-            cmd.StdErr.Should().Be($"Could not find any project in `{setup.TestRoot + Path.DirectorySeparatorChar}`.");
-            cmd.StdOut.Should().BeVisuallyEquivalentTo(HelpText);
+            cmd.StdErr.Should().Be(string.Format(CommonLocalizableStrings.CouldNotFindAnyProjectInDirectory, setup.TestRoot + Path.DirectorySeparatorChar));
+            cmd.StdOut.Should().BeVisuallyEquivalentToIfNotLocalized(HelpText);
         }
 
         [Fact]
@@ -188,7 +199,7 @@ Additional Arguments:
                 .WithProject(lib.CsProjPath)
                 .Execute($"\"{setup.ValidRefCsprojPath}\"");
             cmd.Should().Pass();
-            cmd.StdOut.Should().Be("Reference `ValidRef\\ValidRef.csproj` added to the project.");
+            cmd.StdOut.Should().Be(string.Format(CommonLocalizableStrings.ReferenceAddedToTheProject, @"ValidRef\ValidRef.csproj"));
             cmd.StdErr.Should().BeEmpty();
             var csproj = lib.CsProj();
             csproj.NumberOfItemGroupsWithoutCondition().Should().Be(noCondBefore + 1);
@@ -207,7 +218,7 @@ Additional Arguments:
                 .WithProject(lib.CsProjPath)
                 .Execute($"{FrameworkNet451Arg} \"{setup.ValidRefCsprojPath}\"");
             cmd.Should().Pass();
-            cmd.StdOut.Should().Be("Reference `ValidRef\\ValidRef.csproj` added to the project.");
+            cmd.StdOut.Should().Be(string.Format(CommonLocalizableStrings.ReferenceAddedToTheProject, @"ValidRef\ValidRef.csproj"));
             cmd.StdErr.Should().BeEmpty();
             var csproj = lib.CsProj();
             csproj.NumberOfItemGroupsWithConditionContaining(ConditionFrameworkNet451).Should().Be(condBefore + 1);
@@ -232,7 +243,7 @@ Additional Arguments:
                 .WithProject(lib.CsProjName)
                 .Execute($"\"{setup.ValidRefCsprojPath}\"");
             cmd.Should().Pass();
-            cmd.StdOut.Should().Be("Reference `ValidRef\\ValidRef.csproj` added to the project.");
+            cmd.StdOut.Should().Be(string.Format(CommonLocalizableStrings.ReferenceAddedToTheProject, @"ValidRef\ValidRef.csproj"));
             var csproj = lib.CsProj();
             csproj.NumberOfItemGroupsWithoutCondition().Should().Be(noCondBefore);
             csproj.NumberOfProjectReferencesWithIncludeContaining(setup.ValidRefCsprojName).Should().Be(1);
@@ -256,7 +267,7 @@ Additional Arguments:
                 .WithProject(lib.CsProjPath)
                 .Execute($"{FrameworkNet451Arg} \"{setup.ValidRefCsprojPath}\"");
             cmd.Should().Pass();
-            cmd.StdOut.Should().Be("Reference `ValidRef\\ValidRef.csproj` added to the project.");
+            cmd.StdOut.Should().Be(string.Format(CommonLocalizableStrings.ReferenceAddedToTheProject, @"ValidRef\ValidRef.csproj")); ;
             var csproj = lib.CsProj();
             csproj.NumberOfItemGroupsWithConditionContaining(ConditionFrameworkNet451).Should().Be(condBefore);
             csproj.NumberOfProjectReferencesWithIncludeAndConditionContaining(setup.ValidRefCsprojName, ConditionFrameworkNet451).Should().Be(1);
@@ -280,7 +291,7 @@ Additional Arguments:
                 .WithProject(lib.CsProjPath)
                 .Execute($"{FrameworkNet451Arg} \"{setup.ValidRefCsprojPath}\"");
             cmd.Should().Pass();
-            cmd.StdOut.Should().Be("Reference `ValidRef\\ValidRef.csproj` added to the project.");
+            cmd.StdOut.Should().Be(string.Format(CommonLocalizableStrings.ReferenceAddedToTheProject, @"ValidRef\ValidRef.csproj"));
             var csproj = lib.CsProj();
             csproj.NumberOfItemGroupsWithConditionContaining(ConditionFrameworkNet451).Should().Be(condBefore + 1);
             csproj.NumberOfProjectReferencesWithIncludeAndConditionContaining(setup.ValidRefCsprojName, ConditionFrameworkNet451).Should().Be(1);
@@ -304,7 +315,7 @@ Additional Arguments:
                 .WithProject(lib.CsProjPath)
                 .Execute($"\"{setup.ValidRefCsprojPath}\"");
             cmd.Should().Pass();
-            cmd.StdOut.Should().Be("Reference `ValidRef\\ValidRef.csproj` added to the project.");
+            cmd.StdOut.Should().Be(string.Format(CommonLocalizableStrings.ReferenceAddedToTheProject, @"ValidRef\ValidRef.csproj"));
             var csproj = lib.CsProj();
             csproj.NumberOfItemGroupsWithoutCondition().Should().Be(noCondBefore + 1);
             csproj.NumberOfProjectReferencesWithIncludeContaining(setup.ValidRefCsprojName).Should().Be(1);
@@ -328,7 +339,7 @@ Additional Arguments:
                 .WithProject(lib.CsProjName)
                 .Execute($"\"{setup.ValidRefCsprojPath}\"");
             cmd.Should().Pass();
-            cmd.StdOut.Should().Be("Project already has a reference to `ValidRef\\ValidRef.csproj`.");
+            cmd.StdOut.Should().Be(string.Format(CommonLocalizableStrings.ProjectAlreadyHasAreference, @"ValidRef\ValidRef.csproj"));
 
             var csproj = lib.CsProj();
             csproj.NumberOfItemGroupsWithoutCondition().Should().Be(noCondBefore);
@@ -347,7 +358,7 @@ Additional Arguments:
                     .WithProject(proj.CsProjPath)
                     .Execute($"{FrameworkNet451Arg} \"{setup.LibCsprojRelPath}\"");
             cmd.Should().Pass();
-            cmd.StdOut.Should().Be("Project already has a reference to `..\\Lib\\Lib.csproj`.");
+            cmd.StdOut.Should().Be(string.Format(CommonLocalizableStrings.ProjectAlreadyHasAreference, @"..\Lib\Lib.csproj"));
             proj.CsProjContent().Should().BeEquivalentTo(contentBefore);
         }
 
@@ -369,7 +380,7 @@ Additional Arguments:
                 .WithProject(lib.CsProjPath)
                 .Execute($"{FrameworkNet451Arg} \"{setup.ValidRefCsprojPath}\"");
             cmd.Should().Pass();
-            cmd.StdOut.Should().Be("Project already has a reference to `ValidRef\\ValidRef.csproj`.");
+            cmd.StdOut.Should().Be(string.Format(CommonLocalizableStrings.ProjectAlreadyHasAreference, @"ValidRef\ValidRef.csproj"));
             lib.CsProjContent().Should().BeEquivalentTo(csprojContentBefore);
         }
 
@@ -385,7 +396,7 @@ Additional Arguments:
                     .WithProject(proj.CsProjName)
                     .Execute($"{FrameworkNet451Arg} \"{setup.LibCsprojRelPath}\"");
             cmd.Should().Pass();
-            cmd.StdOut.Should().Be("Project already has a reference to `..\\Lib\\Lib.csproj`.");
+            cmd.StdOut.Should().Be(string.Format(CommonLocalizableStrings.ProjectAlreadyHasAreference, @"..\Lib\Lib.csproj"));
             proj.CsProjContent().Should().BeEquivalentTo(contentBefore);
         }
 
@@ -401,7 +412,7 @@ Additional Arguments:
                     .WithProject(proj.CsProjName)
                     .Execute($"\"{setup.LibCsprojRelPath}\"");
             cmd.Should().Pass();
-            cmd.StdOut.Should().Be("Project already has a reference to `..\\Lib\\Lib.csproj`.");
+            cmd.StdOut.Should().Be(string.Format(CommonLocalizableStrings.ProjectAlreadyHasAreference, @"..\Lib\Lib.csproj"));
             proj.CsProjContent().Should().BeEquivalentTo(contentBefore);
         }
 
@@ -417,7 +428,7 @@ Additional Arguments:
                     .WithProject(proj.CsProjPath)
                     .Execute($"\"{setup.ValidRefCsprojPath}\"");
             cmd.Should().Pass();
-            cmd.StdOut.Should().Be("Reference `..\\ValidRef\\ValidRef.csproj` added to the project.");
+            cmd.StdOut.Should().Be(string.Format(CommonLocalizableStrings.ReferenceAddedToTheProject, @"..\ValidRef\ValidRef.csproj"));
             var csproj = proj.CsProj();
             csproj.NumberOfItemGroupsWithoutCondition().Should().Be(noCondBefore + 1);
             csproj.NumberOfProjectReferencesWithIncludeContaining(setup.ValidRefCsprojName).Should().Be(1);
@@ -435,7 +446,7 @@ Additional Arguments:
                     .WithProject(proj.CsProjName)
                     .Execute($"{FrameworkNet451Arg} \"{setup.LibCsprojRelPath}\"");
             cmd.Should().Pass();
-            cmd.StdOut.Should().Be("Project already has a reference to `..\\Lib\\Lib.csproj`.");
+            cmd.StdOut.Should().Be(string.Format(CommonLocalizableStrings.ProjectAlreadyHasAreference, @"..\Lib\Lib.csproj"));
             proj.CsProjContent().Should().BeEquivalentTo(contentBefore);
         }
 
@@ -451,7 +462,7 @@ Additional Arguments:
                     .WithProject(proj.CsProjPath)
                     .Execute($"{FrameworkNet451Arg} \"{setup.ValidRefCsprojPath}\"");
             cmd.Should().Pass();
-            cmd.StdOut.Should().Be("Reference `..\\ValidRef\\ValidRef.csproj` added to the project.");
+            cmd.StdOut.Should().Be(string.Format(CommonLocalizableStrings.ReferenceAddedToTheProject, "..\\ValidRef\\ValidRef.csproj"));
             var csproj = proj.CsProj();
             csproj.NumberOfItemGroupsWithConditionContaining(ConditionFrameworkNet451).Should().Be(condBefore + 1);
             csproj.NumberOfProjectReferencesWithIncludeAndConditionContaining(setup.ValidRefCsprojName, ConditionFrameworkNet451).Should().Be(1);
@@ -469,7 +480,7 @@ Additional Arguments:
                     .WithProject(proj.CsProjPath)
                     .Execute($"\"{setup.ValidRefCsprojPath}\"");
             cmd.Should().Pass();
-            cmd.StdOut.Should().Be("Reference `..\\ValidRef\\ValidRef.csproj` added to the project.");
+            cmd.StdOut.Should().Be(string.Format(CommonLocalizableStrings.ReferenceAddedToTheProject, @"..\ValidRef\ValidRef.csproj"));
             var csproj = proj.CsProj();
             csproj.NumberOfItemGroupsWithoutCondition().Should().Be(noCondBefore);
             csproj.NumberOfProjectReferencesWithIncludeContaining(setup.ValidRefCsprojName).Should().Be(1);
@@ -478,8 +489,8 @@ Additional Arguments:
         [Fact]
         public void ItAddsMultipleRefsNoCondToTheSameItemGroup()
         {
-            const string OutputText = @"Reference `Lib\Lib.csproj` added to the project.
-Reference `ValidRef\ValidRef.csproj` added to the project.";
+            string OutputText = $@"{string.Format(CommonLocalizableStrings.ReferenceAddedToTheProject, @"Lib\Lib.csproj")}
+{string.Format(CommonLocalizableStrings.ReferenceAddedToTheProject, @"ValidRef\ValidRef.csproj")}";
 
             var setup = Setup();
             var lib = NewLibWithFrameworks(dir: setup.TestRoot);
@@ -500,8 +511,8 @@ Reference `ValidRef\ValidRef.csproj` added to the project.";
         [Fact]
         public void ItAddsMultipleRefsWithCondToTheSameItemGroup()
         {
-            const string OutputText = @"Reference `Lib\Lib.csproj` added to the project.
-Reference `ValidRef\ValidRef.csproj` added to the project.";
+            string OutputText = $@"{string.Format(CommonLocalizableStrings.ReferenceAddedToTheProject, @"Lib\Lib.csproj")}
+{string.Format(CommonLocalizableStrings.ReferenceAddedToTheProject, @"ValidRef\ValidRef.csproj")}";
 
             var setup = Setup();
             var lib = NewLibWithFrameworks(dir: setup.TestRoot);
@@ -530,7 +541,7 @@ Reference `ValidRef\ValidRef.csproj` added to the project.";
                 .WithWorkingDirectory(lib.Path)
                 .Execute($"\"{setup.ValidRefCsprojPath}\"");
             cmd.Should().Pass();
-            cmd.StdOut.Should().Be("Reference `ValidRef\\ValidRef.csproj` added to the project.");
+            cmd.StdOut.Should().Be(string.Format(CommonLocalizableStrings.ReferenceAddedToTheProject, @"ValidRef\ValidRef.csproj"));
             cmd.StdErr.Should().BeEmpty();
             var csproj = lib.CsProj();
             csproj.NumberOfItemGroupsWithoutCondition().Should().Be(noCondBefore + 1);
@@ -548,7 +559,7 @@ Reference `ValidRef\ValidRef.csproj` added to the project.";
                 .WithProject(lib.CsProjName)
                 .Execute("\"IDoNotExist.csproj\"");
             cmd.Should().Fail();
-            cmd.StdErr.Should().Be("Reference IDoNotExist.csproj does not exist.");
+            cmd.StdErr.Should().Be(string.Format(CommonLocalizableStrings.CouldNotFindProjectOrDirectory, "IDoNotExist.csproj"));
             lib.CsProjContent().Should().BeEquivalentTo(contentBefore);
         }
 
@@ -564,7 +575,7 @@ Reference `ValidRef\ValidRef.csproj` added to the project.";
                 .WithProject(lib.CsProjPath)
                 .Execute($"\"{setup.ValidRefCsprojPath}\" \"IDoNotExist.csproj\"");
             cmd.Should().Fail();
-            cmd.StdErr.Should().Be("Reference IDoNotExist.csproj does not exist.");
+            cmd.StdErr.Should().Be(string.Format(CommonLocalizableStrings.CouldNotFindProjectOrDirectory, "IDoNotExist.csproj"));
             lib.CsProjContent().Should().BeEquivalentTo(contentBefore);
         }
 
@@ -580,7 +591,7 @@ Reference `ValidRef\ValidRef.csproj` added to the project.";
                 .WithProject(lib.CsProjName)
                 .Execute($"\"{setup.ValidRefCsprojPath.Replace('\\', '/')}\"");
             cmd.Should().Pass();
-            cmd.StdOut.Should().Be("Reference `ValidRef\\ValidRef.csproj` added to the project.");
+            cmd.StdOut.Should().Be(string.Format(CommonLocalizableStrings.ReferenceAddedToTheProject, @"ValidRef\ValidRef.csproj"));
             cmd.StdErr.Should().BeEmpty();
             var csproj = lib.CsProj();
             csproj.NumberOfItemGroupsWithoutCondition().Should().Be(noCondBefore + 1);
@@ -599,7 +610,7 @@ Reference `ValidRef\ValidRef.csproj` added to the project.";
                 .WithProject(setup.LibCsprojPath)
                 .Execute($"\"{setup.ValidRefCsprojRelPath}\"");
             cmd.Should().Pass();
-            cmd.StdOut.Should().Be("Reference `..\\ValidRef\\ValidRef.csproj` added to the project.");
+            cmd.StdOut.Should().Be(string.Format(CommonLocalizableStrings.ReferenceAddedToTheProject, @"..\ValidRef\ValidRef.csproj"));
             cmd.StdErr.Should().BeEmpty();
             var csproj = proj.CsProj();
             csproj.NumberOfItemGroupsWithoutCondition().Should().Be(noCondBefore + 1);
@@ -618,7 +629,7 @@ Reference `ValidRef\ValidRef.csproj` added to the project.";
                     .WithProject(lib.CsProjPath)
                     .Execute($"{FrameworkNet451Arg} \"{net45lib.CsProjPath}\"");
             cmd.Should().Pass();
-            cmd.StdOut.Should().Be("Reference `..\\Net45Lib\\Net45Lib.csproj` added to the project.");
+            cmd.StdOut.Should().Be(string.Format(CommonLocalizableStrings.ReferenceAddedToTheProject, @"..\Net45Lib\Net45Lib.csproj"));
             var csproj = lib.CsProj();
             csproj.NumberOfItemGroupsWithConditionContaining(ConditionFrameworkNet451).Should().Be(condBefore + 1);
             csproj.NumberOfProjectReferencesWithIncludeAndConditionContaining(net45lib.CsProjName, ConditionFrameworkNet451).Should().Be(1);
@@ -636,7 +647,8 @@ Reference `ValidRef\ValidRef.csproj` added to the project.";
                     .WithProject(net452netcoreapp10lib.CsProjPath)
                     .Execute($"\"{lib.CsProjPath}\"");
             cmd.Should().Pass();
-            cmd.StdOut.Should().Be("Reference `..\\Lib\\Lib.csproj` added to the project.");
+            cmd.Should().Pass();
+            cmd.StdOut.Should().Be(string.Format(CommonLocalizableStrings.ReferenceAddedToTheProject, @"..\Lib\Lib.csproj"));
             var csproj = net452netcoreapp10lib.CsProj();
             csproj.NumberOfItemGroupsWithoutCondition().Should().Be(noCondBefore + 1);
             csproj.NumberOfProjectReferencesWithIncludeContaining(lib.CsProjName).Should().Be(1);
@@ -649,7 +661,7 @@ Reference `ValidRef\ValidRef.csproj` added to the project.";
         [InlineData("nonexistingframeworkname")]
         public void WhenFrameworkSwitchIsNotMatchingAnyOfTargetedFrameworksItPrintsError(string framework)
         {
-            var setup = Setup();
+            var setup = Setup(framework);
             var lib = new ProjDir(setup.LibDir);
             var net45lib = new ProjDir(Path.Combine(setup.TestRoot, "Net45Lib"));
 
@@ -658,7 +670,7 @@ Reference `ValidRef\ValidRef.csproj` added to the project.";
                     .WithProject(lib.CsProjPath)
                     .Execute($"-f {framework} \"{net45lib.CsProjPath}\"");
             cmd.Should().Fail();
-            cmd.StdErr.Should().Be($"Project `{setup.LibCsprojPath}` does not target framework `{framework}`.");
+            cmd.StdErr.Should().Be(string.Format(CommonLocalizableStrings.ProjectDoesNotTargetFramework, setup.LibCsprojPath, framework));
 
             lib.CsProjContent().Should().BeEquivalentTo(csProjContent);
         }
@@ -680,6 +692,56 @@ Reference `ValidRef\ValidRef.csproj` added to the project.";
             cmd.StdErr.Should().MatchRegex(ProjectNotCompatibleErrorMessageRegEx);
             cmd.StdErr.Should().MatchRegex(" - net45");
             net45lib.CsProjContent().Should().BeEquivalentTo(csProjContent);
+        }
+
+        [Fact]
+        public void WhenDirectoryContainingProjectIsGivenReferenceIsAdded()
+        {
+            var setup = Setup();
+            var lib = NewLibWithFrameworks(dir: setup.TestRoot);
+
+            var result = new AddReferenceCommand()
+                    .WithWorkingDirectory(setup.TestRoot)
+                    .WithProject(lib.CsProjPath)
+                    .Execute($"\"{Path.GetDirectoryName(setup.ValidRefCsprojPath)}\"");
+
+            result.Should().Pass();
+            result.StdOut.Should().Be(string.Format(CommonLocalizableStrings.ReferenceAddedToTheProject, @"ValidRef\ValidRef.csproj"));
+            result.StdErr.Should().BeEmpty();
+        }
+
+        [Fact]
+        public void WhenDirectoryContainsNoProjectsItCancelsWholeOperation()
+        {
+            var setup = Setup();
+            var lib = NewLibWithFrameworks(dir: setup.TestRoot);
+
+            var reference = "Empty";
+            var result = new AddReferenceCommand()
+                    .WithWorkingDirectory(setup.TestRoot)
+                    .WithProject(lib.CsProjPath)
+                    .Execute(reference);
+
+            result.Should().Fail();
+            result.StdOut.Should().BeVisuallyEquivalentToIfNotLocalized(HelpText);
+            result.StdErr.Should().Be(string.Format(CommonLocalizableStrings.CouldNotFindAnyProjectInDirectory, reference));
+        }
+
+        [Fact]
+        public void WhenDirectoryContainsMultipleProjectsItCancelsWholeOperation()
+        {
+            var setup = Setup();
+            var lib = NewLibWithFrameworks(dir: setup.TestRoot);
+
+            var reference = "MoreThanOne";
+            var result = new AddReferenceCommand()
+                    .WithWorkingDirectory(setup.TestRoot)
+                    .WithProject(lib.CsProjPath)
+                    .Execute(reference);
+
+            result.Should().Fail();
+            result.StdOut.Should().BeVisuallyEquivalentToIfNotLocalized(HelpText);
+            result.StdErr.Should().Be(string.Format(CommonLocalizableStrings.MoreThanOneProjectInDirectory, reference));
         }
     }
 }

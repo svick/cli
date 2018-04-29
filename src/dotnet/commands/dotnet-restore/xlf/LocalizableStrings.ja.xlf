@@ -1,8 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.2" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 xliff-core-1.2-transitional.xsd">
-  <file datatype="xml" source-language="en" target-language="ja" original="src/dotnet/commands/dotnet-restore/LocalizableStrings.resx">
+  <file datatype="xml" source-language="en" target-language="ja" original="../LocalizableStrings.resx">
     <body>
-      <group id="src/dotnet/commands/dotnet-restore/LocalizableStrings.resx" />
       <trans-unit id="AppFullName">
         <source>.NET dependency restorer</source>
         <target state="translated">.NET 依存関係リストアラー</target>
@@ -69,8 +68,8 @@
         <note />
       </trans-unit>
       <trans-unit id="CmdNoDependenciesOptionDescription">
-        <source>Set this flag to ignore project to project references and only restore the root project</source>
-        <target state="translated">プロジェクト間参照を無視して、ルート プロジェクトのみを復元するには、このフラグを設定します</target>
+        <source>Set this flag to ignore project to project references and only restore the root project.</source>
+        <target state="translated">プロジェクト間参照を無視して、ルート プロジェクトのみを復元するには、このフラグを設定します。</target>
         <note />
       </trans-unit>
       <trans-unit id="CmdRuntimeOption">
@@ -81,6 +80,11 @@
       <trans-unit id="CmdRuntimeOptionDescription">
         <source>Target runtime to restore packages for.</source>
         <target state="translated">パッケージ復元用のターゲット ランタイム。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="CmdForceRestoreOptionDescription">
+        <source>Set this flag to force all dependencies to be resolved even if the last restore was successful. This is equivalent to deleting project.assets.json.</source>
+        <target state="translated">このフラグを設定すると、最後に行われた復元が成功した場合でも強制的にすべての依存関係を解決します。これは、project.assets.json を削除することと同じです。</target>
         <note />
       </trans-unit>
     </body>

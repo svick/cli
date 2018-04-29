@@ -1,77 +1,125 @@
 ﻿// Copyright (c) .NET Foundation and contributors. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using System.Reflection;
+using System.Diagnostics;
+using System.Linq;
+using System.Runtime.InteropServices;
+using Microsoft.DotNet.Cli;
+using Microsoft.DotNet.Cli.CommandLine;
 using Microsoft.DotNet.Cli.Utils;
+using Command = Microsoft.DotNet.Cli.CommandLine.Command;
+using Parser = Microsoft.DotNet.Cli.Parser;
 
 namespace Microsoft.DotNet.Tools.Help
 {
     public class HelpCommand
     {
-        private static readonly string UsageText = $@"{LocalizableStrings.Usage}: dotnet [host-options] [command] [arguments] [common-options]
+        private readonly AppliedOption _appliedOption;
 
-{LocalizableStrings.Arguments}:
-  [command]             {LocalizableStrings.CommandDefinition}
-  [arguments]           {LocalizableStrings.ArgumentsDefinition}
-  [host-options]        {LocalizableStrings.HostOptionsDefinition}
-  [common-options]      {LocalizableStrings.OptionsDescription}
-
-{LocalizableStrings.CommonOptions}:
-  -v|--verbose          {LocalizableStrings.VerboseDefinition}
-  -h|--help             {LocalizableStrings.HelpDefinition} 
-
-{LocalizableStrings.HostOptions}:
-  -d|--diagnostics      {LocalizableStrings.DiagnosticsDefinition}
-  --version             {LocalizableStrings.VersionDescription}
-  --info                {LocalizableStrings.InfoDescription}
-
-{LocalizableStrings.Commands}:
-  new           {LocalizableStrings.NewDefinition}
-  restore       {LocalizableStrings.RestoreDefinition}
-  build         {LocalizableStrings.BuildDefinition}
-  publish       {LocalizableStrings.PublishDefinition}
-  run           {LocalizableStrings.RunDefinition}
-  test          {LocalizableStrings.TestDefinition}
-  pack          {LocalizableStrings.PackDefinition}
-  migrate       {LocalizableStrings.MigrateDefinition}
-  clean         {LocalizableStrings.CleanDefinition}
-  sln           {LocalizableStrings.SlnDefinition}
-
-Project modification commands:
-  add           Add items to the project
-  remove        Remove items from the project
-  list          List items in the project
-
-{LocalizableStrings.AdvancedCommands}:
-  nuget         {LocalizableStrings.NugetDefinition}
-  msbuild       {LocalizableStrings.MsBuildDefinition}
-  vstest        {LocalizableStrings.VsTestDefinition}";
+        public HelpCommand(AppliedOption appliedOption)
+        {
+            _appliedOption = appliedOption;
+        }
 
         public static int Run(string[] args)
         {
-            if (args.Length == 0)
+            DebugHelper.HandleDebugSwitch(ref args);
+
+            var parser = Parser.Instance;
+            var result = parser.ParseFrom("dotnet help", args);
+            var helpAppliedOption = result["dotnet"]["help"];
+
+            result.ShowHelpIfRequested();
+
+            HelpCommand cmd;
+            try
             {
-                PrintHelp();
-                return 0;
+                cmd = new HelpCommand(helpAppliedOption);
+            }
+            catch (CommandCreationException e)
+            {
+                return e.ExitCode;
+            }
+
+            if (helpAppliedOption.Arguments.Any())
+            {
+                return cmd.Execute();
             }
             else
             {
-                return Cli.Program.Main(new[] { args[0], "--help" });
+                PrintHelp();
+                return 0;
             }
         }
 
         public static void PrintHelp()
         {
             PrintVersionHeader();
-            Reporter.Output.WriteLine(UsageText);
+            Reporter.Output.WriteLine(HelpUsageText.UsageText);
         }
 
         public static void PrintVersionHeader()
         {
-            var versionString = string.IsNullOrEmpty(Product.Version) ?
-                string.Empty :
-                $" ({Product.Version})";
+            var versionString = string.IsNullOrEmpty(Product.Version) ? string.Empty : $" ({Product.Version})";
             Reporter.Output.WriteLine(Product.LongName + versionString);
+        }
+
+        public static Process ConfigureProcess(string docUrl)
+        {
+            ProcessStartInfo psInfo;
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                psInfo = new ProcessStartInfo
+                {
+                    FileName = "cmd",
+                    Arguments = $"/c start {docUrl}"
+                };
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                psInfo = new ProcessStartInfo
+                {
+                    FileName = "open",
+                    Arguments = docUrl
+                };
+            }
+            else
+            {
+                psInfo = new ProcessStartInfo
+                {
+                    FileName = "xdg-open",
+                    Arguments = docUrl
+                };
+            }
+
+            return new Process
+            {
+                StartInfo = psInfo
+            };
+        }
+
+        public int Execute()
+        {
+            if (BuiltInCommandsCatalog.Commands.TryGetValue(
+                _appliedOption.Arguments.Single(),
+                out BuiltInCommandMetadata builtIn) &&
+                !string.IsNullOrEmpty(builtIn.DocLink))
+            {
+                var process = ConfigureProcess(builtIn.DocLink);
+                process.Start();
+                process.WaitForExit();
+                return 0;
+            }
+            else
+            {
+                Reporter.Error.WriteLine(
+                    string.Format(
+                        LocalizableStrings.CommandDoesNotExist,
+                        _appliedOption.Arguments.Single()));
+                Reporter.Output.WriteLine(HelpUsageText.UsageText);
+                return 1;
+            }
         }
     }
 }
+

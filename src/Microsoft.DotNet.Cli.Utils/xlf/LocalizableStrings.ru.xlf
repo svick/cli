@@ -1,8 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.2" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 xliff-core-1.2-transitional.xsd">
-  <file datatype="xml" source-language="en" target-language="ru" original="src/Microsoft.DotNet.Cli.Utils/LocalizableStrings.resx">
+  <file datatype="xml" source-language="en" target-language="ru" original="../LocalizableStrings.resx">
     <body>
-      <group id="src/Microsoft.DotNet.Cli.Utils/LocalizableStrings.resx" />
       <trans-unit id="MalformedText">
         <source>Malformed command text '{0}'</source>
         <target state="translated">Неправильный формат текста команды "{0}"</target>
@@ -30,12 +29,12 @@
       </trans-unit>
       <trans-unit id="UnableToLocateDotnetMultiplexer">
         <source>Unable to locate dotnet multiplexer</source>
-        <target state="translated">Не удалось найти мультиплексор dotnet</target>
+        <target state="translated">Не удается найти мультиплексор dotnet.</target>
         <note />
       </trans-unit>
       <trans-unit id="LookingForPreferCliRuntimeFile">
         <source>{0}: Looking for prefercliruntime file at `{1}`</source>
-        <target state="translated">{0}: Поиск файла prefercliruntime "{1}"</target>
+        <target state="translated">{0}: поиск файла prefercliruntime в "{1}"</target>
         <note />
       </trans-unit>
       <trans-unit id="AttemptingToResolve">
@@ -45,12 +44,12 @@
       </trans-unit>
       <trans-unit id="DidNotFindAMatchingProject">
         <source>{0}: Did not find a matching project {1}.</source>
-        <target state="translated">{0}: Не найден соответствующий проект {1}.</target>
+        <target state="translated">{0}: не найден подходящий проект {1}.</target>
         <note />
       </trans-unit>
       <trans-unit id="InvalidCommandResolverArguments">
         <source>{0}: invalid commandResolverArguments</source>
-        <target state="translated">{0}: недопустимое значение commandResolverArguments</target>
+        <target state="translated">{0}: недопустимый commandResolverArguments</target>
         <note />
       </trans-unit>
       <trans-unit id="DoesNotExist">
@@ -65,7 +64,7 @@
       </trans-unit>
       <trans-unit id="ToolLibraryFound">
         <source>{0}: tool library found {1}</source>
-        <target state="translated">{0}: найдена библиотека средств {1}</target>
+        <target state="translated">{0}: найдена библиотека средств {1}.</target>
         <note />
       </trans-unit>
       <trans-unit id="MSBuildExePath">
@@ -75,7 +74,7 @@
       </trans-unit>
       <trans-unit id="MSBuildProjectPath">
         <source>{0}: MSBuild project path = {1}</source>
-        <target state="translated">{0}: путь проекта MSBuild = {1}</target>
+        <target state="translated">{0}: путь проекта MSBuild — {1}</target>
         <note />
       </trans-unit>
       <trans-unit id="MultipleProjectFilesFound">
@@ -85,7 +84,7 @@
       </trans-unit>
       <trans-unit id="DidNotFindProject">
         <source>{0}: ProjectFactory did not find Project.</source>
-        <target state="translated">{0}: Фабрика проектов не нашла проект.</target>
+        <target state="translated">{0}: фабрика проектов не нашла проект.</target>
         <note />
       </trans-unit>
       <trans-unit id="ResolvingCommandSpec">
@@ -141,8 +140,8 @@
         <note />
       </trans-unit>
       <trans-unit id="UnableToGenerateDepsJson">
-        <source>unable to generate deps.json, it may have been already generated: {0}</source>
-        <target state="translated">не удается создать deps.json, возможно, он уже создан: {0}</target>
+        <source>Unable to generate deps.json, it may have been already generated.  You can specify the "-d" option before the tool name for diagnostic output (for example, "dotnet -d &lt;toolname&gt;": {0}</source>
+        <target state="needs-review-translation">не удается создать deps.json, возможно, он уже создан: {0}</target>
         <note />
       </trans-unit>
       <trans-unit id="UnableToDeleteTemporaryDepsJson">
@@ -162,7 +161,7 @@
       </trans-unit>
       <trans-unit id="ProjectNotRestoredOrRestoreFailed">
         <source>The project may not have been restored or restore failed - run `dotnet restore`</source>
-        <target state="translated">Возможно, проект не был восстановлен или его восстановление завершилось со сбоем, запустите команду "dotnet restore".</target>
+        <target state="translated">Возможно, проект не был восстановлен или его восстановление завершилось со сбоем. Запустите команду "dotnet restore".</target>
         <note />
       </trans-unit>
       <trans-unit id="NoExecutableFoundMatchingCommand">
@@ -172,7 +171,7 @@
       </trans-unit>
       <trans-unit id="WaitingForDebuggerToAttach">
         <source>Waiting for debugger to attach. Press ENTER to continue</source>
-        <target state="translated">Ожидание подключения отладчика. Нажмите ВВОД, чтобы продолжить</target>
+        <target state="translated">Ожидание подключения отладчика. Для продолжения нажмите клавишу ВВОД.</target>
         <note />
       </trans-unit>
       <trans-unit id="ProcessId">
@@ -213,6 +212,51 @@
       <trans-unit id="UnableToInvokeMemberNameAfterCommand">
         <source>Unable to invoke {0} after the command has been run</source>
         <target state="translated">Не удается вызвать {0} после запуска команды.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="IgnoringPreferCLIRuntimeFile">
+        <source>{0}: Ignoring prefercliruntime file as the tool target framework ({1}) has a different major version than the current CLI runtime ({2})</source>
+        <target state="translated">{0}: файл prefercliruntime игнорируется, так как основные номера версии целевой платформы средства ({1}) и текущей среды выполнения CLI ({2}) различаются</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="CouldNotFindToolRuntimeConfigFile">
+        <source>{0}: Could not find runtimeconfig.json file for tool {1}</source>
+        <target state="translated">{0}: не удалось найти файл runtimeconfig.json для средства {1}</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="DepsJsonGeneratorProjectNotSet">
+        <source>Unable to find deps.json generator project.</source>
+        <target state="translated">Не удалось найти проект генератора deps.json.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="CommandAssembliesNotFound">
+        <source>The command executable for "{0}" was not found. The project may not have been restored or restore failed - run `dotnet restore`</source>
+        <target state="translated">Исполняемый файл команды для "{0}" не найден. Возможно, проект не был восстановлен или его восстановление завершилось сбоем. Запустите команду "dotnet restore".</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="DotNetSdkInfoLabel">
+        <source>.NET Core SDK (reflecting any global.json):</source>
+        <target state="translated">Пакет SDK для .NET Core (отражающий любой global.json):</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="DotNetRuntimeInfoLabel">
+        <source>Runtime Environment:</source>
+        <target state="translated">Среда выполнения:</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="MSBuildArgs">
+        <source>MSBuild arguments: {0}</source>
+        <target state="new">MSBuild arguments: {0}</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="EmbedAppNameInHostAppHostHasBeenModified">
+        <source>Unable to use '{0}' as application host executable as it does not contain the expected placeholder byte sequence '{1}' that would mark where the application name would be written.</source>
+        <target state="new">Unable to use '{0}' as application host executable as it does not contain the expected placeholder byte sequence '{1}' that would mark where the application name would be written.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="EmbedAppNameInHostFileNameIsTooLong">
+        <source>Given file name '{0}' is longer than 1024 bytes</source>
+        <target state="new">Given file name '{0}' is longer than 1024 bytes</target>
         <note />
       </trans-unit>
     </body>

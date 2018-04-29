@@ -1,8 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.2" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 xliff-core-1.2-transitional.xsd">
-  <file datatype="xml" source-language="en" target-language="ko" original="src/dotnet/commands/dotnet-add/dotnet-add-package/LocalizableStrings.resx">
+  <file datatype="xml" source-language="en" target-language="ko" original="../LocalizableStrings.resx">
     <body>
-      <group id="src/dotnet/commands/dotnet-add/dotnet-add-package/LocalizableStrings.resx" />
       <trans-unit id="AppFullName">
         <source>.NET Add Package reference Command</source>
         <target state="translated">.NET 패키지 참조 추가 명령</target>
@@ -13,34 +12,29 @@
         <target state="translated">패키지 참조를 추가하는 명령</target>
         <note />
       </trans-unit>
-      <trans-unit id="AppHelpText">
-        <source>Package references to add</source>
-        <target state="translated">추가할 패키지 참조</target>
-        <note />
-      </trans-unit>
       <trans-unit id="SpecifyExactlyOnePackageReference">
         <source>Please specify one package reference to add.</source>
         <target state="translated">추가할 하나의 패키지 참조를 지정하세요.</target>
         <note />
       </trans-unit>
       <trans-unit id="CmdFrameworkDescription">
-        <source>Add reference only when targetting a specific framework</source>
+        <source>Adds reference only when targeting a specific framework.</source>
         <target state="translated">특정 프레임워크를 대상으로 지정할 때에만 참조를 추가합니다.</target>
         <note />
       </trans-unit>
       <trans-unit id="CmdNoRestoreDescription">
-        <source>Add reference without performing restore preview and compatibility check.</source>
+        <source>Adds reference without performing restore preview and compatibility check.</source>
         <target state="translated">미리 보기 복원 및 호환성 검사를 수행하지 않고 참조를 추가합니다.</target>
         <note />
       </trans-unit>
       <trans-unit id="CmdSourceDescription">
-        <source>Use specific NuGet package sources to use during the restore.</source>
-        <target state="translated">복원 중 사용할 특정 NuGet 패키지 소스를 사용합니다.</target>
+        <source>Specifies NuGet package sources to use during the restore.</source>
+        <target state="translated">복원 중 사용할 NuGet 패키지 소스를 지정합니다.</target>
         <note />
       </trans-unit>
       <trans-unit id="CmdPackageDirectoryDescription">
-        <source>Restore the packages to this Directory .</source>
-        <target state="translated">패키지를 이 디렉터리에 복원합니다.</target>
+        <source>Restores the packages to the specified directory.</source>
+        <target state="translated">패키지를 지정된 디렉터리에 복원합니다.</target>
         <note />
       </trans-unit>
       <trans-unit id="CmdVersionDescription">
@@ -49,7 +43,7 @@
         <note />
       </trans-unit>
       <trans-unit id="CmdDGFileException">
-        <source>Unable to Create Dependency graph file for project '{0}'. Cannot add package reference.</source>
+        <source>Unable to create dependency graph file for project '{0}'. Cannot add package reference.</source>
         <target state="translated">'{0}' 프로젝트에 대한 종속성 그래프 파일을 만들 수 없습니다. 패키지 참조를 추가할 수 없습니다.</target>
         <note />
       </trans-unit>
@@ -71,6 +65,21 @@
       <trans-unit id="CmdPackageDirectory">
         <source>PACKAGE_DIRECTORY</source>
         <target state="translated">PACKAGE_DIRECTORY</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="CmdPackageDescription">
+        <source>The package reference to add.</source>
+        <target state="translated">추가할 패키지 참조입니다.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="CmdPackage">
+        <source>PACKAGE_NAME</source>
+        <target state="translated">PACKAGE_NAME</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="CmdDGFileIOException">
+        <source>Unable to generate a temporary file for project '{0}'. Cannot add package reference. Please clear the temp directory and try again.</source>
+        <target state="translated">'{0}' 프로젝트에 대한 임시 파일을 생성할 수 없습니다. 패키지 참조를 추가할 수 없습니다. 임시 디렉터리를 지우고 다시 시도하세요.</target>
         <note />
       </trans-unit>
     </body>

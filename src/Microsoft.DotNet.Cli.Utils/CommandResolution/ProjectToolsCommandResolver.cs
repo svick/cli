@@ -134,14 +134,35 @@ namespace Microsoft.DotNet.Cli.Utils
                 ProjectToolsCommandResolverName,
                 string.Join(Environment.NewLine, possiblePackageRoots.Select((p) => $"- {p}"))));
 
-            var toolPackageFramework = project.DotnetCliToolTargetFramework;
+            List<NuGetFramework> toolFrameworksToCheck = new List<NuGetFramework>();
+            toolFrameworksToCheck.Add(project.DotnetCliToolTargetFramework);
 
-            string nugetPackagesRoot;
-            var toolLockFile = GetToolLockFile(
-                toolLibraryRange,
-                toolPackageFramework,
-                possiblePackageRoots,
-                out nugetPackagesRoot);
+            //  NuGet restore in Visual Studio may restore for netcoreapp1.0.  So if that happens, fall back to
+            //  looking for a netcoreapp1.0 or netcoreapp1.1 tool restore.
+            if (project.DotnetCliToolTargetFramework.Framework == FrameworkConstants.FrameworkIdentifiers.NetCoreApp &&
+                project.DotnetCliToolTargetFramework.Version >= new Version(2, 0, 0))
+            {
+                toolFrameworksToCheck.Add(NuGetFramework.Parse("netcoreapp1.1"));
+                toolFrameworksToCheck.Add(NuGetFramework.Parse("netcoreapp1.0"));
+            }
+
+            
+            LockFile toolLockFile = null;
+            NuGetFramework toolTargetFramework = null; ;
+
+            foreach (var toolFramework in toolFrameworksToCheck)
+            {
+                toolLockFile = GetToolLockFile(
+                    toolLibraryRange,
+                    toolFramework,
+                    possiblePackageRoots);
+
+                if (toolLockFile != null)
+                {
+                    toolTargetFramework = toolFramework;
+                    break;
+                }
+            }
 
             if (toolLockFile == null)
             {
@@ -154,7 +175,7 @@ namespace Microsoft.DotNet.Cli.Utils
                 toolLockFile.Path));
 
             var toolLibrary = toolLockFile.Targets
-                .FirstOrDefault(t => toolPackageFramework == t.TargetFramework)
+                .FirstOrDefault(t => toolTargetFramework == t.TargetFramework)
                 ?.Libraries.FirstOrDefault(
                     l => StringComparer.OrdinalIgnoreCase.Equals(l.Name, toolLibraryRange.Name));
             if (toolLibrary == null)
@@ -170,11 +191,10 @@ namespace Microsoft.DotNet.Cli.Utils
 
             var depsFilePath = GetToolDepsFilePath(
                 toolLibraryRange,
-                toolPackageFramework,
+                toolTargetFramework,
                 toolLockFile,
-                depsFileRoot);
-
-            var normalizedNugetPackagesRoot = PathUtility.EnsureNoTrailingDirectorySeparator(nugetPackagesRoot);
+                depsFileRoot,
+                project.ToolDepsJsonGeneratorProject);
 
             Reporter.Verbose.WriteLine(string.Format(
                 LocalizableStrings.AttemptingToCreateCommandSpec,
@@ -185,7 +205,7 @@ namespace Microsoft.DotNet.Cli.Utils
                     commandName,
                     args,
                     _allowedCommandExtensions,
-                    normalizedNugetPackagesRoot,
+                    toolLockFile,
                     s_commandResolutionStrategy,
                     depsFilePath,
                     null);
@@ -215,19 +235,16 @@ namespace Microsoft.DotNet.Cli.Utils
         private LockFile GetToolLockFile(
             SingleProjectInfo toolLibrary,
             NuGetFramework framework,
-            IEnumerable<string> possibleNugetPackagesRoot,
-            out string nugetPackagesRoot)
+            IEnumerable<string> possibleNugetPackagesRoot)
         {
             foreach (var packagesRoot in possibleNugetPackagesRoot)
             {
                 if (TryGetToolLockFile(toolLibrary, framework, packagesRoot, out LockFile lockFile))
                 {
-                    nugetPackagesRoot = packagesRoot;
                     return lockFile;
                 }
             }
 
-            nugetPackagesRoot = null;
             return null;
         }
 
@@ -285,7 +302,8 @@ namespace Microsoft.DotNet.Cli.Utils
             SingleProjectInfo toolLibrary,
             NuGetFramework framework,
             LockFile toolLockFile,
-            string depsPathRoot)
+            string depsPathRoot,
+            string toolDepsJsonGeneratorProject)
         {
             var depsJsonPath = Path.Combine(
                 depsPathRoot,
@@ -296,7 +314,7 @@ namespace Microsoft.DotNet.Cli.Utils
                 ProjectToolsCommandResolverName,
                 depsJsonPath));
 
-            EnsureToolJsonDepsFileExists(toolLockFile, framework, depsJsonPath, toolLibrary);
+            EnsureToolJsonDepsFileExists(toolLockFile, framework, depsJsonPath, toolLibrary, toolDepsJsonGeneratorProject);
 
             return depsJsonPath;
         }
@@ -305,11 +323,12 @@ namespace Microsoft.DotNet.Cli.Utils
             LockFile toolLockFile,
             NuGetFramework framework,
             string depsPath,
-            SingleProjectInfo toolLibrary)
+            SingleProjectInfo toolLibrary,
+            string toolDepsJsonGeneratorProject)
         {
             if (!File.Exists(depsPath))
             {
-                GenerateDepsJsonFile(toolLockFile, framework, depsPath, toolLibrary);
+                GenerateDepsJsonFile(toolLockFile, framework, depsPath, toolLibrary, toolDepsJsonGeneratorProject);
             }
         }
 
@@ -317,21 +336,83 @@ namespace Microsoft.DotNet.Cli.Utils
             LockFile toolLockFile,
             NuGetFramework framework,
             string depsPath,
-            SingleProjectInfo toolLibrary)
+            SingleProjectInfo toolLibrary,
+            string toolDepsJsonGeneratorProject)
         {
+            if (string.IsNullOrEmpty(toolDepsJsonGeneratorProject) ||
+                !File.Exists(toolDepsJsonGeneratorProject))
+            {
+                throw new GracefulException(LocalizableStrings.DepsJsonGeneratorProjectNotSet);
+            }
+
             Reporter.Verbose.WriteLine(string.Format(
                 LocalizableStrings.GeneratingDepsJson,
                 depsPath));
 
-            var dependencyContext = new DepsJsonBuilder()
-                .Build(toolLibrary, null, toolLockFile, framework, null);
-
             var tempDepsFile = Path.GetTempFileName();
-            using (var fileStream = File.Open(tempDepsFile, FileMode.Open, FileAccess.Write))
-            {
-                var dependencyContextWriter = new DependencyContextWriter();
 
-                dependencyContextWriter.Write(dependencyContext, fileStream);
+            var args = new List<string>();
+
+            args.Add(toolDepsJsonGeneratorProject);
+            args.Add($"-property:ProjectAssetsFile=\"{toolLockFile.Path}\"");
+            args.Add($"-property:ToolName={toolLibrary.Name}");
+            args.Add($"-property:ProjectDepsFilePath={tempDepsFile}");
+
+            var toolTargetFramework = toolLockFile.Targets.First().TargetFramework.GetShortFolderName();
+            args.Add($"-property:TargetFramework={toolTargetFramework}");
+
+
+            //  Look for the .props file in the Microsoft.NETCore.App package, until NuGet
+            //  generates .props and .targets files for tool restores (https://github.com/NuGet/Home/issues/5037)
+            var platformLibrary = toolLockFile.Targets
+                .FirstOrDefault(t => framework == t.TargetFramework)
+                ?.GetPlatformLibrary();
+
+            if (platformLibrary != null)
+            {
+                string buildRelativePath = platformLibrary.Build.FirstOrDefault()?.Path;
+
+                var platformLibraryPath = toolLockFile.GetPackageDirectory(platformLibrary);
+
+                if (platformLibraryPath != null && buildRelativePath != null)
+                {
+                    //  Get rid of "_._" filename
+                    buildRelativePath = Path.GetDirectoryName(buildRelativePath);
+
+                    string platformLibraryBuildFolderPath = Path.Combine(platformLibraryPath, buildRelativePath);
+                    var platformLibraryPropsFile = Directory.GetFiles(platformLibraryBuildFolderPath, "*.props").FirstOrDefault();
+
+                    if (platformLibraryPropsFile != null)
+                    {
+                        args.Add($"-property:AdditionalImport={platformLibraryPropsFile}");
+                    }
+                }
+            }
+
+            //  Delete temporary file created by Path.GetTempFileName(), otherwise the GenerateBuildDependencyFile target
+            //  will think the deps file is up-to-date and skip executing
+            File.Delete(tempDepsFile);
+
+            var msBuildExePath = _environment.GetEnvironmentVariable(Constants.MSBUILD_EXE_PATH);
+
+            msBuildExePath = string.IsNullOrEmpty(msBuildExePath) ?
+                Path.Combine(AppContext.BaseDirectory, "MSBuild.dll") :
+                msBuildExePath;
+
+            Reporter.Verbose.WriteLine(string.Format(LocalizableStrings.MSBuildArgs,
+                ArgumentEscaper.EscapeAndConcatenateArgArrayForProcessStart(args)));
+
+            var result = new MSBuildForwardingAppWithoutLogging(args, msBuildExePath)
+                .GetProcessStartInfo()
+                .ExecuteAndCaptureOutput(out string stdOut, out string stdErr);
+
+            if (result != 0)
+            {
+                Reporter.Verbose.WriteLine(string.Format(
+                    LocalizableStrings.UnableToGenerateDepsJson,
+                    stdOut + Environment.NewLine + stdErr));
+
+                throw new GracefulException(string.Format(LocalizableStrings.UnableToGenerateDepsJson, toolDepsJsonGeneratorProject));
             }
 
             try

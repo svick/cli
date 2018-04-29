@@ -7,17 +7,13 @@ using System.Collections.Generic;
 
 namespace Microsoft.DotNet.Tools.Test.Utilities
 {
-    public sealed class PublishCommand : TestCommand
+    public sealed class PublishCommand : DotnetCommand
     {
         private string _framework;
         private string _output;
         private string _runtime;
-        private List<string> _profileFilterProject = new List<string>();
-
-        public PublishCommand()
-            : base("dotnet")
-        {
-        }
+        private List<string> _targetManifests = new List<string>();
+        private bool? _selfContained;
 
         public PublishCommand WithFramework(string framework)
         {
@@ -42,9 +38,15 @@ namespace Microsoft.DotNet.Tools.Test.Utilities
             return this;
         }
 
-        public PublishCommand WithProFileProject(string profileproj)
+        public PublishCommand WithTargetManifest(string manifest)
         {
-            _profileFilterProject.Add( $" --filter {profileproj}");
+            _targetManifests.Add( $"--manifest {manifest}");
+            return this;
+        }
+
+        public PublishCommand WithSelfContained(bool value)
+        {
+            _selfContained = value;
             return this;
         }
 
@@ -65,8 +67,9 @@ namespace Microsoft.DotNet.Tools.Test.Utilities
             return string.Join(" ", 
                 FrameworkOption,
                 OutputOption,
-                ProfileProjOption,
-                RuntimeOption);
+                TargetOption,
+                RuntimeOption,
+                SelfContainedOption);
         }
 
         private string FrameworkOption => string.IsNullOrEmpty(_framework) ? "" : $"-f {_framework}";
@@ -75,6 +78,8 @@ namespace Microsoft.DotNet.Tools.Test.Utilities
 
         private string RuntimeOption => string.IsNullOrEmpty(_runtime) ? "" : $"-r {_runtime}";
 
-        private string ProfileProjOption => string.Join(" ", _profileFilterProject);
+        private string TargetOption => string.Join(" ", _targetManifests);
+
+        private string SelfContainedOption => _selfContained.HasValue ? $"--self-contained:{_selfContained.Value}" : "";
     }
 }

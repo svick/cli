@@ -1,8 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.2" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 xliff-core-1.2-transitional.xsd">
-  <file datatype="xml" source-language="en" target-language="zh-Hant" original="src/dotnet/commands/dotnet-sln/LocalizableStrings.resx">
+  <file datatype="xml" source-language="en" target-language="zh-Hant" original="../LocalizableStrings.resx">
     <body>
-      <group id="src/dotnet/commands/dotnet-sln/LocalizableStrings.resx" />
       <trans-unit id="AppFullName">
         <source>.NET modify solution file command</source>
         <target state="translated">.NET 修改方案檔命令</target>
@@ -24,8 +23,8 @@
         <note />
       </trans-unit>
       <trans-unit id="AddSubcommandHelpText">
-        <source>Add a specified project(s) to the solution.</source>
-        <target state="translated">將指定的專案新增到解決方案。</target>
+        <source>Add one or more specified projects to the solution.</source>
+        <target state="translated">將一或多個指定的專案新增至解決方案。</target>
         <note />
       </trans-unit>
       <trans-unit id="RemoveAppFullName">
@@ -35,7 +34,7 @@
       </trans-unit>
       <trans-unit id="RemoveSubcommandHelpText">
         <source>Remove the specified project(s) from the solution. The project is not impacted.</source>
-        <target state="translated">將指定的專案從解決方案移除。專案不會受到影響。</target>
+        <target state="translated">從解決方案移除指定的專案。專案不會受到影響。</target>
         <note />
       </trans-unit>
       <trans-unit id="ListAppFullName">

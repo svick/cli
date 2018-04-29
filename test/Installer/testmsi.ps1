@@ -3,7 +3,8 @@
 
 param(
     [string]$InputMsi,
-    [string]$DotnetDir
+    [string]$DotnetDir,
+    [string]$TestDir
 )
 
 . "$PSScriptRoot\..\..\scripts\common\_common.ps1"
@@ -28,7 +29,7 @@ function CopyTestXUnitRunner([string]$destination)
     Copy-Item $XUnitRunnerDir\xunit.runner.utility.desktop.dll -Destination:$destination
 }
 
-Write-Host "Running tests for MSI installer at $inputMsi."
+Write-Output "Running tests for MSI installer at $inputMsi."
 
 if(!(Test-Path $inputMsi))
 {
@@ -37,7 +38,7 @@ if(!(Test-Path $inputMsi))
 
 $testName = "Microsoft.DotNet.Cli.Msi.Tests"
 $testProj="$PSScriptRoot\$testName\$testName.csproj"
-$testBin="$RepoRoot\artifacts\tests\$testName"
+$testBin="$TestDir\$testName"
 
 pushd "$DotnetDir"
 
@@ -65,7 +66,7 @@ try {
         CopyInstaller $testBin
         CopyTestXUnitRunner $testBin
 
-        Write-Host "Running installer tests in Windows Container"
+        Write-Output "Running installer tests in Windows Container"
 
         # --net="none" works around a networking issue on the containers on the CI machines.
         # Since our installer tests don't require the network, it is fine to shut it off.

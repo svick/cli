@@ -22,5 +22,13 @@ namespace Microsoft.Extensions.EnvironmentAbstractions
             FileOptions fileOptions);
 
         void CreateEmptyFile(string path);
+
+        void WriteAllText(string path, string content);
+
+        void Move(string source, string destination);
+
+        void Copy(string source, string destination);
+
+        void Delete(string path);
     }
 }

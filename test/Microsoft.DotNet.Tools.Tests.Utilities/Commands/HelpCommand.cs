@@ -5,17 +5,21 @@ using Microsoft.DotNet.Cli.Utils;
 
 namespace Microsoft.DotNet.Tools.Test.Utilities
 {
-    public sealed class HelpCommand : TestCommand
+    public sealed class HelpCommand : DotnetCommand
     {
-        public HelpCommand()
-            : base("dotnet")
-        {
-        }
-
         public override CommandResult Execute(string args = "")
         {
-            args = $"help {args}";
-            return base.Execute(args);
+            return base.Execute(AppendHelp(args));
+        }
+
+        public override CommandResult ExecuteWithCapturedOutput(string args = "")
+        {
+            return base.ExecuteWithCapturedOutput(AppendHelp(args));
+        }
+
+        private string AppendHelp(string args)
+        {
+            return args = $"help {args}";
         }
     }
 }

@@ -1,8 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.2" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 xliff-core-1.2-transitional.xsd">
-  <file datatype="xml" source-language="en" target-language="ko" original="src/dotnet/commands/dotnet-help/LocalizableStrings.resx">
+  <file datatype="xml" source-language="en" target-language="ko" original="../LocalizableStrings.resx">
     <body>
-      <group id="src/dotnet/commands/dotnet-help/LocalizableStrings.resx" />
       <trans-unit id="Usage">
         <source>Usage</source>
         <target state="translated">사용법</target>
@@ -38,14 +37,9 @@
         <target state="translated">공통 옵션</target>
         <note />
       </trans-unit>
-      <trans-unit id="VerboseDefinition">
-        <source>Enable verbose output</source>
-        <target state="translated">자세한 정보 출력 사용</target>
-        <note />
-      </trans-unit>
       <trans-unit id="HelpDefinition">
-        <source>Show help</source>
-        <target state="translated">도움말 표시</target>
+        <source>Show help.</source>
+        <target state="translated">도움말을 표시합니다.</target>
         <note />
       </trans-unit>
       <trans-unit id="HostOptions">
@@ -64,8 +58,8 @@
         <note />
       </trans-unit>
       <trans-unit id="Commands">
-        <source>Commands</source>
-        <target state="translated">명령</target>
+        <source>SDK commands</source>
+        <target state="translated">SDK 명령</target>
         <note />
       </trans-unit>
       <trans-unit id="NewDefinition">
@@ -114,13 +108,13 @@
         <note />
       </trans-unit>
       <trans-unit id="AddDefinition">
-        <source>Add items to the project.</source>
-        <target state="translated">프로젝트에 항목을 추가합니다.</target>
+        <source>Add reference to the project.</source>
+        <target state="translated">프로젝트에 참조를 추가합니다.</target>
         <note />
       </trans-unit>
       <trans-unit id="RemoveDefinition">
-        <source>Remove items from the project.</source>
-        <target state="translated">프로젝트에서 항목을 제거합니다.</target>
+        <source>Remove reference from the project.</source>
+        <target state="translated">프로젝트에서 참조를 제거합니다.</target>
         <note />
       </trans-unit>
       <trans-unit id="AdvancedCommands">
@@ -156,6 +150,116 @@
       <trans-unit id="SlnDefinition">
         <source>Modify solution (SLN) files.</source>
         <target state="translated">솔루션(SLN) 파일을 수정합니다.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ListDefinition">
+        <source>List project references or installed tools.</source>
+        <target state="translated">프로젝트 참조 또는 설치된 도구를 나열합니다.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="CommandDoesNotExist">
+        <source>Specified command '{0}' is not a valid CLI command. Please specify a valid CLI commands. For more information, run dotnet help.</source>
+        <target state="translated">지정된 명령 '{0}'은(는) 유효한 CLI 명령이 아닙니다. 유효한 CLI 명령을 지정하세요. 자세한 내용은 dotnet 도움말을 실행하세요.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="AppFullName">
+        <source>.NET CLI help utility</source>
+        <target state="translated">.NET CLI 도움말 유틸리티</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="AppDescription">
+        <source>Utility to get more detailed help about each of the CLI commands.</source>
+        <target state="translated">각 CLI 명령에 대해 더 자세한 도움말을 얻는 유틸리티입니다.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="CommandArgumentName">
+        <source>COMMAND_NAME</source>
+        <target state="translated">COMMAND_NAME</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="CommandArgumentDescription">
+        <source>CLI command for which to view more detailed help.</source>
+        <target state="translated">더 자세한 도움말을 보는 CLI 명령입니다.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="PathToApplicationDefinition">
+        <source>The path to an application .dll file to execute.</source>
+        <target state="translated">실행할 응용 프로그램 .dll 파일의 경로입니다.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="SDKVersionCommandDefinition">
+        <source>Display .NET Core SDK version in use.</source>
+        <target state="translated">사용 중인 .NET Core SDK 버전을 표시합니다.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="SDKInfoCommandDefinition">
+        <source>Display .NET Core information.</source>
+        <target state="translated">.NET Core 정보를 표시합니다.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="SDKListSdksCommandDefinition">
+        <source>Display the installed SDKs.</source>
+        <target state="translated">설치된 SDK를 표시합니다.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="SDKListRuntimesCommandDefinition">
+        <source>Display the installed runtimes.</source>
+        <target state="translated">설치된 런타임을 표시합니다.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="SDKDiagnosticsCommandDefinition">
+        <source>Enable diagnostic output.</source>
+        <target state="translated">진단 출력을 사용합니다.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="RunDotnetCommandHelpForMore">
+        <source>Run 'dotnet COMMAND --help' for more information on a command.</source>
+        <target state="translated">명령에 대한 자세한 정보를 보려면 'dotnet COMMAND --help'를 실행합니다.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="AdditionalprobingpathDefinition">
+        <source>Path containing probing policy and assemblies to probe for.</source>
+        <target state="translated">검색할 검색 정책 및 어셈블리를 포함하는 경로입니다.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="DepsfilDefinition">
+        <source>Path to &lt;application&gt;.deps.json file.</source>
+        <target state="translated">&lt;응용 프로그램&gt;.deps.json 파일의 경로입니다.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="RuntimeconfigDefinition">
+        <source>Path to &lt;application&gt;.runtimeconfig.json file.</source>
+        <target state="translated">&lt;응용 프로그램&gt;.runtimeconfig.json 파일의 경로입니다.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="FxVersionDefinition">
+        <source>Version of the installed Shared Framework to use to run the application.</source>
+        <target state="translated">응용 프로그램을 실행하는 데 사용할 설치된 공유 프레임워크의 버전입니다.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="RollForwardOnNoCandidateFxDefinition">
+        <source>Roll forward on no candidate shared framework is enabled.</source>
+        <target state="translated">사용되지 않는 후보 공유 프레임워크에 대해 롤포워드합니다.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="AdditionalDeps">
+        <source>Path to additional deps.json file.</source>
+        <target state="translated">추가 deps.json 파일의 경로입니다.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="StoreDefinition">
+        <source>Stores the specified assemblies in the runtime store.</source>
+        <target state="translated">지정된 어셈블리를 런타임 저장소에 저장합니다.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ToolDefinition">
+        <source>Modify tools.</source>
+        <target state="translated">도구를 수정합니다.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="BuildServerDefinition">
+        <source>Interact with servers started by a build.</source>
+        <target state="new">Interact with servers started by a build.</target>
         <note />
       </trans-unit>
     </body>

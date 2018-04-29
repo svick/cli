@@ -1,19 +1,25 @@
 ﻿// Copyright (c) .NET Foundation and contributors. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using System.Collections.Generic;
 using Microsoft.DotNet.Cli;
 using Microsoft.DotNet.Cli.CommandLine;
 using Microsoft.DotNet.Cli.Utils;
+using Microsoft.DotNet.Tools;
 using Microsoft.DotNet.Tools.MSBuild;
-using System.Collections.Generic;
-using System.Diagnostics;
+using Parser = Microsoft.DotNet.Cli.Parser;
 
 namespace Microsoft.DotNet.Tools.Publish
 {
-    public partial class PublishCommand : MSBuildForwardingApp
+    public class PublishCommand : RestoringCommand
     {
-        private PublishCommand(IEnumerable<string> msbuildArgs, string msbuildPath = null)
-            : base(msbuildArgs, msbuildPath)
+        private PublishCommand(
+            IEnumerable<string> msbuildArgs,
+            IEnumerable<string> userDefinedArguments,
+            IEnumerable<string> trailingArguments,
+            bool noRestore,
+            string msbuildPath = null)
+            : base(msbuildArgs, userDefinedArguments, trailingArguments, noRestore, msbuildPath)
         {
         }
 
@@ -21,102 +27,31 @@ namespace Microsoft.DotNet.Tools.Publish
         {
             DebugHelper.HandleDebugSwitch(ref args);
 
-            CommandLineApplication app = new CommandLineApplication(throwOnUnexpectedArg: false);
-            app.Name = "dotnet publish";
-            app.FullName = LocalizableStrings.AppFullName;
-            app.Description = LocalizableStrings.AppDescription;
-            app.HandleRemainingArguments = true;
-            app.ArgumentSeparatorHelpText = HelpMessageStrings.MSBuildAdditionalArgsHelpText;
-            app.HelpOption("-h|--help");
+            var msbuildArgs = new List<string>();
 
-            CommandArgument projectArgument = app.Argument($"<{LocalizableStrings.ProjectArgument}>",
-                LocalizableStrings.ProjectArgDescription);
+            var parser = Parser.Instance;
 
-            CommandOption frameworkOption = app.Option(
-                $"-f|--framework <{LocalizableStrings.FrameworkOption}>", LocalizableStrings.FrameworkOptionDescription,
-                CommandOptionType.SingleValue);
+            var result = parser.ParseFrom("dotnet publish", args);
 
-            CommandOption runtimeOption = app.Option(
-                $"-r|--runtime <{LocalizableStrings.RuntimeOption}>", LocalizableStrings.RuntimeOptionDescription,
-                CommandOptionType.SingleValue);
+            result.ShowHelpOrErrorIfAppropriate();
 
-            CommandOption outputOption = app.Option(
-                $"-o|--output <{LocalizableStrings.OutputOption}>", LocalizableStrings.OutputOptionDescription,
-                CommandOptionType.SingleValue);
+            msbuildArgs.Add("-target:Publish");
 
-            CommandOption configurationOption = app.Option(
-                $"-c|--configuration <{LocalizableStrings.ConfigurationOption}>", LocalizableStrings.ConfigurationOptionDescription,
-                CommandOptionType.SingleValue);
+            var appliedPublishOption = result["dotnet"]["publish"];
 
-            CommandOption versionSuffixOption = app.Option(
-               $"--version-suffix <{LocalizableStrings.VersionSuffixOption}>", LocalizableStrings.VersionSuffixOptionDescription,
-                CommandOptionType.SingleValue);
+            msbuildArgs.AddRange(appliedPublishOption.OptionValuesToBeForwarded());
 
-            CommandOption filterProjOption = app.Option(
-               $"--filter <{LocalizableStrings.FilterProjOption}>", LocalizableStrings.FilterProjOptionDescription,
-                CommandOptionType.MultipleValue);
+            msbuildArgs.AddRange(appliedPublishOption.Arguments);
 
-            CommandOption verbosityOption = AddVerbosityOption(app);
+            bool noRestore = appliedPublishOption.HasOption("--no-restore")
+                          || appliedPublishOption.HasOption("--no-build");
 
-            List<string> msbuildArgs = null;
-            app.OnExecute(() =>
-            {
-                msbuildArgs = new List<string>();
-
-                msbuildArgs.Add("/t:Publish");
-
-                if (!string.IsNullOrEmpty(projectArgument.Value))
-                {
-                    msbuildArgs.Add(projectArgument.Value);
-                }
-
-                if (!string.IsNullOrEmpty(frameworkOption.Value()))
-                {
-                    msbuildArgs.Add($"/p:TargetFramework={frameworkOption.Value()}");
-                }
-
-                if (!string.IsNullOrEmpty(runtimeOption.Value()))
-                {
-                    msbuildArgs.Add($"/p:RuntimeIdentifier={runtimeOption.Value()}");
-                }
-
-                if (!string.IsNullOrEmpty(outputOption.Value()))
-                {
-                    msbuildArgs.Add($"/p:PublishDir={outputOption.Value()}");
-                }
-
-                if (!string.IsNullOrEmpty(configurationOption.Value()))
-                {
-                    msbuildArgs.Add($"/p:Configuration={configurationOption.Value()}");
-                }
-
-                if (!string.IsNullOrEmpty(versionSuffixOption.Value()))
-                {
-                    msbuildArgs.Add($"/p:VersionSuffix={versionSuffixOption.Value()}");
-                }
-
-                if (filterProjOption.HasValue())
-                {
-                    msbuildArgs.Add($"/p:FilterProjectFiles={string.Join("%3B", filterProjOption.Values)}");
-                }
-
-                if (!string.IsNullOrEmpty(verbosityOption.Value()))
-                {
-                    msbuildArgs.Add($"/verbosity:{verbosityOption.Value()}");
-                }
-
-                msbuildArgs.AddRange(app.RemainingArguments);
-
-                return 0;
-            });
-
-            int exitCode = app.Execute(args);
-            if (msbuildArgs == null)
-            {
-                throw new CommandCreationException(exitCode);
-            }
-
-            return new PublishCommand(msbuildArgs, msbuildPath);
+            return new PublishCommand(
+                msbuildArgs,
+                appliedPublishOption.OptionValuesToBeForwarded(),
+                appliedPublishOption.Arguments,
+                noRestore,
+                msbuildPath);
         }
 
         public static int Run(string[] args)

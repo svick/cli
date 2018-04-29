@@ -51,13 +51,13 @@ namespace Microsoft.DotNet.Cli.Build
             {
                 { "win_x86", false },
                 { "win_x64", false },
-                { "ubuntu_x64", false },
-                { "ubuntu_16_04_x64", false },
-                { "rhel_x64", false },
                 { "osx_x64", false },
-                { "debian_x64", false },
-                { "centos_x64", false },
                 { "linux_x64", false },
+                { "rhel.6_x64", false },
+                { "alpine.3.6_x64", false },
+                { "all_linux_distros_native_installer", false },
+                { "linux_arm", false },
+                { "linux_arm64", false }
             };
 
             if (!badges.ContainsKey(VersionBadgeMoniker))
@@ -71,7 +71,7 @@ namespace Microsoft.DotNet.Cli.Build
                 string name = Path.GetFileName(file);
                 foreach (string img in badges.Keys)
                 {
-                    if ((name.StartsWith($"{img}")) && (name.EndsWith(".svg")))
+                    if ((name.StartsWith($"{img}_")) && (name.EndsWith(".svg")))
                     {
                         badges[img] = true;
                         break;

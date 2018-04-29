@@ -1,8 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.2" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 xliff-core-1.2-transitional.xsd">
-  <file datatype="xml" source-language="en" target-language="ja" original="src/dotnet/commands/dotnet-build/LocalizableStrings.resx">
+  <file datatype="xml" source-language="en" target-language="ja" original="../LocalizableStrings.resx">
     <body>
-      <group id="src/dotnet/commands/dotnet-build/LocalizableStrings.resx" />
       <trans-unit id="AppDescription">
         <source>Builder for the .NET Platform. Delegates to the MSBuild 'Build' target in the project file.</source>
         <target state="translated">.NET Platform 用ビルダープロジェクト ファイル内の MSBuild 'Build' ターゲットへのデリゲート。</target>
@@ -11,26 +10,6 @@
       <trans-unit id="AppFullName">
         <source>.NET Builder</source>
         <target state="translated">.NET ビルダー</target>
-        <note />
-      </trans-unit>
-      <trans-unit id="ConfigurationOptionDescription">
-        <source>Configuration to use for building the project. Default for most projects is  "Debug".</source>
-        <target state="translated">プロジェクトの構築に使用する構成。ほとんどのプロジェクトで既定は "デバッグ" です。</target>
-        <note />
-      </trans-unit>
-      <trans-unit id="ConfigurationOptionName">
-        <source>CONFIGURATION</source>
-        <target state="translated">CONFIGURATION</target>
-        <note />
-      </trans-unit>
-      <trans-unit id="FrameworkOptionDescription">
-        <source>Target framework to build for. The target framework has to be specified in the project file.</source>
-        <target state="translated">構築用のターゲット フレームワーク。ターゲット フレームワークはプロジェクト ファイルで指定する必要があります。</target>
-        <note />
-      </trans-unit>
-      <trans-unit id="FrameworkOptionName">
-        <source>FRAMEWORK</source>
-        <target state="translated">FRAMEWORK</target>
         <note />
       </trans-unit>
       <trans-unit id="NoDependenciesOptionDescription">
@@ -51,36 +30,6 @@
       <trans-unit id="OutputOptionName">
         <source>OUTPUT_DIR</source>
         <target state="translated">OUTPUT_DIR</target>
-        <note />
-      </trans-unit>
-      <trans-unit id="ProjectArgumentDescription">
-        <source>The MSBuild project file to build. If a project file is not specified, MSBuild searches the current working directory for a file that has a file extension that ends in `proj` and uses that file.</source>
-        <target state="translated">構築する MSBuild プロジェクト ファイル。プロジェクト ファイルを指定しなかった場合、MSBuild は現在の作業ディレクトリの中から "proj" で終わるファイル拡張子を検索し、そのファイルを使用します。</target>
-        <note />
-      </trans-unit>
-      <trans-unit id="ProjectArgumentValueName">
-        <source>PROJECT</source>
-        <target state="translated">PROJECT</target>
-        <note />
-      </trans-unit>
-      <trans-unit id="RuntimeOptionDescription">
-        <source>Target runtime to build for. The default is to build a portable application.</source>
-        <target state="translated">構築用のターゲット ランタイム既定では、ポータブル アプリケーションを構築します。</target>
-        <note />
-      </trans-unit>
-      <trans-unit id="RuntimeOptionName">
-        <source>RUNTIME_IDENTIFIER</source>
-        <target state="translated">RUNTIME_IDENTIFIER</target>
-        <note />
-      </trans-unit>
-      <trans-unit id="VersionSuffixOptionDescription">
-        <source>Defines the value for the $(VersionSuffix) property in the project</source>
-        <target state="translated">プロジェクトの $(VersionSuffix) プロパティの値を定義します。</target>
-        <note />
-      </trans-unit>
-      <trans-unit id="VersionSuffixOptionName">
-        <source>VERSION_SUFFIX</source>
-        <target state="translated">VERSION_SUFFIX</target>
         <note />
       </trans-unit>
     </body>

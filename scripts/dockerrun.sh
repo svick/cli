@@ -67,6 +67,9 @@ if [ -z "$DOCKERFILE" ]; then
         elif [ "$(cat /etc/*-release | grep -cim1 centos)" -eq 1 ]; then
             echo "Detected current OS as CentOS, using 'centos' image"
             export DOCKERFILE=scripts/docker/centos
+        elif [ "$(cat /etc/*-release | grep -cim1 rhel)" -eq 1 ]; then
+            echo "Detected current OS as rhel, using 'rhel' image"
+            export DOCKERFILE=scripts/docker/rhel
         elif [ "$(cat /etc/*-release | grep -cim1 debian)" -eq 1 ]; then
             echo "Detected current OS as Debian, using 'debian' image"
             export DOCKERFILE=scripts/docker/debian
@@ -112,29 +115,31 @@ echo "Running command: $BUILD_COMMAND"
 echo "Using code from: $DOCKER_HOST_SHARE_DIR"
 [ -z "$INTERACTIVE" ] || echo "Running Interactive"
 
+# Note: passwords/keys should not be passed in the environment
 docker run $INTERACTIVE -t --rm --sig-proxy=true \
     --name $DOTNET_BUILD_CONTAINER_NAME \
     -v $DOCKER_HOST_SHARE_DIR:/opt/code \
     -e CHANNEL \
-    -e CONNECTION_STRING \
-    -e REPO_ID \
-    -e REPO_USER \
-    -e REPO_PASS \
-    -e REPO_SERVER \
     -e DOTNET_BUILD_SKIP_CROSSGEN \
     -e PUBLISH_TO_AZURE_BLOB \
     -e NUGET_FEED_URL \
     -e NUGET_API_KEY \
-    -e GITHUB_PASSWORD \
-    -e ARTIFACT_STORAGE_KEY \
     -e ARTIFACT_STORAGE_ACCOUNT \
     -e ARTIFACT_STORAGE_CONTAINER \
-    -e CHECKSUM_STORAGE_KEY \
     -e CHECKSUM_STORAGE_ACCOUNT \
     -e CHECKSUM_STORAGE_CONTAINER \
+    -e BLOBFEED_STORAGE_CONTAINER \
     -e CLIBUILD_SKIP_TESTS \
     -e COMMITCOUNT \
     -e DROPSUFFIX \
     -e RELEASESUFFIX \
+    -e COREFXAZURECONTAINER \
+    -e AZUREACCOUNTNAME \
+    -e RELEASETOOLSGITURL \
+    -e CORESETUPBLOBROOTURL \
+    -e PB_ASSETROOTURL \
+    -e PB_PACKAGEVERSIONPROPSURL \
+    -e PB_PUBLISHBLOBFEEDURL \
+    -e EXTERNALRESTORESOURCES \
     $DOTNET_BUILD_CONTAINER_TAG \
     $BUILD_COMMAND "$@"

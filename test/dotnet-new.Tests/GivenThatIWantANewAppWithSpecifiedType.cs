@@ -20,29 +20,41 @@ namespace Microsoft.DotNet.New.Tests
         [InlineData("C#", "classlib", false)]
         [InlineData("C#", "mstest", false)]
         [InlineData("C#", "xunit", false)]
-        [InlineData("C#", "web", true)]
-        [InlineData("C#", "mvc", true)]
-        [InlineData("C#", "webapi", true)]
+        [InlineData("C#", "web", false)]
+        [InlineData("C#", "mvc", false)]
+        [InlineData("C#", "webapi", false)]
+        [InlineData("C#", "angular", true)]
+        [InlineData("C#", "react", true)]
+        [InlineData("C#", "reactredux", true)]
         [InlineData("F#", "console", false)]
-        [InlineData("F#", "classlib", false)]
+        // re-enable when this bug is resolved: https://github.com/dotnet/cli/issues/7574
+        //[InlineData("F#", "classlib", false)]
         [InlineData("F#", "mstest", false)]
         [InlineData("F#", "xunit", false)]
-        [InlineData("F#", "mvc", true)]
+        [InlineData("F#", "mvc", false)]
+        [InlineData("VB", "console", false)]
+        [InlineData("VB", "classlib", false)]
+        [InlineData("VB", "mstest", false)]
+        [InlineData("VB", "xunit", false)]
         public void TemplateRestoresAndBuildsWithoutWarnings(
             string language,
             string projectType,
-            bool useNuGetConfigForAspNet)
+            bool skipSpaWebpackSteps)
         {
             string rootPath = TestAssets.CreateTestDirectory(identifier: $"{language}_{projectType}").FullName;
+            string noRestoreDirective = "--no-restore";
 
             new TestCommand("dotnet") { WorkingDirectory = rootPath }
-                .Execute($"new {projectType} -lang {language} -o {rootPath} --debug:ephemeral-hive")
+                .Execute($"new {projectType} -lang {language} -o {rootPath} --debug:ephemeral-hive {noRestoreDirective}")
                 .Should().Pass();
 
-            if (useNuGetConfigForAspNet)
+            if (skipSpaWebpackSteps)
             {
-                var configFile = new FileInfo(Path.Combine(rootPath, "..", "..", "..", "..", "..", "NuGet.tempaspnetpatch.config"));
-                File.Copy(configFile.FullName, Path.Combine(rootPath, "NuGet.Config"));
+                // Not all CI machines have Node installed, so the build would fail if we tried
+                // to run Webpack. Bypass this by making it appear that Webpack already ran.
+                Directory.CreateDirectory(Path.Combine(rootPath, "wwwroot", "dist"));
+                Directory.CreateDirectory(Path.Combine(rootPath, "ClientApp", "node_modules"));
+                Directory.CreateDirectory(Path.Combine(rootPath, "node_modules"));
             }
 
             new TestCommand("dotnet")
@@ -52,7 +64,7 @@ namespace Microsoft.DotNet.New.Tests
 
             var buildResult = new TestCommand("dotnet")
                 .WithWorkingDirectory(rootPath)
-                .ExecuteWithCapturedOutput("build")
+                .ExecuteWithCapturedOutput("build --no-restore")
                 .Should().Pass()
                 .And.NotHaveStdErr();
         }

@@ -5,128 +5,52 @@ using System.Collections.Generic;
 using Microsoft.DotNet.Cli.CommandLine;
 using Microsoft.DotNet.Cli.Utils;
 using Microsoft.DotNet.Tools.MSBuild;
+using Microsoft.DotNet.Tools;
 using Microsoft.DotNet.Cli;
 using System.Diagnostics;
+using Parser = Microsoft.DotNet.Cli.Parser;
 
 namespace Microsoft.DotNet.Tools.Pack
 {
-    public class PackCommand : MSBuildForwardingApp
+    public class PackCommand : RestoringCommand
     {
-        public PackCommand(IEnumerable<string> msbuildArgs, string msbuildPath = null)
-            : base(msbuildArgs, msbuildPath)
+        public PackCommand(
+            IEnumerable<string> msbuildArgs,
+            IEnumerable<string> userDefinedArguments,
+            IEnumerable<string> trailingArguments,
+            bool noRestore,
+            string msbuildPath = null)
+            : base(msbuildArgs, userDefinedArguments, trailingArguments, noRestore, msbuildPath)
         {
         }
 
         public static PackCommand FromArgs(string[] args, string msbuildPath = null)
         {
-            DebugHelper.HandleDebugSwitch(ref args);
+            var parser = Parser.Instance;
 
-            CommandLineApplication cmd = new CommandLineApplication(throwOnUnexpectedArg: false)
+            var result = parser.ParseFrom("dotnet pack", args);
+
+            result.ShowHelpOrErrorIfAppropriate();
+
+            var parsedPack = result["dotnet"]["pack"];
+          
+            var msbuildArgs = new List<string>()
             {
-                Name = "pack",
-                FullName = LocalizableStrings.AppFullName,
-                Description = LocalizableStrings.AppDescription,
-                HandleRemainingArguments = true,
-                ArgumentSeparatorHelpText = HelpMessageStrings.MSBuildAdditionalArgsHelpText
+                "-target:pack"
             };
 
-            cmd.HelpOption("-h|--help");
+            msbuildArgs.AddRange(parsedPack.OptionValuesToBeForwarded());
 
-            var output = cmd.Option(
-                $"-o|--output <{LocalizableStrings.CmdOutputDir}>",
-                LocalizableStrings.CmdOutputDirDescription,
-                CommandOptionType.SingleValue);
-            var noBuild = cmd.Option(
-                "--no-build",
-                LocalizableStrings.CmdNoBuildOptionDescription, 
-                CommandOptionType.NoValue);
-            var includeSymbols = cmd.Option(
-                "--include-symbols",
-                LocalizableStrings.CmdIncludeSymbolsDescription,
-                CommandOptionType.NoValue);
-            var includeSource = cmd.Option(
-                "--include-source",
-                LocalizableStrings.CmdIncludeSourceDescription,
-                CommandOptionType.NoValue);
-            var configuration = cmd.Option(
-                $"-c|--configuration <{LocalizableStrings.CmdConfig}>",
-                LocalizableStrings.CmdConfigDescription, 
-                CommandOptionType.SingleValue);
-            var versionSuffix = cmd.Option(
-                $"--version-suffix <{LocalizableStrings.CmdVersionSuffix}>",
-                LocalizableStrings.CmdVersionSuffixDescription,
-                CommandOptionType.SingleValue);
-            var serviceable = cmd.Option(
-                "-s|--serviceable",
-                LocalizableStrings.CmdServiceableDescription, 
-                CommandOptionType.NoValue);
-            var argRoot = cmd.Argument(
-                $"<{LocalizableStrings.CmdArgumentProject}>",
-                LocalizableStrings.CmdArgumentDescription,
-                multipleValues:true);
-            CommandOption verbosityOption = AddVerbosityOption(cmd);
+            msbuildArgs.AddRange(parsedPack.Arguments);
 
-            List<string> msbuildArgs = null;
-            cmd.OnExecute(() =>
-            {
-                msbuildArgs = new List<string>()
-                {
-                     "/t:pack"
-                };
+            bool noRestore = parsedPack.HasOption("--no-restore") || parsedPack.HasOption("--no-build");
 
-                if (noBuild.HasValue())
-                {
-                    msbuildArgs.Add($"/p:NoBuild=true");
-                }
-
-                if (includeSymbols.HasValue())
-                {
-                    msbuildArgs.Add($"/p:IncludeSymbols=true");
-                }
-
-                if (includeSource.HasValue())
-                {
-                    msbuildArgs.Add($"/p:IncludeSource=true");
-                }
-
-                if (output.HasValue())
-                {
-                    msbuildArgs.Add($"/p:PackageOutputPath={output.Value()}");
-                }
-
-                if (configuration.HasValue())
-                {
-                    msbuildArgs.Add($"/p:Configuration={configuration.Value()}");
-                }
-
-                if (versionSuffix.HasValue())
-                {
-                    msbuildArgs.Add($"/p:VersionSuffix={versionSuffix.Value()}");
-                }
-
-                if (serviceable.HasValue())
-                {
-                    msbuildArgs.Add($"/p:Serviceable=true");
-                }
-
-                if (verbosityOption.HasValue())
-                {
-                    msbuildArgs.Add($"/verbosity:{verbosityOption.Value()}");
-                }
-
-                msbuildArgs.AddRange(argRoot.Values);
-
-                msbuildArgs.AddRange(cmd.RemainingArguments);
-                return 0;
-            });
-
-            int exitCode = cmd.Execute(args);
-            if (msbuildArgs == null)
-            {
-                throw new CommandCreationException(exitCode);
-            }
-
-            return new PackCommand(msbuildArgs, msbuildPath);
+            return new PackCommand(
+                msbuildArgs,
+                parsedPack.OptionValuesToBeForwarded(),
+                parsedPack.Arguments,
+                noRestore,
+                msbuildPath);
         }
 
         public static int Run(string[] args)

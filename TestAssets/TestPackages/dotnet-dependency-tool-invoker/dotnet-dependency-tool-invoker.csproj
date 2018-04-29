@@ -1,13 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!-- This test asset needs to import the general dir.props in order to get the SdkNugetVersion property.
+      This is why it also needs to explicitly set DisableImplicitFrameworkReferences to false. -->
   <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), dir.props))\dir.props" />
 
   <PropertyGroup>
     <VersionPrefix>1.0.0-rc</VersionPrefix>
-    <TargetFramework>netcoreapp1.0</TargetFramework>
-    <AssemblyName>dotnet-dependency-tool-invoker</AssemblyName>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
     <OutputType>Exe</OutputType>
-    <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netcoreapp1.0' ">$(PackageTargetFallback);portable-net45+win8;dnxcore50</PackageTargetFallback>
     <VersionSuffix></VersionSuffix>
+    <DisableImplicitFrameworkReferences>false</DisableImplicitFrameworkReferences>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -15,19 +17,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\..\..\src\dotnet\CommandLine\*.cs;..\..\..\src\dotnet\CommonLocalizableStrings.cs;" Exclude="bin\**;obj\**;**\*.xproj;packages\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <BuiltProjectOutputGroupOutput Include="$(ProjectRuntimeConfigFilePath)">
-      <FinalOutputPath>$(ProjectRuntimeConfigFilePath)</FinalOutputPath>
-    </BuiltProjectOutputGroupOutput>
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.NETCore.App" Version="1.0.4" />
-    <PackageReference Include="NuGet.Frameworks" Version="$(CLI_NuGet_Version)" />
+    <PackageReference Include="NuGet.Frameworks" Version="$(NuGetFrameworksPackageVersion)" />
     <PackageReference Include="Microsoft.DotNet.Cli.Utils" Version="$(SdkNugetVersion)" />
+    <PackageReference Include="Microsoft.DotNet.Cli.CommandLine" Version="$(MicrosoftDotNetCliCommandLinePackageVersion)" />
+    <PackageReference Include="System.Linq" Version="4.3.0" />
   </ItemGroup>
 
 </Project>

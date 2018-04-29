@@ -1,8 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.2" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 xliff-core-1.2-transitional.xsd">
-  <file datatype="xml" source-language="en" target-language="ja" original="src/dotnet/commands/dotnet-test/LocalizableStrings.resx">
+  <file datatype="xml" source-language="en" target-language="ja" original="../LocalizableStrings.resx">
     <body>
-      <group id="src/dotnet/commands/dotnet-test/LocalizableStrings.resx" />
       <trans-unit id="AppFullName">
         <source>.NET Test Driver</source>
         <target state="translated">.NET Test Driver</target>
@@ -19,7 +18,7 @@
         <note />
       </trans-unit>
       <trans-unit id="CmdArgDescription">
-        <source>The project to test, defaults to the current directory.</source>
+        <source>The project to test. Defaults to the current directory.</source>
         <target state="translated">テストするプロジェクト。既定は現在のディレクトリです。</target>
         <note />
       </trans-unit>
@@ -52,18 +51,19 @@
                                         More info on filtering support: https://aka.ms/vstest-filtering
                                         </source>
         <target state="translated">指定された式に一致するテストを実行します。
-                                       例:
-                                       優先度を 1 に設定してテストを実行する: --filter "Priority = 1"
-                                       指定したフル ネームでテストを実行する: --filter "FullyQualifiedName=Namespace.ClassName.MethodName"
-                                       指定した名前を含むテストを実行する: --filter "FullyQualifiedName~Namespace.Class"
-                                       フィルタリング サポートの詳細情報: https://aka.ms/vstest-filtering</target>
+                                        例:
+                                        優先度を 1 に設定してテストを実行する: --filter "Priority = 1"
+                                        指定したフル ネームでテストを実行する: --filter "FullyQualifiedName=Namespace.ClassName.MethodName"
+                                        指定した名前を含むテストを実行する: --filter "FullyQualifiedName~Namespace.Class"
+                                        フィルタリング サポートの詳細情報: https://aka.ms/vstest-filtering
+                                        </target>
         <note />
       </trans-unit>
       <trans-unit id="CmdTestAdapterPathDescription">
         <source>Use custom adapters from the given path in the test run.
                                         Example: --test-adapter-path &lt;PATH_TO_ADAPTER&gt;</source>
         <target state="translated">テストの実行では、指定されたパスのカスタム アダプターを使用します。
-                                       例: --test-adapter-path &lt;PATH_TO_ADAPTER&gt;</target>
+                                        例: --test-adapter-path &lt;PATH_TO_ADAPTER&gt;</target>
         <note />
       </trans-unit>
       <trans-unit id="CmdLoggerOption">
@@ -72,10 +72,16 @@
         <note />
       </trans-unit>
       <trans-unit id="CmdLoggerDescription">
-        <source>Specify a logger for test results. 
-                                        Example: --logger "trx[;LogFileName=&lt;Defaults to unique file name&gt;]"</source>
+        <source>Specify a logger for test results.
+                                        Examples:
+                                        Log in trx format using a unqiue file name: --logger trx
+                                        Log in trx format using the specified file name: --logger "trx;LogFileName=&lt;TestResults.trx&gt;"
+                                        More info on logger arguments support:https://aka.ms/vstest-report</source>
         <target state="translated">テスト結果のロガーを指定します。
-                                       例: --logger "trx[;LogFileName=&lt;Defaults to unique file name&gt;]"</target>
+                                        例:
+                                        一意のファイル名を使用して trx 形式でログインします: --ロガー trx
+                                        指定されたファイル名を使用して trx 形式でログインします: --ロガー "trx;LogFileName=&lt;TestResults.trx&gt;"
+                                        ロガーの引数の詳細情報: https://aka.ms/vstest-report</target>
         <note />
       </trans-unit>
       <trans-unit id="CmdConfiguration">
@@ -84,8 +90,8 @@
         <note />
       </trans-unit>
       <trans-unit id="CmdConfigDescription">
-        <source>Configuration to use for building the project.  Default for most projects is  "Debug".</source>
-        <target state="translated">プロジェクトの構築に使用する構成。ほとんどのプロジェクトで既定は "デバッグ" です。</target>
+        <source>Configuration to use for building the project.  Default for most projects is "Debug".</source>
+        <target state="translated">プロジェクトのビルドに使用する構成。ほとんどのプロジェクトで既定は "Debug" です。</target>
         <note />
       </trans-unit>
       <trans-unit id="CmdFramework">
@@ -116,20 +122,64 @@
       <trans-unit id="CmdPathTologFileDescription">
         <source>Enable verbose logs for test platform.
                                         Logs are written to the provided file.</source>
-        <target state="translated">テスト プラットフォームの詳細ログを有効にします。
-                                       ログは指定されたファイルに書き込まれます。</target>
+        <target state="translated">"テスト プラットフォームの詳細ログを有効にします。
+                                       ログは指定されたファイルに書き込まれます。"</target>
         <note />
       </trans-unit>
       <trans-unit id="CmdNoBuildDescription">
-        <source>Do not build project before testing.</source>
-        <target state="translated">テストする前にプロジェクトを構築しないでください。</target>
+        <source>Do not build the project before testing. Implies --no-restore.</source>
+        <target state="needs-review-translation">テストする前にプロジェクトをビルドしないでください。  暗示 --復元なし。</target>
         <note />
       </trans-unit>
-      <trans-unit id="RunSettingsArgsHelpText">
-        <source>Any extra commandline runsettings arguments that should be passed to vstest. See 'dotnet vstest --help' for available options.
-                                        Example: -- RunConfiguration.ResultsDirectory="C:\users\user\desktop\Results Directory" MSTest.DeploymentEnabled=false</source>
-        <target state="translated">vstest に渡されるその他の commandline runsettings 引数。利用可能なオプションについては、'dotnet vstest --help' をご覧ください。
-                                       例: -- RunConfiguration.ResultsDirectory="C:\users\user\desktop\Results Directory" MSTest.DeploymentEnabled=false</target>
+      <trans-unit id="CmdTestAdapterPath">
+        <source>PATH_TO_ADAPTER</source>
+        <target state="translated">PATH_TO_ADAPTER</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="CmdResultsDirectoryDescription">
+        <source>The directory where the test results are going to be placed. The specified directory will be created if it does not exist.
+                                        Example: --results-directory &lt;PATH_TO_RESULTS_DIRECTORY&gt;</source>
+        <target state="translated">テスト結果が配置されるディレクトリ。存在しない場合、指定のディレクトリが作成されます。
+                                        例: --results-directory &lt;PATH_TO_RESULTS_DIRECTORY&gt;</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="CmdPathToResultsDirectory">
+        <source>PATH_TO_RESULTS_DIRECTORY</source>
+        <target state="translated">PATH_TO_RESULTS_DIRECTORY</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="RunSettingsArgumentsDescription">
+        <source>
+
+RunSettings arguments:
+  Arguments to pass runsettings configurations through commandline. Arguments may be specified as name-value pair of the form [name]=[value] after "-- ". Note the space after --. 
+  Use a space to separate multiple[name] =[value].
+  More info on RunSettings arguments support: https://aka.ms/vstest-runsettings-arguments
+  Example: dotnet test -- MSTest.DeploymentEnabled=false MSTest.MapInconclusiveToFailed=True</source>
+        <target state="translated">
+
+RunSettings 引数:
+  commandline 経由で runsettings 構成を渡す引数。引数は、"-- " の後に [name]=[value] の形式で名前と値のペアとして指定できます。-- の後のスペースにご注意ください。
+  複数の [name] =[value] を区切るにはスペースを使用します。
+  RunSettings 引数のサポートに関する詳細情報: https://aka.ms/vstest-runsettings-arguments
+  例: dotnet test -- MSTest.DeploymentEnabled=false MSTest.MapInconclusiveToFailed=True</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="cmdCollectFriendlyName">
+        <source>DATA_COLLECTOR_FRIENDLY_NAME</source>
+        <target state="translated">DATA_COLLECTOR_FRIENDLY_NAME</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="cmdCollectDescription">
+        <source>Enables data collector for the test run.
+                                        More info here : https://aka.ms/vstest-collect</source>
+        <target state="translated">テスト実行用にデータ コレクターを有効にします。
+                                        詳細情報: https://aka.ms/vstest-collect</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="CmdBlameDescription">
+        <source>Runs the test in blame mode. This option is helpful in isolating the problematic test causing test host crash. It creates an output file in the current directory as "Sequence.xml", that captures the order of execution of test before the crash.</source>
+        <target state="translated">変更履歴モードでテストを実行します。このオプションは、テスト ホストのクラッシュの原因となる問題のあるテストを分離する場合に役立ちます。現在のディレクトリに、クラッシュする前のテスト実行順序を示す出力ファイル "Sequence.xml" が作成されます。</target>
         <note />
       </trans-unit>
     </body>

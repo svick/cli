@@ -10,6 +10,8 @@ using System.Runtime.InteropServices;
 using Microsoft.DotNet.Cli;
 using Microsoft.DotNet.Cli.CommandLine;
 using System.Diagnostics;
+using Microsoft.DotNet.Cli.Telemetry;
+using Microsoft.DotNet.Cli.Utils;
 
 namespace Microsoft.DotNet.Tools.MSBuild
 {
@@ -17,35 +19,21 @@ namespace Microsoft.DotNet.Tools.MSBuild
     {
         internal const string TelemetrySessionIdEnvironmentVariableName = "DOTNET_CLI_TELEMETRY_SESSIONID";
 
-        private const string MSBuildExeName = "MSBuild.dll";
+        private MSBuildForwardingAppWithoutLogging _forwardingAppWithoutLogging;
 
-        private const string SdksDirectoryName = "Sdks";
-
-        private readonly ForwardingApp _forwardingApp;
-
-        private readonly Dictionary<string, string> _msbuildRequiredEnvironmentVariables =
-            new Dictionary<string, string>
-            {
-                { "MSBuildExtensionsPath", AppContext.BaseDirectory },
-                { "CscToolExe", GetRunCscPath() },
-                { "MSBuildSDKsPath", GetMSBuildSDKsPath() }
-            };
-        
-        private readonly IEnumerable<string> _msbuildRequiredParameters = 
-            new List<string> { "/m", "/v:m" };
-
-        public MSBuildForwardingApp(IEnumerable<string> argsToForward, string msbuildPath = null)
+        private static IEnumerable<string> ConcatTelemetryLogger(IEnumerable<string> argsToForward)
         {
             if (Telemetry.CurrentSessionId != null)
             {
                 try
                 {
                     Type loggerType = typeof(MSBuildLogger);
+                    Type forwardingLoggerType = typeof(MSBuildForwardingLogger);
 
-                    argsToForward = argsToForward
+                    return argsToForward
                         .Concat(new[]
                         {
-                            $"/Logger:{loggerType.FullName},{loggerType.GetTypeInfo().Assembly.Location}"
+                            $"-distributedlogger:{loggerType.FullName},{loggerType.GetTypeInfo().Assembly.Location}*{forwardingLoggerType.FullName},{forwardingLoggerType.GetTypeInfo().Assembly.Location}"
                         });
                 }
                 catch (Exception)
@@ -53,62 +41,28 @@ namespace Microsoft.DotNet.Tools.MSBuild
                     // Exceptions during telemetry shouldn't cause anything else to fail
                 }
             }
+            return argsToForward;
+        }
 
-            _forwardingApp = new ForwardingApp(
-                msbuildPath ?? GetMSBuildExePath(),
-                _msbuildRequiredParameters.Concat(argsToForward.Select(Escape)),
-                environmentVariables: _msbuildRequiredEnvironmentVariables);
+        public MSBuildForwardingApp(IEnumerable<string> argsToForward, string msbuildPath = null)
+        {
+            _forwardingAppWithoutLogging = new MSBuildForwardingAppWithoutLogging(
+                ConcatTelemetryLogger(argsToForward),
+                msbuildPath);
         }
 
         public ProcessStartInfo GetProcessStartInfo()
         {
-            return _forwardingApp
-                .WithEnvironmentVariable(TelemetrySessionIdEnvironmentVariableName, Telemetry.CurrentSessionId)
-                .GetProcessStartInfo();
+            var ret = _forwardingAppWithoutLogging.GetProcessStartInfo();
+
+            ret.Environment[TelemetrySessionIdEnvironmentVariableName] = Telemetry.CurrentSessionId;
+
+            return ret;
         }
 
-        public int Execute()
+        public virtual int Execute()
         {
             return GetProcessStartInfo().Execute();
-        }
-
-        internal static CommandOption AddVerbosityOption(CommandLineApplication app)
-        {
-            return app.Option("-v|--verbosity", LocalizableStrings.VerbosityOptionDescription, CommandOptionType.SingleValue);
-        }
-
-        private static string Escape(string arg) =>
-            // this is a workaround for https://github.com/Microsoft/msbuild/issues/1622
-             (arg.StartsWith("/p:RestoreSources=", StringComparison.OrdinalIgnoreCase)) ?
-                arg.Replace(";", "%3B") 
-                   .Replace("://", ":%2F%2F") : 
-                arg;
-
-        private static string GetMSBuildExePath()
-        {
-            return Path.Combine(
-                AppContext.BaseDirectory,
-                MSBuildExeName);
-        }
-
-        private static string GetMSBuildSDKsPath()
-        {
-            var envMSBuildSDKsPath = Environment.GetEnvironmentVariable("MSBuildSDKsPath");
-
-            if (envMSBuildSDKsPath != null)
-            {
-                return envMSBuildSDKsPath;
-            }
-
-            return Path.Combine(
-                AppContext.BaseDirectory,
-                SdksDirectoryName);
-        }
-
-        private static string GetRunCscPath()
-        {
-            var scriptExtension = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? ".cmd" : ".sh";
-            return Path.Combine(AppContext.BaseDirectory, "Roslyn", $"RunCsc{scriptExtension}");
         }
     }
 }

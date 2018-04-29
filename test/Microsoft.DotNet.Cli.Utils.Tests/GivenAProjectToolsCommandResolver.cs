@@ -12,13 +12,14 @@ using NuGet.Frameworks;
 using NuGet.ProjectModel;
 using NuGet.Versioning;
 using Xunit;
+using Microsoft.DotNet.Tools.Tests.Utilities;
 
 namespace Microsoft.DotNet.Tests
 {
     public class GivenAProjectToolsCommandResolver : TestBase
     {
         private static readonly NuGetFramework s_toolPackageFramework =
-            FrameworkConstants.CommonFrameworks.NetCoreApp10;
+            NuGetFrameworks.NetCoreApp21;
 
         private const string TestProjectName = "AppWithToolDependency";
 
@@ -266,14 +267,8 @@ namespace Microsoft.DotNet.Tests
 
             var lockFile = new LockFileFormat().Read(lockFilePath);
 
-            var depsJsonFile = Path.Combine(
-                Path.GetDirectoryName(lockFilePath),
-                "dotnet-portable.deps.json");
-
-            if (File.Exists(depsJsonFile))
-            {
-                File.Delete(depsJsonFile);
-            }
+            // NOTE: We must not use the real deps.json path here as it will interfere with tests running in parallel.
+            var depsJsonFile = Path.GetTempFileName();
             File.WriteAllText(depsJsonFile, "temp");
 
             var projectToolsCommandResolver = SetupProjectToolsCommandResolver();
@@ -281,7 +276,8 @@ namespace Microsoft.DotNet.Tests
                 lockFile,
                 s_toolPackageFramework,
                 depsJsonFile,
-                new SingleProjectInfo("dotnet-portable", "1.0.0", Enumerable.Empty<ResourceAssemblyInfo>()));
+                new SingleProjectInfo("dotnet-portable", "1.0.0", Enumerable.Empty<ResourceAssemblyInfo>()),
+                GetToolDepsJsonGeneratorProject());
 
             File.ReadAllText(depsJsonFile).Should().Be("temp");
             File.Delete(depsJsonFile);
@@ -308,7 +304,7 @@ namespace Microsoft.DotNet.Tests
 
             result.Should().NotBeNull();
 
-            result.Args.Should().Contain("--fx-version 2.0.0");
+            result.Args.Should().Contain("--fx-version 2.1.0");
         }
 
         [Fact]
@@ -335,6 +331,114 @@ namespace Microsoft.DotNet.Tests
             result.Args.Should().NotContain("--fx-version");
         }
 
+        [Fact]
+        public void ItFindsToolsLocatedInTheNuGetFallbackFolder()
+        {
+            var projectToolsCommandResolver = SetupProjectToolsCommandResolver();
+
+            var testInstance = TestAssets.Get("AppWithFallbackFolderToolDependency")
+                .CreateInstance()
+                .WithSourceFiles()
+                .WithNuGetConfig(new RepoDirectoriesProvider().TestPackages);
+            var testProjectDirectory = testInstance.Root.FullName;
+            var fallbackFolder = Path.Combine(testProjectDirectory, "fallbackFolder");
+
+            PopulateFallbackFolder(testProjectDirectory, fallbackFolder);
+
+            var nugetConfig = UseNuGetConfigWithFallbackFolder(testInstance, fallbackFolder);
+
+            new RestoreCommand()
+                .WithWorkingDirectory(testProjectDirectory)
+                .Execute($"--configfile {nugetConfig}")
+                .Should()
+                .Pass();
+
+            var commandResolverArguments = new CommandResolverArguments()
+            {
+                CommandName = "dotnet-fallbackfoldertool",
+                CommandArguments = null,
+                ProjectDirectory = testProjectDirectory
+            };
+
+            var result = projectToolsCommandResolver.Resolve(commandResolverArguments);
+
+            result.Should().NotBeNull();
+
+            var commandPath = result.Args.Trim('"');
+            commandPath.Should().Contain(Path.Combine(
+                fallbackFolder,
+                "dotnet-fallbackfoldertool",
+                "1.0.0",
+                "lib",
+                "netcoreapp2.1",
+                "dotnet-fallbackfoldertool.dll"));
+        }
+
+        [Fact]
+        public void ItShowsAnErrorWhenTheToolDllIsNotFound()
+        {
+            var projectToolsCommandResolver = SetupProjectToolsCommandResolver();
+
+            var testInstance = TestAssets.Get("AppWithFallbackFolderToolDependency")
+                .CreateInstance()
+                .WithSourceFiles()
+                .WithNuGetConfig(new RepoDirectoriesProvider().TestPackages);
+            var testProjectDirectory = testInstance.Root.FullName;
+            var fallbackFolder = Path.Combine(testProjectDirectory, "fallbackFolder");
+
+            PopulateFallbackFolder(testProjectDirectory, fallbackFolder);
+
+            var nugetConfig = UseNuGetConfigWithFallbackFolder(testInstance, fallbackFolder);
+
+            new RestoreCommand()
+                .WithWorkingDirectory(testProjectDirectory)
+                .Execute($"--configfile {nugetConfig}")
+                .Should()
+                .Pass();
+
+            Directory.Delete(Path.Combine(fallbackFolder, "dotnet-fallbackfoldertool"), true);
+
+            var commandResolverArguments = new CommandResolverArguments()
+            {
+                CommandName = "dotnet-fallbackfoldertool",
+                CommandArguments = null,
+                ProjectDirectory = testProjectDirectory
+            };
+
+            Action action = () => projectToolsCommandResolver.Resolve(commandResolverArguments);
+
+            action.ShouldThrow<GracefulException>().WithMessage(
+                string.Format(LocalizableStrings.CommandAssembliesNotFound, "dotnet-fallbackfoldertool"));
+        }
+
+        private void PopulateFallbackFolder(string testProjectDirectory, string fallbackFolder)
+        {
+            var nugetConfigPath = Path.Combine(testProjectDirectory, "NuGet.Config");
+            new RestoreCommand()
+                .WithWorkingDirectory(testProjectDirectory)
+                .Execute($"--configfile {nugetConfigPath} --packages {fallbackFolder}")
+                .Should()
+                .Pass();
+
+            Directory.Delete(Path.Combine(fallbackFolder, ".tools"), true);
+        }
+
+        private string UseNuGetConfigWithFallbackFolder(TestAssetInstance testInstance, string fallbackFolder)
+        {
+            var nugetConfig = testInstance.Root.GetFile("NuGet.Config").FullName;
+            File.WriteAllText(
+                nugetConfig,
+                $@"<?xml version=""1.0"" encoding=""utf-8""?>
+                <configuration>
+                  <fallbackPackageFolders>
+                        <add key=""MachineWide"" value=""{fallbackFolder}""/>
+                    </fallbackPackageFolders>
+                </configuration>
+                ");
+
+            return nugetConfig;
+        }
+
         private ProjectToolsCommandResolver SetupProjectToolsCommandResolver()
         {
             Environment.SetEnvironmentVariable(
@@ -347,6 +451,13 @@ namespace Microsoft.DotNet.Tests
                 new ProjectToolsCommandResolver(packagedCommandSpecFactory, new EnvironmentProvider());
 
             return projectToolsCommandResolver;
+        }
+
+        private string GetToolDepsJsonGeneratorProject()
+        {
+            //  When using the product, the ToolDepsJsonGeneratorProject property is used to get this path, but for testing
+            //  we'll hard code the path inside the SDK since we don't have a project to evaluate here
+            return Path.Combine(new RepoDirectoriesProvider().Stage2Sdk, "Sdks", "Microsoft.NET.Sdk", "targets", "GenerateDeps", "GenerateDeps.proj");
         }
     }
 }

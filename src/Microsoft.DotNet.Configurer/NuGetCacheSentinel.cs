@@ -1,6 +1,7 @@
 ﻿// Copyright (c) .NET Foundation and contributors. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using System;
 using System.IO;
 using Microsoft.DotNet.Cli.Utils;
 using Microsoft.Extensions.EnvironmentAbstractions;
@@ -13,43 +14,38 @@ namespace Microsoft.DotNet.Configurer
         public static readonly string SENTINEL = $"{Product.Version}.dotnetSentinel";
         public static readonly string INPROGRESS_SENTINEL = $"{Product.Version}.inprogress.dotnetSentinel";
 
+        public bool UnauthorizedAccess { get; private set; }
+
         private readonly IFile _file;
+
+        private readonly IDirectory _directory;
 
         private string _nugetCachePath;
 
-        private string NuGetCachePath
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(_nugetCachePath))
-                {
-                    _nugetCachePath = NuGetPathContext.Create(new NullSettings()).UserPackageFolder;
-                }
-
-                return _nugetCachePath;
-            }
-        }
-
-        private string SentinelPath => Path.Combine(NuGetCachePath, SENTINEL);
-        private string InProgressSentinelPath => Path.Combine(NuGetCachePath, INPROGRESS_SENTINEL);
+        private string SentinelPath => Path.Combine(_nugetCachePath, SENTINEL);
+        private string InProgressSentinelPath => Path.Combine(_nugetCachePath, INPROGRESS_SENTINEL);
 
         private Stream InProgressSentinel { get; set; }
 
-        public NuGetCacheSentinel() : this(string.Empty, FileSystemWrapper.Default.File)
+        public NuGetCacheSentinel(CliFolderPathCalculator cliFolderPathCalculator) :
+            this(cliFolderPathCalculator.CliFallbackFolderPath,
+                 FileSystemWrapper.Default.File,
+                 FileSystemWrapper.Default.Directory)
         {
         }
 
-        internal NuGetCacheSentinel(string nugetCachePath, IFile file)
+        internal NuGetCacheSentinel(string nugetCachePath, IFile file, IDirectory directory)
         {
-            _file = file;
             _nugetCachePath = nugetCachePath;
+            _file = file;
+            _directory = directory;
 
             SetInProgressSentinel();
         }
 
         public bool InProgressSentinelAlreadyExists()
         {
-            return CouldNotGetAHandleToTheInProgressSentinel();
+            return CouldNotGetAHandleToTheInProgressSentinel() && !UnauthorizedAccess;
         }
 
         public bool Exists()
@@ -74,9 +70,9 @@ namespace Microsoft.DotNet.Configurer
         {
             try
             {
-                if(!Directory.Exists(NuGetCachePath))
+                if (!_directory.Exists(_nugetCachePath))
                 {
-                    Directory.CreateDirectory(NuGetCachePath);
+                    _directory.CreateDirectory(_nugetCachePath);
                 }
 
                 // open an exclusive handle to the in-progress sentinel and mark it for delete on close.
@@ -91,6 +87,10 @@ namespace Microsoft.DotNet.Configurer
                     FileShare.None,
                     1,
                     FileOptions.DeleteOnClose);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                UnauthorizedAccess = true;
             }
             catch { }
         }

@@ -1,8 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.2" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 xliff-core-1.2-transitional.xsd">
-  <file datatype="xml" source-language="en" target-language="zh-Hans" original="src/dotnet/CommonLocalizableStrings.resx">
+  <file datatype="xml" source-language="en" target-language="zh-Hans" original="../CommonLocalizableStrings.resx">
     <body>
-      <group id="src/dotnet/CommonLocalizableStrings.resx" />
       <trans-unit id="CouldNotFindAnyProjectInDirectory">
         <source>Could not find any project in `{0}`.</source>
         <target state="translated">“{0}”中找不到任何项目。</target>
@@ -96,11 +95,6 @@
       <trans-unit id="Application">
         <source>Application</source>
         <target state="translated">应用程序</target>
-        <note />
-      </trans-unit>
-      <trans-unit id="ReferenceDoesNotExist">
-        <source>Reference {0} does not exist.</source>
-        <target state="translated">引用 {0} 不存在。</target>
         <note />
       </trans-unit>
       <trans-unit id="ReferenceAddedToTheProject">
@@ -368,11 +362,6 @@
         <target state="translated">必须至少指定一个要添加的引用。</target>
         <note />
       </trans-unit>
-      <trans-unit id="ProjectAlreadyHasAReference">
-        <source>Project {0} already has a reference `{1}`.</source>
-        <target state="translated">项目 {0} 已经具有引用“{1}”。</target>
-        <note />
-      </trans-unit>
       <trans-unit id="PackageReferenceDoesNotExist">
         <source>Package reference `{0}` does not exist.</source>
         <target state="translated">包引用“{0}”不存在。</target>
@@ -485,7 +474,7 @@
       </trans-unit>
       <trans-unit id="NoReferencesFound">
         <source>There are no {0} references in project {1}. ;; {0} is the type of the item being requested (project, package, p2p) and {1} is the object operated on (a project file or a solution file). </source>
-        <target state="translated">项目 {1} 中没有 {0} 引用。;; {0} 是正在请求的项类型(项目、包、p2p)且 {1} 是在其上进行操作的对象(项目文件或解决方案文件)。 </target>
+        <target state="translated">项目 {1} 中没有 {0} 引用。;; {0} 是正在请求的项类型(项目、包、p2p)且 {1} 是项目文件或解决方案文件上操作的对象。 </target>
         <note />
       </trans-unit>
       <trans-unit id="NoProjectsFound">
@@ -575,7 +564,7 @@
       </trans-unit>
       <trans-unit id="MoreThanOneSolutionInDirectory">
         <source>Found more than one solution file in {0}. Please specify which one to use.</source>
-        <target state="translated">{0} 中找到多个解决方案文件。请指定使用哪一个。</target>
+        <target state="translated">在 {0} 中找到多个解决方案文件。请指定使用哪一个。</target>
         <note />
       </trans-unit>
       <trans-unit id="SolutionAlreadyContainsProject">
@@ -595,7 +584,7 @@
       </trans-unit>
       <trans-unit id="ProjectNotCompatibleWithFrameworks">
         <source>Project `{0}` cannot be added due to incompatible targeted frameworks between the two projects. Please review the project you are trying to add and verify that is compatible with the following targets:</source>
-        <target state="translated">由于两个项目之间的目标框架不兼容，因此无法添加项目“{0}”。请审阅正在尝试添加的项目，验证其是否与以下目标兼容: </target>
+        <target state="translated">由于两个项目之间的目标框架不兼容，无法添加项目“{0}”。请检查要添加的项目，并验证是否与以下目标兼容:</target>
         <note />
       </trans-unit>
       <trans-unit id="ProjectDoesNotTargetFramework">
@@ -605,19 +594,19 @@
       </trans-unit>
       <trans-unit id="ProjectCouldNotBeEvaluated">
         <source>Project `{0}` could not be evaluated. Evaluation failed with following error:
-{1}</source>
-        <target state="translated">无法评估项目“{0}”。评估失败，出现以下错误: 
-{1}</target>
+{1}.</source>
+        <target state="translated">无法评估项目“{0}”。评估失败，出现以下错误:
+{1}。</target>
         <note />
       </trans-unit>
       <trans-unit id="UnsupportedProjectType">
-        <source>Unsupported project type. Please check with your sdk provider.</source>
-        <target state="translated">不支持的项目类型。请联系 SDK 提供商。</target>
+        <source>Project '{0}' has an unknown project type and cannot be added to the solution file. Please contact your SDK provider for support.</source>
+        <target state="translated">项目“{0}”包含未知的项目类型，且无法添加到解决方案文件。请联系 SDK 提供商获取支持。</target>
         <note />
       </trans-unit>
       <trans-unit id="InvalidSolutionFormatString">
-        <source>Invalid solution `{0}`. {1}</source>
-        <target state="translated">解决方案“{0}”无效。{1}</target>
+        <source>Invalid solution `{0}`. {1}.</source>
+        <target state="translated">解决方案“{0}”无效。{1}。</target>
         <note />
       </trans-unit>
       <trans-unit id="ArgumentsProjectDescription">
@@ -631,13 +620,277 @@
         <note />
       </trans-unit>
       <trans-unit id="CmdSlnFile">
-        <source>&lt;SLN_FILE&gt;</source>
-        <target state="translated">&lt;SLN_FILE&gt;</target>
+        <source>SLN_FILE</source>
+        <target state="translated">SLN_FILE</target>
         <note />
       </trans-unit>
       <trans-unit id="CmdProjectFile">
-        <source>&lt;PROJECT&gt;</source>
-        <target state="translated">&lt;PROJECT&gt;</target>
+        <source>PROJECT</source>
+        <target state="translated">PROJECT</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="InvalidProjectWithExceptionMessage">
+        <source>Invalid project `{0}`. {1}.</source>
+        <target state="translated">项目“{0}”无效。{1}。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="VerbosityOptionDescription">
+        <source>Set the verbosity level of the command. Allowed values are q[uiet], m[inimal], n[ormal], d[etailed], and diag[nostic].</source>
+        <target state="translated">设置命令的详细级别。允许值为 q[uiet]、m[inimal]、n[ormal]、d[etailed] 和 diag[nostic]。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="FrameworkOptionDescription">
+        <source>Target framework to publish for. The target framework has to be specified in the project file.</source>
+        <target state="translated">要发布的目标框架。目标框架必须在项目文件中指定。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="RuntimeOptionDescription">
+        <source>Publish the project for a given runtime. This is used when creating self-contained deployment. Default is to publish a framework-dependent app.</source>
+        <target state="translated">针对给定运行时发布项目。创建自包含部署时使用此项。默认操作为发布依赖框架的应用。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ConfigurationOptionDescription">
+        <source>Configuration to use for building the project.  Default for most projects is  "Debug".</source>
+        <target state="translated">用于生成项目的配置。对大多数项目的默认值是 "Debug"。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="CmdVersionSuffixDescription">
+        <source>Defines the value for the $(VersionSuffix) property in the project.</source>
+        <target state="translated">定义项目中 $(VersionSuffix) 属性的值。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ShowHelpDescription">
+        <source>Show help information.</source>
+        <target state="translated">显示帮助信息。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="NoRestoreDescription">
+        <source>Does not do an implicit restore when executing the command.</source>
+        <target state="translated">请勿在执行命令时进行隐式还原。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ProjectRemovedFromTheSolution">
+        <source>Project `{0}` removed from the solution.</source>
+        <target state="translated">已从解决方案中移除项目“{0}”。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ToolSettingsInvalidXml">
+        <source>Invalid XML: {0}</source>
+        <target state="translated">无效的 XML: {0}</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="EnvironmentPathLinuxNeedLogout">
+        <source>Since you just installed the .NET Core SDK, you will need to logout or restart your session before running the tool you installed.</source>
+        <target state="translated">由于刚安装了 .NET Core SDK，因此在运行安装的工具之前，需要注销或重新启动会话。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="EnvironmentPathOSXNeedReopen">
+        <source>Since you just installed the .NET Core SDK, you will need to reopen terminal before running the tool you installed.</source>
+        <target state="translated">由于刚安装了 .NET Core SDK，因此在运行安装的工具之前，需要重新打开终端。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="EnvironmentPathWindowsNeedReopen">
+        <source>Since you just installed the .NET Core SDK, you will need to reopen the Command Prompt window before running the tool you installed.</source>
+        <target state="translated">由于刚安装了 .NET Core SDK，因此在运行安装的工具之前，需要重新打开命令提示符窗口。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ToolSettingsMissingCommandName">
+        <source>Tool defines a command with a missing name setting.</source>
+        <target state="translated">工具使用缺失的名称设置定义命令。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ToolSettingsMissingEntryPoint">
+        <source>Command '{0}' is missing an entry point setting.</source>
+        <target state="translated">命令“{0}”缺少入口点设置。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ToolSettingsInvalidCommandName">
+        <source>Command '{0}' contains one or more of the following invalid characters: {1}.</source>
+        <target state="translated">命令“{0}”包含一个或多个以下无效字符: {1}。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ToolSettingsMoreThanOneCommand">
+        <source>More than one command is defined for the tool.</source>
+        <target state="translated">为工具定义了多个命令。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ToolSettingsUnsupportedRunner">
+        <source>Command '{0}' uses unsupported runner '{1}'."</source>
+        <target state="translated">命令“{0}”使用不受支持的运行程序“{1}”。”</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ToolPackageConflictPackageId">
+        <source>Tool '{0}' (version '{1}') is already installed.</source>
+        <target state="translated">已安装工具“{0}”（版本“{1}”）。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ShellShimConflict">
+        <source>Command '{0}' conflicts with an existing command from another tool.</source>
+        <target state="translated">命令“{0}”与另一个工具中的现有命令相冲突。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="CannotCreateShimForEmptyExecutablePath">
+        <source>Cannot create shell shim for an empty executable path.</source>
+        <target state="translated">无法为空的可执行文件路径创建 shell 填充程序。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="CannotCreateShimForEmptyCommand">
+        <source>Cannot create shell shim for an empty command.</source>
+        <target state="translated">无法为空的命令创建 shell 填充程序。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="FailedToRetrieveToolConfiguration">
+        <source>Failed to retrieve tool configuration: {0}</source>
+        <target state="translated">无法检索工具配置: {0}</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="EnvironmentPathLinuxManualInstructions">
+        <source>Tools directory '{0}' is not currently on the PATH environment variable.
+If you are using bash, you can add it to your profile by running the following command:
+
+cat &lt;&lt; \EOF &gt;&gt; ~/.bash_profile
+# Add .NET Core SDK tools
+export PATH="$PATH:{0}"
+EOF
+
+You can add it to the current session by running the following command:
+
+export PATH="$PATH:{0}"
+</source>
+        <target state="translated">工具目录“{0}”目前不在 PATH 环境变量中。
+如果你使用的是 bash，可运行以下命令将其添加到配置文件中:
+
+cat &lt;&lt; \EOF &gt;&gt; ~/.bash_profile
+# Add .NET Core SDK tools
+export PATH="$PATH:{0}"
+EOF
+
+可通过运行以下命令将其添加到当前会话中: 
+
+export PATH="$PATH:{0}"
+</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="EnvironmentPathOSXManualInstructions">
+        <source>Tools directory '{0}' is not currently on the PATH environment variable.
+If you are using bash, you can add it to your profile by running the following command:
+
+cat &lt;&lt; \EOF &gt;&gt; ~/.bash_profile
+# Add .NET Core SDK tools
+export PATH="$PATH:{0}"
+EOF
+
+You can add it to the current session by running the following command:
+
+export PATH="$PATH:{0}"
+</source>
+        <target state="translated">工具目录“{0}”目前不在 PATH 环境变量中。
+如果你使用的是 bash，可运行以下命令将其添加到配置文件中:
+
+cat &lt;&lt; \EOF &gt;&gt; ~/.bash_profile
+# Add .NET Core SDK tools
+export PATH="$PATH:{0}"
+EOF
+
+可通过运行以下命令将其添加到当前会话中: 
+
+export PATH="$PATH:{0}"
+</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="EnvironmentPathWindowsManualInstructions">
+        <source>Tools directory '{0}' is not currently on the PATH environment variable.
+
+You can add the directory to the PATH by running the following command:
+
+setx PATH "%PATH%;{0}"
+</source>
+        <target state="translated">工具目录“{0}”目前不在 PATH 环境变量中。
+
+可运行以下命令将目录添加到 PATH:
+
+setx PATH "%PATH%;{0}"
+</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="FailedToCreateShellShim">
+        <source>Failed to create tool shim for command '{0}': {1}</source>
+        <target state="translated">未能为命令“{0}”创建工具填充程序: {1}</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="FailedToRemoveShellShim">
+        <source>Failed to remove tool shim for command '{0}': {1}</source>
+        <target state="translated">未能为命令“{0}”删除工具填充程序: {1}</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="FailedSettingShimPermissions">
+        <source>Failed to set user executable permissions for shell shim: {0}</source>
+        <target state="translated">未能为 shell 填充程序设置用户可执行文件权限: {0}</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="FailedToInstallToolPackage">
+        <source>Failed to install tool package '{0}': {1}</source>
+        <target state="translated">未能安装工具包“{0}”: {1}</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="FailedToUninstallToolPackage">
+        <source>Failed to uninstall tool package '{0}': {1}</source>
+        <target state="translated">未能卸载工具包“{0}”: {1}</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ColumnMaxWidthMustBeGreaterThanZero">
+        <source>Column maximum width must be greater than zero.</source>
+        <target state="translated">列的最大宽度必须大于零。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="MissingToolEntryPointFile">
+        <source>Entry point file '{0}' for command '{1}' was not found in the package.</source>
+        <target state="translated">在包中找不到命令“{1}”的入口点文件“{0}”。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="MissingToolSettingsFile">
+        <source>Settings file 'DotnetToolSettings.xml' was not found in the package.</source>
+        <target state="translated">在包中找不到设置文件 "DotnetToolSettings.xml"。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="FailedToFindStagedToolPackage">
+        <source>Failed to find staged tool package '{0}'.</source>
+        <target state="translated">无法找到暂存工具包“{0}”。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ToolSettingsInvalidLeadingDotCommandName">
+        <source>The command name '{0}' cannot begin with a leading dot (.).</source>
+        <target state="translated">命令名称“{0}”不能以前导点(.)开头。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="FormatVersionIsHigher">
+        <source>Format version is higher than supported. This tool may not be supported in this SDK version. Please update your SDK.</source>
+        <target state="new">Format version is higher than supported. This tool may not be supported in this SDK version. Please update your SDK.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="FormatVersionIsMalformed">
+        <source>Format version is malformed. This tool may not be supported in this SDK version. Please contact the author of the tool.</source>
+        <target state="new">Format version is malformed. This tool may not be supported in this SDK version. Please contact the author of the tool.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="FormatVersionIsMissing">
+        <source>Format version is missing. This tool may not be supported in this SDK version. Please contact the author of the tool.</source>
+        <target state="new">Format version is missing. This tool may not be supported in this SDK version. Please contact the author of the tool.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="FailedToSetToolsPathEnvironmentVariable">
+        <source>Failed to add '{0}' to the PATH environment variable. Please add this directory to your PATH to use tools installed with 'dotnet tool install'.</source>
+        <target state="new">Failed to add '{0}' to the PATH environment variable. Please add this directory to your PATH to use tools installed with 'dotnet tool install'.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="MoreThanOnePackagedShimAvailable">
+        <source>More than one packaged shim is available: {0}.</source>
+        <target state="new">More than one packaged shim is available: {0}.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="FailedToReadNuGetLockFile">
+        <source>Failed to read NuGet LockFile for tool package '{0}': {1}</source>
+        <target state="new">Failed to read NuGet LockFile for tool package '{0}': {1}</target>
         <note />
       </trans-unit>
     </body>

@@ -7,16 +7,17 @@ using Microsoft.DotNet.TestFramework;
 using Microsoft.DotNet.Cli.Utils;
 using System.IO;
 using System;
+using Xunit;
 
 namespace Microsoft.DotNet.Cli.Test.Tests
 {
     public class GivenDotnetTestBuildsAndRunsTestFromCsprojForMultipleTFM : TestBase
     {
-        [WindowsOnlyFact(Skip="https://github.com/dotnet/cli/issues/4616")]
+        [WindowsOnlyFact]
         public void MStestMultiTFM()
         {
-            var testProjectDirectory = TestAssets.Get("VSTestDesktopAndNetCore")
-                .CreateInstance()
+            var testProjectDirectory = TestAssets.Get("VSTestMulti")
+                .CreateInstance("1")
                 .WithSourceFiles()
                 .WithNuGetConfig(new RepoDirectoriesProvider().TestPackages)
                 .Root;
@@ -34,26 +35,29 @@ namespace Microsoft.DotNet.Cli.Test.Tests
                 .WithRuntime(runtime)
                 .ExecuteWithCapturedOutput(TestBase.ConsoleLoggerOutputNormal);
 
-            result.StdOut
-                .Should().Contain("Total tests: 3. Passed: 2. Failed: 1. Skipped: 0.", "because .NET 4.6 tests will pass")
-                     .And.Contain("Passed   TestNamespace.VSTestTests.VSTestPassTestDesktop", "because .NET 4.6 tests will pass")
-                     .And.Contain("Total tests: 3. Passed: 1. Failed: 2. Skipped: 0.", "because netcoreapp2.0 tests will fail")
-                     .And.Contain("Failed   TestNamespace.VSTestTests.VSTestFailTestNetCoreApp", "because netcoreapp2.0 tests will fail");
+            if (!DotnetUnderTest.IsLocalized())
+            {
+                result.StdOut
+                    .Should().Contain("Total tests: 3. Passed: 2. Failed: 1. Skipped: 0.", "because .NET 4.6 tests will pass")
+                         .And.Contain("Passed   VSTestPassTestDesktop", "because .NET 4.6 tests will pass")
+                         .And.Contain("Total tests: 3. Passed: 1. Failed: 2. Skipped: 0.", "because netcoreapp2.0 tests will fail")
+                         .And.Contain("Failed   VSTestFailTestNetCoreApp", "because netcoreapp2.0 tests will fail");
+            }
             result.ExitCode.Should().Be(1);
         }
 
         [WindowsOnlyFact]
         public void XunitMultiTFM()
         {
-            // Copy VSTestXunitDesktopAndNetCore project in output directory of project dotnet-test.Tests
-            string testAppName = "VSTestXunitDesktopAndNetCore";
+            // Copy XunitMulti project in output directory of project dotnet-test.Tests
+            string testAppName = "XunitMulti";
             var testInstance = TestAssets.Get(testAppName)
-                            .CreateInstance()
+                            .CreateInstance("2")
                             .WithSourceFiles();
 
             var testProjectDirectory = testInstance.Root.FullName;
 
-            // Restore project VSTestXunitDesktopAndNetCore
+            // Restore project XunitMulti
             new RestoreCommand()
                 .WithWorkingDirectory(testProjectDirectory)
                 .Execute()
@@ -66,14 +70,35 @@ namespace Microsoft.DotNet.Cli.Test.Tests
                                        .ExecuteWithCapturedOutput(TestBase.ConsoleLoggerOutputNormal);
 
             // Verify
-            // for target framework net46
-            result.StdOut.Should().Contain("Total tests: 3. Passed: 2. Failed: 1. Skipped: 0.");
-            result.StdOut.Should().Contain("Passed   TestNamespace.VSTestXunitTests.VSTestXunitPassTestDesktop");
+            if (!DotnetUnderTest.IsLocalized())
+            {
+                // for target framework net46
+                result.StdOut.Should().Contain("Total tests: 3. Passed: 2. Failed: 1. Skipped: 0.");
+                result.StdOut.Should().Contain("Passed   TestNamespace.VSTestXunitTests.VSTestXunitPassTestDesktop");
 
-            // for target framework netcoreapp1.0
-            result.StdOut.Should().Contain("Total tests: 3. Passed: 1. Failed: 2. Skipped: 0.");
-            result.StdOut.Should().Contain("Failed   TestNamespace.VSTestXunitTests.VSTestXunitFailTestNetCoreApp");
+                // for target framework netcoreapp1.0
+                result.StdOut.Should().Contain("Total tests: 3. Passed: 1. Failed: 2. Skipped: 0.");
+                result.StdOut.Should().Contain("Failed   TestNamespace.VSTestXunitTests.VSTestXunitFailTestNetCoreApp");
+            }
+
             result.ExitCode.Should().Be(1);
+        }
+
+        [Fact]
+        public void ItCanTestAMultiTFMProjectWithImplicitRestore()
+        {
+            var testInstance = TestAssets.Get(
+                    TestAssetKinds.DesktopTestProjects,
+                    "MultiTFMXunitProject")
+                .CreateInstance()
+                .WithSourceFiles();
+
+            string projectDirectory = Path.Combine(testInstance.Root.FullName, "XUnitProject");
+
+            new DotnetTestCommand()
+               .WithWorkingDirectory(projectDirectory)
+               .ExecuteWithCapturedOutput($"{TestBase.ConsoleLoggerOutputNormal} --framework netcoreapp2.1")
+               .Should().Pass();
         }
     }
 }

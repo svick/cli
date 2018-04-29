@@ -92,6 +92,19 @@ namespace Microsoft.DotNet.Cli.Utils
             }
         }
 
+        public string ToolDepsJsonGeneratorProject
+        {
+            get
+            {
+                var generatorProject = _project
+                    .AllEvaluatedProperties
+                    .FirstOrDefault(p => p.Name.Equals("ToolDepsJsonGeneratorProject"))
+                    ?.EvaluatedValue;
+
+                return generatorProject;
+            }
+        }
+
         public MSBuildProject(
             string msBuildProjectPath,
             NuGetFramework framework,
@@ -101,7 +114,7 @@ namespace Microsoft.DotNet.Cli.Utils
         {
             _projectRoot = msBuildExePath;
 
-            var globalProperties = new Dictionary<string, string>()
+            var globalProperties = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {
                { "MSBuildExtensionsPath", Path.GetDirectoryName(msBuildExePath) }
             };

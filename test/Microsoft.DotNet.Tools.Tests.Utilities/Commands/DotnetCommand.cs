@@ -5,12 +5,16 @@ using Microsoft.DotNet.Cli.Utils;
 
 namespace Microsoft.DotNet.Tools.Test.Utilities
 {
-    public sealed class DotnetCommand : TestCommand
+    public class DotnetCommand : TestCommand
     {
         public DotnetCommand()
-            : base(DotnetUnderTest.FullName)
+            : this(DotnetUnderTest.FullName)
         {
+        }
 
+        public DotnetCommand(string dotnetUnderTest)
+            : base(dotnetUnderTest)
+        {
         }
     }
 }

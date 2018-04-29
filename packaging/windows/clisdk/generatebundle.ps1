@@ -3,12 +3,10 @@
 
 param(
     [Parameter(Mandatory=$true)][string]$CLISDKMSIFile,
+    [Parameter(Mandatory=$true)][string]$ASPNETRuntimeWixLibFile,
     [Parameter(Mandatory=$true)][string]$SharedFxMSIFile,
     [Parameter(Mandatory=$true)][string]$HostFxrMSIFile,
     [Parameter(Mandatory=$true)][string]$SharedHostMSIFile,
-    [Parameter(Mandatory=$true)][string]$AdditionalSharedFxMSIFile,
-    [Parameter(Mandatory=$true)][string]$AdditionalHostFxrMSIFile,
-    [Parameter(Mandatory=$true)][string]$AdditionalSharedHostMSIFile,
     [Parameter(Mandatory=$true)][string]$DotnetBundleOutput,
     [Parameter(Mandatory=$true)][string]$WixRoot,
     [Parameter(Mandatory=$true)][string]$ProductMoniker,
@@ -16,7 +14,9 @@ param(
     [Parameter(Mandatory=$true)][string]$DotnetCLIDisplayVersion,
     [Parameter(Mandatory=$true)][string]$DotnetCLINugetVersion,
     [Parameter(Mandatory=$true)][string]$UpgradeCode,
-    [Parameter(Mandatory=$true)][string]$Architecture
+    [Parameter(Mandatory=$true)][string]$Architecture,
+    [Parameter(Mandatory=$true)][string]$DotNetRuntimeVersion,
+    [Parameter(Mandatory=$true)][string]$AspNetCoreVersion
 )
 
 . "$PSScriptRoot\..\..\..\scripts\common\_common.ps1"
@@ -27,12 +27,12 @@ function RunCandleForBundle
     $result = $true
     pushd "$WixRoot"
 
-    Write-Host Running candle for bundle..
+    Write-Output Running candle for bundle..
     $AuthWsxRoot =  Join-Path $RepoRoot "packaging\windows\clisdk"
 
     .\candle.exe -nologo `
         -dDotnetSrc="$inputDir" `
-        -dMicrosoftEula="$RepoRoot\packaging\osx\clisdk\resources\en.lproj\eula.rtf" `
+        -dMicrosoftEula="$RepoRoot\packaging\windows\clisdk\dummyeula.rtf" `
         -dProductMoniker="$ProductMoniker" `
         -dBuildVersion="$DotnetMSIVersion" `
         -dDisplayVersion="$DotnetCLIDisplayVersion" `
@@ -45,6 +45,8 @@ function RunCandleForBundle
         -dAdditionalSharedFXMsiSourcePath="$AdditionalSharedFxMSIFile" `
         -dAdditionalHostFXRMsiSourcePath="$AdditionalHostFxrMSIFile" `
         -dAdditionalSharedHostMsiSourcePath="$AdditionalSharedHostMSIFile" `
+        -dDotNetRuntimeVersion="$DotNetRuntimeVersion" `
+        -dAspNetCoreVersion="$AspNetCoreVersion" `
         -arch "$Architecture" `
         -ext WixBalExtension.dll `
         -ext WixUtilExtension.dll `
@@ -54,7 +56,7 @@ function RunCandleForBundle
     if($LastExitCode -ne 0)
     {
         $result = $false
-        Write-Host "Candle failed with exit code $LastExitCode."
+        Write-Output "Candle failed with exit code $LastExitCode."
     }
 
     popd
@@ -66,12 +68,13 @@ function RunLightForBundle
     $result = $true
     pushd "$WixRoot"
 
-    Write-Host Running light for bundle..
+    Write-Output Running light for bundle..
     $AuthWsxRoot =  Join-Path $RepoRoot "packaging\windows\clisdk"
 
     .\light.exe -nologo `
         -cultures:en-us `
         bundle.wixobj `
+        $ASPNETRuntimeWixlibFile `
         -ext WixBalExtension.dll `
         -ext WixUtilExtension.dll `
         -ext WixTagExtension.dll `
@@ -81,7 +84,7 @@ function RunLightForBundle
     if($LastExitCode -ne 0)
     {
         $result = $false
-        Write-Host "Light failed with exit code $LastExitCode."
+        Write-Output "Light failed with exit code $LastExitCode."
     }
 
     popd
@@ -94,7 +97,12 @@ if(!(Test-Path $CLISDKMSIFile))
     throw "$CLISDKMSIFile not found"
 }
 
-Write-Host "Creating dotnet Bundle at $DotnetBundleOutput"
+if(!(Test-Path $ASPNETRuntimeWixLibFile))
+{
+    throw "$ASPNETRuntimeWixLibFile not found"
+}
+
+Write-Output "Creating dotnet Bundle at $DotnetBundleOutput"
 
 if([string]::IsNullOrEmpty($WixRoot))
 {
@@ -117,6 +125,6 @@ if(!(Test-Path $DotnetBundleOutput))
     Exit -1
 }
 
-Write-Host -ForegroundColor Green "Successfully created dotnet bundle - $DotnetBundleOutput"
+Write-Output -ForegroundColor Green "Successfully created dotnet bundle - $DotnetBundleOutput"
 
 exit $LastExitCode

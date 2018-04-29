@@ -1,8 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.2" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 xliff-core-1.2-transitional.xsd">
-  <file datatype="xml" source-language="en" target-language="fr" original="src/dotnet/commands/dotnet-pack/LocalizableStrings.resx">
+  <file datatype="xml" source-language="en" target-language="fr" original="../LocalizableStrings.resx">
     <body>
-      <group id="src/dotnet/commands/dotnet-pack/LocalizableStrings.resx" />
       <trans-unit id="AppFullName">
         <source>.NET Core NuGet Package Packer</source>
         <target state="translated">Compresseur de package NuGet .NET Core</target>
@@ -15,7 +14,7 @@
       </trans-unit>
       <trans-unit id="CmdOutputDir">
         <source>OUTPUT_DIR</source>
-        <target state="translated">RÉP_SORTIE</target>
+        <target state="translated">OUTPUT_DIR</target>
         <note />
       </trans-unit>
       <trans-unit id="CmdOutputDirDescription">
@@ -24,8 +23,8 @@
         <note />
       </trans-unit>
       <trans-unit id="CmdNoBuildOptionDescription">
-        <source>Skip building the project prior to packing. By default, the project will be built.</source>
-        <target state="translated">Ignorez la génération du projet avant la compression. Par défaut, le projet est généré.</target>
+        <source>Do not build the project before packing. Implies --no-restore.</source>
+        <target state="needs-review-translation">Ne pas générer le projet avant la compression. Implique --no-restore.</target>
         <note />
       </trans-unit>
       <trans-unit id="CmdIncludeSymbolsDescription">
@@ -38,26 +37,6 @@
         <target state="translated">Inclure les PDB et les fichiers sources. Les fichiers sources vont dans le dossier src dans le paquet NuGet résultant</target>
         <note />
       </trans-unit>
-      <trans-unit id="CmdConfig">
-        <source>CONFIGURATION</source>
-        <target state="translated">CONFIGURATION</target>
-        <note />
-      </trans-unit>
-      <trans-unit id="CmdConfigDescription">
-        <source>Configuration to use for building the project.  Default for most projects is  "Debug".</source>
-        <target state="translated">Configuration à utiliser pour la génération du projet.  La valeur par défaut pour la plupart des projets est "Debug".</target>
-        <note />
-      </trans-unit>
-      <trans-unit id="CmdVersionSuffix">
-        <source>VERSION_SUFFIX</source>
-        <target state="translated">SUFFIXE_VERSION</target>
-        <note />
-      </trans-unit>
-      <trans-unit id="CmdVersionSuffixDescription">
-        <source>Defines the value for the $(VersionSuffix) property in the project.</source>
-        <target state="translated">Définit la valeur de la propriété $(VersionSuffix) dans le projet.</target>
-        <note />
-      </trans-unit>
       <trans-unit id="CmdServiceableDescription">
         <source>Set the serviceable flag in the package. For more information, please see https://aka.ms/nupkgservicing.</source>
         <target state="translated">Définissez l'indicateur de maintenance dans le package. Pour plus d'informations, consultez https://aka.ms/nupkgservicing.</target>
@@ -65,7 +44,7 @@
       </trans-unit>
       <trans-unit id="CmdArgumentProject">
         <source>PROJECT</source>
-        <target state="translated">PROJET</target>
+        <target state="translated">PROJECT</target>
         <note />
       </trans-unit>
       <trans-unit id="CmdArgumentDescription">

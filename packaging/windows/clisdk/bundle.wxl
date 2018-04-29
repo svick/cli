@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <WixLocalization Culture="en-us" Language="1033" xmlns="http://schemas.microsoft.com/wix/2006/localization">
-  <String Id="Caption">[WixBundleName] Setup</String>
+  <String Id="Caption">[WixBundleName] Installer</String>
   <String Id="Title">[BUNDLEMONIKER]</String>
-  <String Id="Motto">You just need a shell, a text editor and 10 minutes of your time.
-
-Ready? Set? Let's go!</String>
   <String Id="ConfirmCancelMessage">Are you sure you want to cancel?</String>
   <String Id="ExecuteUpgradeRelatedBundleMessage">Previous version</String>
   <String Id="HelpHeader">Setup Help</String>
@@ -21,11 +18,6 @@ Ready? Set? Let's go!</String>
   <String Id="InstallOptionsButton">&amp;Options</String>
   <String Id="InstallInstallButton">&amp;Install</String>
   <String Id="InstallCloseButton">&amp;Close</String>
-  <String Id="OptionsHeader">Setup Options</String>
-  <String Id="OptionsLocationLabel">Install location:</String>
-  <String Id="OptionsBrowseButton">&amp;Browse</String>
-  <String Id="OptionsOkButton">&amp;OK</String>
-  <String Id="OptionsCancelButton">&amp;Cancel</String>
   <String Id="ProgressHeader">Setup Progress</String>
   <String Id="ProgressLabel">Processing:</String>
   <String Id="OverallProgressPackageText">Initializing...</String>
@@ -36,7 +28,6 @@ Ready? Set? Let's go!</String>
   <String Id="ModifyCloseButton">&amp;Close</String>
   <String Id="SuccessRepairHeader">Repair Successfully Completed</String>
   <String Id="SuccessUninstallHeader">Uninstall Successfully Completed</String>
-  <String Id="SuccessInstallHeader">Installation Successfully Completed</String>
   <String Id="SuccessHeader">Setup Successful</String>
   <String Id="SuccessLaunchButton">&amp;Launch</String>
   <String Id="SuccessRestartText">You must restart your computer before you can use the software.</String>
@@ -56,4 +47,33 @@ Ready? Set? Let's go!</String>
   <String Id="FilesInUseDontCloseRadioButton">&amp;Do not close applications. A reboot will be required.</String>
   <String Id="FilesInUseOkButton">&amp;OK</String>
   <String Id="FilesInUseCancelButton">&amp;Cancel</String>
+  <String Id="FirstTimeWelcomeMessage">The installation was successful
+
+The following were installed at [DOTNETHOME]
+    • .NET Core SDK [DOTNETSDKVERSION]
+    • .NET Core Runtime [DOTNETRUNTIMEVERSION]
+    • ASP.NET Core Runtime [ASPNETCOREVERSION]
+
+This product collects usage data
+    • More information and opt-out https://aka.ms/dotnet-cli-telemetry
+
+Resources
+    • Core Documentation https://aka.ms/dotnet-docs
+    • SDK Documentation https://aka.ms/dotnet-cli-docs
+    • Release Notes https://aka.ms/20-p2-rel-notes
+    • Tutorials https://aka.ms/dotnet-tutorials</String>
+  <String Id="WelcomeHeaderMessage">.NET Core SDK</String>
+  <String Id="WelcomeDescription">
+    .NET Core is a development platform that you can use to build command-line applications, microservices and modern websites. It is open source, cross-platform, and supported by Microsoft. We hope you enjoy it!</String>
+  <String Id="LearnMoreTitle">Learn more about .NET Core</String>
+  <String Id="ResourcesHeader">Resources</String>
+  <String Id="CoreDocumentationLink">&lt;A HREF=&quot;https://aka.ms/dotnet-docs&quot;&gt;Core Documentation&lt;/A&gt;</String>
+  <String Id="SDKDocumentation">&lt;A HREF=&quot;https://aka.ms/dotnet-cli-docs&quot;&gt;SDK Documentation&lt;/A&gt;</String>
+  <String Id="PrivacyStatementLink">&lt;A HREF=&quot;https://aka.ms/dev-privacy&quot;&gt;Privacy Statement&lt;/A&gt;</String>
+  <String Id="MITLicenseLink">&lt;A HREF=&quot;https://aka.ms/dotnet-license&quot;&gt;MIT License&lt;/A&gt;</String>
+  <String Id="InstallationNoteTitle">Installation note</String>
+  <String Id="InstallationNote">A command will be run during the install process that will improve project restore speed and enable offline access. It will take up to a minute to complete.
+  </String>
+  <String Id="VisualStudioWarning">If you plan to use .NET Core 2.1 with Visual Studio, Visual Studio 2017 15.7 or newer is recommended. &lt;A HREF=&quot;https://go.microsoft.com/fwlink/?linkid=866799&quot;&gt;Learn More&lt;/A&gt;.
+  </String>
 </WixLocalization>

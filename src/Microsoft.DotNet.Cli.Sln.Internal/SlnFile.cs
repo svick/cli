@@ -33,6 +33,7 @@ using System.IO;
 using System.Collections;
 using System.Globalization;
 using System.Reflection;
+using System.Text;
 using Microsoft.DotNet.Cli.Sln.Internal.FileManipulation;
 using Microsoft.DotNet.Tools.Common;
 
@@ -120,7 +121,7 @@ namespace Microsoft.DotNet.Cli.Sln.Internal
 
         private void Read(TextReader reader)
         {
-            const string HeaderPrefix = "Microsoft Visual Studio Solution File, Format Version ";
+            const string HeaderPrefix = "Microsoft Visual Studio Solution File, Format Version";
 
             string line;
             int curLineNum = 0;
@@ -137,10 +138,10 @@ namespace Microsoft.DotNet.Cli.Sln.Internal
                     {
                         throw new InvalidSolutionFormatException(
                             curLineNum,
-                            LocalizableStrings.FileHeaderMissingError);
+                            LocalizableStrings.FileHeaderMissingVersionError);
                     }
 
-                    FormatVersion = line.Substring(HeaderPrefix.Length);
+                    FormatVersion = line.Substring(HeaderPrefix.Length).Trim();
                     _prefixBlankLines = curLineNum - 1;
                 }
                 if (line.StartsWith("# ", StringComparison.Ordinal))
@@ -199,9 +200,7 @@ namespace Microsoft.DotNet.Cli.Sln.Internal
             }
             if (FormatVersion == null)
             {
-                throw new InvalidSolutionFormatException(
-                    curLineNum,
-                    LocalizableStrings.FileHeaderMissingError);
+                throw new InvalidSolutionFormatException(LocalizableStrings.FileHeaderMissingError);
             }
         }
 
@@ -213,7 +212,7 @@ namespace Microsoft.DotNet.Cli.Sln.Internal
             }
             var sw = new StringWriter();
             Write(sw);
-            File.WriteAllText(FullPath, sw.ToString());
+            File.WriteAllText(FullPath, sw.ToString(), Encoding.UTF8);
         }
 
         private void Write(TextWriter writer)
@@ -285,6 +284,14 @@ namespace Microsoft.DotNet.Cli.Sln.Internal
         public SlnSectionCollection Sections
         {
             get { return _sections; }
+        }
+
+        public SlnSection Dependencies
+        {
+            get
+            {
+                return _sections.GetSection("ProjectDependencies", SlnSectionType.PostProcess);
+            }
         }
 
         internal void Read(TextReader reader, string line, ref int curLineNum)
@@ -1167,6 +1174,11 @@ namespace Microsoft.DotNet.Cli.Sln.Internal
 
     public class InvalidSolutionFormatException : Exception
     {
+        public InvalidSolutionFormatException(string details)
+            : base(details)
+        {
+        }
+
         public InvalidSolutionFormatException(int line, string details)
             : base(string.Format(LocalizableStrings.ErrorMessageFormatString, line, details))
         {

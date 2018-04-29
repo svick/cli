@@ -104,12 +104,23 @@ EndGlobal
 
             SlnFile slnFile = SlnFile.Read(tmpFile.Path);
 
+            Console.WriteLine(new
+            {
+                slnFile_FormatVersion = slnFile.FormatVersion,
+                slnFile_ProductDescription = slnFile.ProductDescription,
+                slnFile_VisualStudioVersion = slnFile.VisualStudioVersion,
+                slnFile_MinimumVisualStudioVersion = slnFile.MinimumVisualStudioVersion,
+                slnFile_BaseDirectory = slnFile.BaseDirectory,
+                slnFile_FullPath = slnFile.FullPath,
+                tmpFilePath = tmpFile.Path
+            }.ToString());
+
             slnFile.FormatVersion.Should().Be("12.00");
             slnFile.ProductDescription.Should().Be("Visual Studio 15");
             slnFile.VisualStudioVersion.Should().Be("15.0.26006.2");
             slnFile.MinimumVisualStudioVersion.Should().Be("10.0.40219.1");
             slnFile.BaseDirectory.Should().Be(Path.GetDirectoryName(tmpFile.Path));
-            slnFile.FullPath.Should().Be(tmpFile.Path);
+            slnFile.FullPath.Should().Be(Path.GetFullPath(tmpFile.Path));
 
             slnFile.Projects.Count.Should().Be(2);
             var project = slnFile.Projects[0];
@@ -277,8 +288,28 @@ EndGlobal
         }
 
         [Theory]
+        [InlineData("Microsoft Visual Studio Solution File, Format Version ", 1)]
+        [InlineData("First Line\nMicrosoft Visual Studio Solution File, Format Version ", 2)]
+        [InlineData("First Line\nMicrosoft Visual Studio Solution File, Format Version \nThird Line", 2)]
+        [InlineData("First Line\nSecondLine\nMicrosoft Visual Studio Solution File, Format Version \nFourth Line", 3)]
+        public void WhenGivenASolutionWithMissingHeaderVersionItThrows(string fileContents, int lineNum)
+        {
+            var tmpFile = Temp.CreateFile();
+            tmpFile.WriteAllText(fileContents);
+
+            Action action = () =>
+            {
+                SlnFile.Read(tmpFile.Path);
+            };
+
+            action.ShouldThrow<InvalidSolutionFormatException>()
+                .WithMessage(FormatError(lineNum, LocalizableStrings.FileHeaderMissingVersionError));
+        }
+
+        [Theory]
         [InlineData("Invalid Solution")]
-        [InlineData("Microsoft Visual Studio Solution File, Format Version ")]
+        [InlineData("Invalid Solution\nSpanning Multiple Lines")]
+        [InlineData("Microsoft Visual\nStudio Solution File,\nFormat Version ")]
         public void WhenGivenASolutionWithMissingHeaderItThrows(string fileContents)
         {
             var tmpFile = Temp.CreateFile();
@@ -290,7 +321,7 @@ EndGlobal
             };
 
             action.ShouldThrow<InvalidSolutionFormatException>()
-                .WithMessage("Invalid format in line 1: File header is missing");
+                .WithMessage(LocalizableStrings.FileHeaderMissingError);
         }
 
         [Fact]
@@ -312,7 +343,7 @@ EndGlobal
             };
 
             action.ShouldThrow<InvalidSolutionFormatException>()
-                .WithMessage("Invalid format in line 5: Global section specified more than once");
+                .WithMessage(FormatError(5, LocalizableStrings.GlobalSectionMoreThanOnceError));
         }
 
         [Fact]
@@ -331,7 +362,7 @@ Global
             };
 
             action.ShouldThrow<InvalidSolutionFormatException>()
-                .WithMessage("Invalid format in line 3: Global section not closed");
+                .WithMessage(FormatError(3, LocalizableStrings.GlobalSectionNotClosedError));
         }
 
         [Fact]
@@ -350,7 +381,7 @@ Project(""{9A19103F-16F7-4668-BE54-9A1E7A4F7556}"") = ""App"", ""App\App.csproj"
             };
 
             action.ShouldThrow<InvalidSolutionFormatException>()
-                .WithMessage("Invalid format in line 3: Project section not closed");
+                .WithMessage(FormatError(3, LocalizableStrings.ProjectSectionNotClosedError));
         }
 
         [Fact]
@@ -371,7 +402,7 @@ EndProject
             };
 
             action.ShouldThrow<InvalidSolutionFormatException>()
-                .WithMessage("Invalid format in line 3: Project section is missing '(' when parsing the line starting at position 0");
+                .WithMessage(FormatError(3, LocalizableStrings.ProjectParsingErrorFormatString, "(", 0));
         }
 
         [Fact]
@@ -393,7 +424,7 @@ EndGlobal
             };
 
             action.ShouldThrow<InvalidSolutionFormatException>()
-                .WithMessage("Invalid format in line 4: Invalid section type: thisIsUnknown");
+                .WithMessage(FormatError(4, LocalizableStrings.InvalidSectionTypeError, "thisIsUnknown"));
         }
 
         [Fact]
@@ -415,7 +446,7 @@ EndGlobal
             };
 
             action.ShouldThrow<InvalidSolutionFormatException>()
-                .WithMessage("Invalid format in line 4: Section id missing");
+                .WithMessage(FormatError(4, LocalizableStrings.SectionIdMissingError));
         }
 
         [Fact]
@@ -436,7 +467,7 @@ EndGlobal
             };
 
             action.ShouldThrow<InvalidSolutionFormatException>()
-                .WithMessage("Invalid format in line 6: Closing section tag not found");
+                .WithMessage(FormatError(6, LocalizableStrings.ClosingSectionTagNotFoundError));
         }
 
         [Fact]
@@ -465,7 +496,15 @@ EndGlobal
             };
 
             action.ShouldThrow<InvalidSolutionFormatException>()
-                .WithMessage("Invalid format in line 7: Property set is missing '.'");
+                .WithMessage(FormatError(7, LocalizableStrings.InvalidPropertySetFormatString, "."));
+        }
+
+        private static string FormatError(int line, string format, params object[] args)
+        {
+            return string.Format(
+                LocalizableStrings.ErrorMessageFormatString,
+                line,
+                string.Format(format, args));
         }
     }
 }

@@ -9,7 +9,7 @@ def project = GithubProject
 def branch = GithubBranchName
 def isPR = true
 
-def platformList = ['Linux:x64:Release', 'Debian8.2:x64:Debug', 'Ubuntu:x64:Release', 'Ubuntu16.04:x64:Debug', 'OSX:x64:Release', 'Windows_NT:x64:Release', 'Windows_NT:x86:Debug', 'RHEL7.2:x64:Release', 'CentOS7.1:x64:Debug']
+def platformList = ['Linux:x64:Release', 'Debian8.2:x64:Debug', 'Ubuntu:x64:Release', 'Ubuntu16.04:x64:Debug', 'OSX10.12:x64:Release', 'Windows_NT:x64:Release', 'Windows_NT:x86:Debug', 'Windows_NT_ES:x64:Debug', 'RHEL7.2:x64:Release', 'CentOS7.1:x64:Debug', 'RHEL6:x64:Debug', 'Alpine3.6:x64:Debug', 'Linux:arm:Debug', 'Linux:arm64:Debug']
 
 def static getBuildJobName(def configuration, def os, def architecture) {
     return configuration.toLowerCase() + '_' + os.toLowerCase() + '_' + architecture.toLowerCase()
@@ -32,12 +32,32 @@ platformList.each { platform ->
     else if (os == 'Windows_2016') {
         buildCommand = ".\\build.cmd -Configuration ${configuration} -Architecture ${architecture} -RunInstallerTestsInDocker -Targets Default"
     }
+    else if (os == 'Windows_NT_ES') {
+        osUsedForMachineAffinity = 'Windows_NT'
+        buildCommand = """
+set DOTNET_CLI_UI_LANGUAGE=es
+.\\build.cmd -Configuration ${configuration} -Architecture ${architecture} -Targets Default
+"""
+    }
     else if (os == 'Ubuntu') {
         buildCommand = "./build.sh --skip-prereqs --configuration ${configuration} --docker ubuntu.14.04 --targets Default"
     }
     else if (os == 'Linux') {
         osUsedForMachineAffinity = 'Ubuntu16.04';
-        buildCommand = "./build.sh --linux-portable --skip-prereqs --configuration ${configuration} --targets Default"
+        if ((architecture == 'arm') || (architecture == 'arm64')) {
+            buildCommand = "./build.sh --linux-portable --skip-prereqs --architecture ${architecture} --configuration ${configuration} --targets Default /p:CLIBUILD_SKIP_TESTS=true"
+        }
+        else {
+            buildCommand = "./build.sh --linux-portable --skip-prereqs --configuration ${configuration} --targets Default"
+        }
+    }
+    else if (os == 'RHEL6') {
+        osUsedForMachineAffinity = 'Ubuntu16.04';
+        buildCommand = "./build.sh --skip-prereqs --configuration ${configuration} --runtime-id rhel.6-x64 --docker rhel.6 --targets Default"
+    }
+    else if (os == 'Alpine3.6') {
+        osUsedForMachineAffinity = 'Ubuntu16.04';
+        buildCommand = "./build.sh --skip-prereqs --configuration ${configuration} --runtime-id alpine.3.6-x64 --docker alpine.3.6 --targets Default"
     }
     else {
         // Jenkins non-Ubuntu CI machines don't have docker
@@ -47,7 +67,7 @@ platformList.each { platform ->
     def newJob = job(Utilities.getFullJobName(project, jobName, isPR)) {
         // Set the label.
         steps {
-            if (os == 'Windows_NT' || os == 'Windows_2016') {
+            if (osUsedForMachineAffinity == 'Windows_NT' || osUsedForMachineAffinity == 'Windows_2016') {
                 // Batch
                 batchFile(buildCommand)
             }
@@ -60,12 +80,16 @@ platformList.each { platform ->
 
     Utilities.setMachineAffinity(newJob, osUsedForMachineAffinity, 'latest-or-auto')
     Utilities.standardJobSetup(newJob, project, isPR, "*/${branch}")
-    // Remove this check once tests work for 2.0. Until that time Linux portable tests will fail so we 
-    // don't run the tests and there won't be any .trx file.
-    if (os != 'Linux') {
+    // ARM CI runs are build only.
+    if ((architecture != 'arm') && (architecture != 'arm64')) {
         Utilities.addMSTestResults(newJob, '**/*.trx')
     }
     Utilities.addGithubPRTriggerForBranch(newJob, branch, "${os} ${architecture} ${configuration} Build")
 }
 
+// Make the call to generate the help job
+Utilities.createHelperJob(this, project, branch,
+    "Welcome to the ${project} Repository",  // This is prepended to the help message
+    "Have a nice day!")  // This is appended to the help message.  You might put known issues here.
 
+Utilities.addCROSSCheck(this, project, branch)

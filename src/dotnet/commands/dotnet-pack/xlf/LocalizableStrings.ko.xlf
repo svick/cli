@@ -1,8 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.2" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 xliff-core-1.2-transitional.xsd">
-  <file datatype="xml" source-language="en" target-language="ko" original="src/dotnet/commands/dotnet-pack/LocalizableStrings.resx">
+  <file datatype="xml" source-language="en" target-language="ko" original="../LocalizableStrings.resx">
     <body>
-      <group id="src/dotnet/commands/dotnet-pack/LocalizableStrings.resx" />
       <trans-unit id="AppFullName">
         <source>.NET Core NuGet Package Packer</source>
         <target state="translated">.NET Core NuGet 패키지 패커</target>
@@ -24,8 +23,8 @@
         <note />
       </trans-unit>
       <trans-unit id="CmdNoBuildOptionDescription">
-        <source>Skip building the project prior to packing. By default, the project will be built.</source>
-        <target state="translated">압축하기 전에 프로젝트를 빌드하지 않습니다. 기본적으로 프로젝트가 빌드됩니다.</target>
+        <source>Do not build the project before packing. Implies --no-restore.</source>
+        <target state="needs-review-translation">압축하기 전에 프로젝트를 빌드하지 않습니다. 복원 없음을 의미합니다.</target>
         <note />
       </trans-unit>
       <trans-unit id="CmdIncludeSymbolsDescription">
@@ -36,26 +35,6 @@
       <trans-unit id="CmdIncludeSourceDescription">
         <source>Include PDBs and source files. Source files go into the src folder in the resulting nuget package</source>
         <target state="translated">PDB 및 소스 파일을 포함합니다. 소스 파일이 결과 nuget 패키지의 src 폴더로 이동합니다.</target>
-        <note />
-      </trans-unit>
-      <trans-unit id="CmdConfig">
-        <source>CONFIGURATION</source>
-        <target state="translated">CONFIGURATION</target>
-        <note />
-      </trans-unit>
-      <trans-unit id="CmdConfigDescription">
-        <source>Configuration to use for building the project.  Default for most projects is  "Debug".</source>
-        <target state="translated">프로젝트 빌드에 사용할 구성입니다.  대부분의 프로젝트에서 기본값은 "Debug"입니다.</target>
-        <note />
-      </trans-unit>
-      <trans-unit id="CmdVersionSuffix">
-        <source>VERSION_SUFFIX</source>
-        <target state="translated">VERSION_SUFFIX</target>
-        <note />
-      </trans-unit>
-      <trans-unit id="CmdVersionSuffixDescription">
-        <source>Defines the value for the $(VersionSuffix) property in the project.</source>
-        <target state="translated">프로젝트에서 $(VersionSuffix) 속성의 값을 정의합니다.</target>
         <note />
       </trans-unit>
       <trans-unit id="CmdServiceableDescription">

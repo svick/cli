@@ -3,6 +3,7 @@
 
 using FluentAssertions;
 using Microsoft.DotNet.Tools.Test.Utilities;
+using Microsoft.DotNet.Tools.Add.PackageReference;
 using System;
 using System.IO;
 using System.Linq;
@@ -106,13 +107,34 @@ namespace Microsoft.DotNet.Cli.Package.Add.Tests
 
             var packageName = "Newtonsoft.Json";
             var packageVersion = "9.0.1";
-            var framework = "netcoreapp2.0";
+            var framework = "netcoreapp2.1";
             var cmd = new DotnetCommand()
                 .WithWorkingDirectory(projectDirectory)
                 .ExecuteWithCapturedOutput($"add package {packageName} --version {packageVersion} --framework {framework}");
             cmd.Should().Pass();
             cmd.StdOut.Should().Contain($"PackageReference for package '{packageName}' version '{packageVersion}' " +
                 $"added to file '{projectDirectory + Path.DirectorySeparatorChar + testAsset}.csproj'.");
+            cmd.StdErr.Should().BeEmpty();
+        }
+
+        [Fact]
+        public void WhenValidPackageIsPassedMSBuildDoesNotPrintVersionHeader()
+        {
+            var testAsset = "TestAppSimple";
+            var projectDirectory = TestAssets
+                .Get(testAsset)
+                .CreateInstance()
+                .WithSourceFiles()
+                .Root
+                .FullName;
+
+            var packageName = "Newtonsoft.Json";
+            var packageVersion = "9.0.1";
+            var cmd = new DotnetCommand()
+                .WithWorkingDirectory(projectDirectory)
+                .ExecuteWithCapturedOutput($"add package {packageName} --version {packageVersion}");
+            cmd.Should().Pass();
+            cmd.StdOut.Should().NotContain("Microsoft (R) Build Engine version");
             cmd.StdErr.Should().BeEmpty();
         }
 
@@ -130,7 +152,7 @@ namespace Microsoft.DotNet.Cli.Package.Add.Tests
                 .WithWorkingDirectory(projectDirectory)
                 .ExecuteWithCapturedOutput($"add package package1 package2 package3");
             cmd.Should().Fail();
-            cmd.StdErr.Should().Contain("Please specify one package reference to add.");
+            cmd.StdErr.Should().Contain(LocalizableStrings.SpecifyExactlyOnePackageReference);
         }
 
         [Fact]
@@ -147,7 +169,7 @@ namespace Microsoft.DotNet.Cli.Package.Add.Tests
                 .WithWorkingDirectory(projectDirectory)
                 .ExecuteWithCapturedOutput($"add package");
             cmd.Should().Fail();
-            cmd.StdErr.Should().Contain("Please specify one package reference to add.");
+            cmd.StdErr.Should().Contain(LocalizableStrings.SpecifyExactlyOnePackageReference);
         }
     }
 }

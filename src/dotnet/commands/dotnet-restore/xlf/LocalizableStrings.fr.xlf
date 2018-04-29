@@ -1,8 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.2" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 xliff-core-1.2-transitional.xsd">
-  <file datatype="xml" source-language="en" target-language="fr" original="src/dotnet/commands/dotnet-restore/LocalizableStrings.resx">
+  <file datatype="xml" source-language="en" target-language="fr" original="../LocalizableStrings.resx">
     <body>
-      <group id="src/dotnet/commands/dotnet-restore/LocalizableStrings.resx" />
       <trans-unit id="AppFullName">
         <source>.NET dependency restorer</source>
         <target state="translated">Programme de restauration de dépendances .NET</target>
@@ -15,7 +14,7 @@
       </trans-unit>
       <trans-unit id="CmdArgument">
         <source>PROJECT</source>
-        <target state="translated">PROJET</target>
+        <target state="translated">PROJECT</target>
         <note />
       </trans-unit>
       <trans-unit id="CmdArgumentDescription">
@@ -35,7 +34,7 @@
       </trans-unit>
       <trans-unit id="CmdPackagesOption">
         <source>PACKAGES_DIRECTORY</source>
-        <target state="translated">RÉPERTOIRE_PACKAGES</target>
+        <target state="translated">PACKAGES_DIRECTORY</target>
         <note />
       </trans-unit>
       <trans-unit id="CmdPackagesOptionDescription">
@@ -50,7 +49,7 @@
       </trans-unit>
       <trans-unit id="CmdConfigFileOption">
         <source>FILE</source>
-        <target state="translated">FICHIER</target>
+        <target state="translated">FILE</target>
         <note />
       </trans-unit>
       <trans-unit id="CmdConfigFileOptionDescription">
@@ -69,18 +68,23 @@
         <note />
       </trans-unit>
       <trans-unit id="CmdNoDependenciesOptionDescription">
-        <source>Set this flag to ignore project to project references and only restore the root project</source>
-        <target state="translated">Définir cet indicateur pour ignorer les références projet à projet et restaurer uniquement le projet racine</target>
+        <source>Set this flag to ignore project to project references and only restore the root project.</source>
+        <target state="translated">Définissez cet indicateur pour ignorer les références de projet à projet et restaurer uniquement le projet racine.</target>
         <note />
       </trans-unit>
       <trans-unit id="CmdRuntimeOption">
         <source>RUNTIME_IDENTIFIER</source>
-        <target state="translated">IDENTIFICATEUR_RUNTIME</target>
+        <target state="translated">RUNTIME_IDENTIFIER</target>
         <note />
       </trans-unit>
       <trans-unit id="CmdRuntimeOptionDescription">
         <source>Target runtime to restore packages for.</source>
         <target state="translated">Runtime cible pour lequel restaurer les packages.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="CmdForceRestoreOptionDescription">
+        <source>Set this flag to force all dependencies to be resolved even if the last restore was successful. This is equivalent to deleting project.assets.json.</source>
+        <target state="translated">Définissez cet indicateur pour forcer la résolution de toutes les dépendances même si la dernière restauration a réussi. Cela équivaut à supprimer project.assets.json.</target>
         <note />
       </trans-unit>
     </body>

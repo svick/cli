@@ -3,58 +3,28 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
-using Microsoft.DotNet.Cli.Utils;
 using Microsoft.DotNet.Cli.CommandLine;
+using Microsoft.DotNet.Cli.Telemetry;
+using Microsoft.DotNet.Cli.Utils;
 using Microsoft.DotNet.Configurer;
 using Microsoft.DotNet.PlatformAbstractions;
-using Microsoft.DotNet.Tools.Add;
-using Microsoft.DotNet.Tools.Build;
-using Microsoft.DotNet.Tools.Clean;
+using Microsoft.DotNet.ShellShim;
 using Microsoft.DotNet.Tools.Help;
-using Microsoft.DotNet.Tools.List;
-using Microsoft.DotNet.Tools.Migrate;
-using Microsoft.DotNet.Tools.MSBuild;
-using Microsoft.DotNet.Tools.New;
-using Microsoft.DotNet.Tools.NuGet;
-using Microsoft.DotNet.Tools.Pack;
-using Microsoft.DotNet.Tools.Publish;
-using Microsoft.DotNet.Tools.Remove;
-using Microsoft.DotNet.Tools.Restore;
-using Microsoft.DotNet.Tools.RestoreProjectJson;
-using Microsoft.DotNet.Tools.Run;
-using Microsoft.DotNet.Tools.Sln;
-using Microsoft.DotNet.Tools.Test;
-using Microsoft.DotNet.Tools.VSTest;
-using Microsoft.DotNet.Tools.Cache;
+using Microsoft.Extensions.EnvironmentAbstractions;
 using NuGet.Frameworks;
+using Command = Microsoft.DotNet.Cli.Utils.Command;
+using RuntimeEnvironment = Microsoft.DotNet.PlatformAbstractions.RuntimeEnvironment;
+using LocalizableStrings = Microsoft.DotNet.Cli.Utils.LocalizableStrings;
 
 namespace Microsoft.DotNet.Cli
 {
     public class Program
     {
-        private static Dictionary<string, Func<string[], int>> s_builtIns = new Dictionary<string, Func<string[], int>>
-        {
-            ["add"] = AddCommand.Run,
-            ["build"] = BuildCommand.Run,
-            ["cache"] = CacheCommand.Run,
-            ["clean"] = CleanCommand.Run,
-            ["help"] = HelpCommand.Run,
-            ["list"] = ListCommand.Run,
-            ["migrate"] = MigrateCommand.Run,
-            ["msbuild"] = MSBuildCommand.Run,
-            ["new"] = NewCommandShim.Run,
-            ["nuget"] = NuGetCommand.Run,
-            ["pack"] = PackCommand.Run,
-            ["publish"] = PublishCommand.Run,
-            ["remove"] = RemoveCommand.Run,
-            ["restore"] = RestoreCommand.Run,
-            ["run"] = RunCommand.Run,
-            ["sln"] = SlnCommand.Run,
-            ["test"] = TestCommand.Run,
-            ["vstest"] = VSTestCommand.Run,
-        };
+        private static readonly string ToolPathSentinelFileName = $"{Product.Version}.toolpath.sentinel";
 
         public static int Main(string[] args)
         {
@@ -76,11 +46,28 @@ namespace Microsoft.DotNet.Cli
                     return ProcessArgs(args);
                 }
             }
+            catch (HelpException e)
+            {
+                Reporter.Output.WriteLine(e.Message);
+                return 0;
+            }
             catch (Exception e) when (e.ShouldBeDisplayedAsError())
             {
-                Reporter.Error.WriteLine(CommandContext.IsVerbose() ? 
-                        e.ToString().Red().Bold() : 
-                        e.Message.Red().Bold());
+                Reporter.Error.WriteLine(CommandContext.IsVerbose()
+                    ? e.ToString().Red().Bold()
+                    : e.Message.Red().Bold());
+
+                var commandParsingException = e as CommandParsingException;
+                if (commandParsingException != null)
+                {
+                    Reporter.Output.WriteLine(commandParsingException.HelpText);
+                }
+
+                return 1;
+            }
+            catch (Exception e) when (!e.ShouldBeDisplayedAsError())
+            {
+                Reporter.Error.WriteLine(e.ToString().Red().Bold());
 
                 return 1;
             }
@@ -98,17 +85,30 @@ namespace Microsoft.DotNet.Cli
         {
             // CommandLineApplication is a bit restrictive, so we parse things ourselves here. Individual apps should use CLA.
 
-            bool? verbose = null;
             var success = true;
             var command = string.Empty;
             var lastArg = 0;
-            using (INuGetCacheSentinel nugetCacheSentinel = new NuGetCacheSentinel())
+            var cliFallbackFolderPathCalculator = new CliFolderPathCalculator();
+            TopLevelCommandParserResult topLevelCommandParserResult = TopLevelCommandParserResult.Empty;
+
+            using (INuGetCacheSentinel nugetCacheSentinel = new NuGetCacheSentinel(cliFallbackFolderPathCalculator))
+            using (IFirstTimeUseNoticeSentinel disposableFirstTimeUseNoticeSentinel =
+                new FirstTimeUseNoticeSentinel(cliFallbackFolderPathCalculator))
             {
+                IFirstTimeUseNoticeSentinel firstTimeUseNoticeSentinel = disposableFirstTimeUseNoticeSentinel;
+                IAspNetCertificateSentinel aspNetCertificateSentinel = new AspNetCertificateSentinel(cliFallbackFolderPathCalculator);
+                IFileSentinel toolPathSentinel = new FileSentinel(
+                    new FilePath(
+                        Path.Combine(
+                            CliFolderPathCalculator.DotnetUserProfileFolderPath,
+                            ToolPathSentinelFileName)));
+
                 for (; lastArg < args.Length; lastArg++)
                 {
                     if (IsArg(args[lastArg], "d", "diagnostics"))
                     {
-                        verbose = true;
+                        Environment.SetEnvironmentVariable(CommandContext.Variables.Verbose, bool.TrueString);
+                        CommandContext.SetVerbose(true);
                     }
                     else if (IsArg(args[lastArg], "version"))
                     {
@@ -120,24 +120,45 @@ namespace Microsoft.DotNet.Cli
                         PrintInfo();
                         return 0;
                     }
-                    else if (IsArg(args[lastArg], "h", "help") || 
-                        args[lastArg] == "-?" ||
-                        args[lastArg] == "/?")
+                    else if (IsArg(args[lastArg], "h", "help") ||
+                             args[lastArg] == "-?" ||
+                             args[lastArg] == "/?")
                     {
                         HelpCommand.PrintHelp();
                         return 0;
                     }
-                    else if (args[lastArg].StartsWith("-"))
+                    else if (args[lastArg].StartsWith("-", StringComparison.OrdinalIgnoreCase))
                     {
                         Reporter.Error.WriteLine($"Unknown option: {args[lastArg]}");
                         success = false;
                     }
                     else
                     {
-                        ConfigureDotNetForFirstTimeUse(nugetCacheSentinel);
-
                         // It's the command, and we're done!
                         command = args[lastArg];
+                        if (string.IsNullOrEmpty(command))
+                        {
+                            command = "help";
+                        }
+
+                        topLevelCommandParserResult = new TopLevelCommandParserResult(command);
+                        var hasSuperUserAccess = false;
+                        if (IsDotnetBeingInvokedFromNativeInstaller(topLevelCommandParserResult))
+                        {
+                            aspNetCertificateSentinel = new NoOpAspNetCertificateSentinel();
+                            firstTimeUseNoticeSentinel = new NoOpFirstTimeUseNoticeSentinel();
+                            toolPathSentinel = new NoOpFileSentinel();
+                            hasSuperUserAccess = true;
+                        }
+
+                        ConfigureDotNetForFirstTimeUse(
+                            nugetCacheSentinel,
+                            firstTimeUseNoticeSentinel,
+                            aspNetCertificateSentinel,
+                            toolPathSentinel,
+                            cliFallbackFolderPathCalculator,
+                            hasSuperUserAccess);
+
                         break;
                     }
                 }
@@ -149,62 +170,86 @@ namespace Microsoft.DotNet.Cli
 
                 if (telemetryClient == null)
                 {
-                    telemetryClient = new Telemetry(nugetCacheSentinel);
+                    telemetryClient = new Telemetry.Telemetry(firstTimeUseNoticeSentinel);
                 }
+                TelemetryEventEntry.Subscribe(telemetryClient.TrackEvent);
+                TelemetryEventEntry.TelemetryFilter = new TelemetryFilter(Sha256Hasher.HashWithNormalizedCasing);
             }
 
-            var appArgs = (lastArg + 1) >= args.Length ? Enumerable.Empty<string>() : args.Skip(lastArg + 1).ToArray();
+            IEnumerable<string> appArgs =
+                (lastArg + 1) >= args.Length
+                ? Enumerable.Empty<string>()
+                : args.Skip(lastArg + 1).ToArray();
 
-            if (verbose.HasValue)
+            if (CommandContext.IsVerbose())
             {
-                Environment.SetEnvironmentVariable(CommandContext.Variables.Verbose, verbose.ToString());
                 Console.WriteLine($"Telemetry is: {(telemetryClient.Enabled ? "Enabled" : "Disabled")}");
             }
 
-            if (string.IsNullOrEmpty(command))
-            {
-                command = "help";
-            }
-
-            telemetryClient.TrackEvent(command, null, null);
+            TelemetryEventEntry.SendFiltered(topLevelCommandParserResult);
 
             int exitCode;
-            Func<string[], int> builtIn;
-            if (s_builtIns.TryGetValue(command, out builtIn))
+            if (BuiltInCommandsCatalog.Commands.TryGetValue(topLevelCommandParserResult.Command, out var builtIn))
             {
-                exitCode = builtIn(appArgs.ToArray());
+                var parseResult = Parser.Instance.ParseFrom($"dotnet {topLevelCommandParserResult.Command}", appArgs.ToArray());
+                if (!parseResult.Errors.Any())
+                {
+                    TelemetryEventEntry.SendFiltered(parseResult);
+                }
+
+                exitCode = builtIn.Command(appArgs.ToArray());
             }
             else
             {
                 CommandResult result = Command.Create(
-                        "dotnet-" + command,
+                        "dotnet-" + topLevelCommandParserResult.Command,
                         appArgs,
                         FrameworkConstants.CommonFrameworks.NetStandardApp15)
                     .Execute();
                 exitCode = result.ExitCode;
             }
-
             return exitCode;
-
         }
 
-        private static void ConfigureDotNetForFirstTimeUse(INuGetCacheSentinel nugetCacheSentinel)
+        private static bool IsDotnetBeingInvokedFromNativeInstaller(TopLevelCommandParserResult parseResult)
         {
+            return parseResult.Command == "internal-reportinstallsuccess";
+        }
+
+        private static void ConfigureDotNetForFirstTimeUse(
+            INuGetCacheSentinel nugetCacheSentinel,
+            IFirstTimeUseNoticeSentinel firstTimeUseNoticeSentinel,
+            IAspNetCertificateSentinel aspNetCertificateSentinel,
+            IFileSentinel toolPathSentinel,
+            CliFolderPathCalculator cliFolderPathCalculator,
+            bool hasSuperUserAccess)
+        {
+            var environmentProvider = new EnvironmentProvider();
+
             using (PerfTrace.Current.CaptureTiming())
             {
-                using (var nugetPackagesArchiver = new NuGetPackagesArchiver())
-                {
-                    var environmentProvider = new EnvironmentProvider();
-                    var commandFactory = new DotNetCommandFactory(alwaysRunOutOfProc: true);
-                    var nugetCachePrimer = 
-                        new NuGetCachePrimer(commandFactory, nugetPackagesArchiver, nugetCacheSentinel);
-                    var dotnetConfigurer = new DotnetFirstTimeUseConfigurer(
-                        nugetCachePrimer,
-                        nugetCacheSentinel,
-                        environmentProvider);
+                var nugetPackagesArchiver = new NuGetPackagesArchiver();
+                var environmentPath =
+                    EnvironmentPathFactory.CreateEnvironmentPath(cliFolderPathCalculator, hasSuperUserAccess, environmentProvider);
+                var commandFactory = new DotNetCommandFactory(alwaysRunOutOfProc: true);
+                var nugetCachePrimer = new NuGetCachePrimer(
+                    nugetPackagesArchiver,
+                    nugetCacheSentinel,
+                    cliFolderPathCalculator);
+                var aspnetCertificateGenerator = new AspNetCoreCertificateGenerator();
+                var dotnetConfigurer = new DotnetFirstTimeUseConfigurer(
+                    nugetCachePrimer,
+                    nugetCacheSentinel,
+                    firstTimeUseNoticeSentinel,
+                    aspNetCertificateSentinel,
+                    aspnetCertificateGenerator,
+                    toolPathSentinel,
+                    environmentProvider,
+                    Reporter.Output,
+                    cliFolderPathCalculator.CliFallbackFolderPath,
+                    environmentPath);
 
-                    dotnetConfigurer.Configure();
-                }
+                dotnetConfigurer.Configure();
             }
         }
 
@@ -213,11 +258,13 @@ namespace Microsoft.DotNet.Cli
             // by default, .NET Core doesn't have all code pages needed for Console apps.
             // see the .NET Core Notes in https://msdn.microsoft.com/en-us/library/system.diagnostics.process(v=vs.110).aspx
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+
+            UILanguageOverride.Setup();
         }
 
-        internal static bool TryGetBuiltInCommand(string commandName, out Func<string[], int> builtInCommand)
+        internal static bool TryGetBuiltInCommand(string commandName, out BuiltInCommandMetadata builtInCommand)
         {
-            return s_builtIns.TryGetValue(commandName, out builtInCommand);
+            return BuiltInCommandsCatalog.Commands.TryGetValue(commandName, out builtInCommand);
         }
 
         private static void PrintVersion()
@@ -227,16 +274,13 @@ namespace Microsoft.DotNet.Cli
 
         private static void PrintInfo()
         {
-            HelpCommand.PrintVersionHeader();
-
             DotnetVersionFile versionFile = DotnetFiles.VersionFileObject;
             var commitSha = versionFile.CommitSha ?? "N/A";
+            Reporter.Output.WriteLine($"{LocalizableStrings.DotNetSdkInfoLabel}");
+            Reporter.Output.WriteLine($" Version:   {Product.Version}");
+            Reporter.Output.WriteLine($" Commit:    {commitSha}");
             Reporter.Output.WriteLine();
-            Reporter.Output.WriteLine("Product Information:");
-            Reporter.Output.WriteLine($" Version:            {Product.Version}");
-            Reporter.Output.WriteLine($" Commit SHA-1 hash:  {commitSha}");
-            Reporter.Output.WriteLine();
-            Reporter.Output.WriteLine("Runtime Environment:");
+            Reporter.Output.WriteLine($"{LocalizableStrings.DotNetRuntimeInfoLabel}");
             Reporter.Output.WriteLine($" OS Name:     {RuntimeEnvironment.OperatingSystem}");
             Reporter.Output.WriteLine($" OS Version:  {RuntimeEnvironment.OperatingSystemVersion}");
             Reporter.Output.WriteLine($" OS Platform: {RuntimeEnvironment.OperatingSystemPlatform}");
@@ -251,7 +295,8 @@ namespace Microsoft.DotNet.Cli
 
         private static bool IsArg(string candidate, string shortName, string longName)
         {
-            return (shortName != null && candidate.Equals("-" + shortName)) || (longName != null && candidate.Equals("--" + longName));
+            return (shortName != null && candidate.Equals("-" + shortName, StringComparison.OrdinalIgnoreCase)) ||
+                   (longName != null && candidate.Equals("--" + longName, StringComparison.OrdinalIgnoreCase));
         }
 
         private static string GetDisplayRid(DotnetVersionFile versionFile)
@@ -260,7 +305,7 @@ namespace Microsoft.DotNet.Cli
 
             string currentRid = RuntimeEnvironment.GetRuntimeIdentifier();
 
-            // if the current RID isn't supported by the shared framework, display the RID the CLI was 
+            // if the current RID isn't supported by the shared framework, display the RID the CLI was
             // built with instead, so the user knows which RID they should put in their "runtimes" section.
             return fxDepsFile.IsRuntimeSupported(currentRid) ?
                 currentRid :

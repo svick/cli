@@ -1,8 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.2" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 xliff-core-1.2-transitional.xsd">
-  <file datatype="xml" source-language="en" target-language="es" original="src/dotnet/commands/dotnet-build/LocalizableStrings.resx">
+  <file datatype="xml" source-language="en" target-language="es" original="../LocalizableStrings.resx">
     <body>
-      <group id="src/dotnet/commands/dotnet-build/LocalizableStrings.resx" />
       <trans-unit id="AppDescription">
         <source>Builder for the .NET Platform. Delegates to the MSBuild 'Build' target in the project file.</source>
         <target state="translated">Generador para la plataforma .NET. Delega en el destino “Build” de MSBuild del archivo del proyecto.</target>
@@ -11,26 +10,6 @@
       <trans-unit id="AppFullName">
         <source>.NET Builder</source>
         <target state="translated">Generador para .NET</target>
-        <note />
-      </trans-unit>
-      <trans-unit id="ConfigurationOptionDescription">
-        <source>Configuration to use for building the project. Default for most projects is  "Debug".</source>
-        <target state="translated">Configuración para usar para crear el proyecto. El valor predeterminado para la mayoría de los proyectos es "Depurar".</target>
-        <note />
-      </trans-unit>
-      <trans-unit id="ConfigurationOptionName">
-        <source>CONFIGURATION</source>
-        <target state="translated">CONFIGURACIÓN</target>
-        <note />
-      </trans-unit>
-      <trans-unit id="FrameworkOptionDescription">
-        <source>Target framework to build for. The target framework has to be specified in the project file.</source>
-        <target state="translated">Plataforma de destino para la que se compila. La plataforma de destino se debe especificar en el archivo de proyecto.</target>
-        <note />
-      </trans-unit>
-      <trans-unit id="FrameworkOptionName">
-        <source>FRAMEWORK</source>
-        <target state="translated">PLATAFORMA</target>
         <note />
       </trans-unit>
       <trans-unit id="NoDependenciesOptionDescription">
@@ -51,36 +30,6 @@
       <trans-unit id="OutputOptionName">
         <source>OUTPUT_DIR</source>
         <target state="translated">DIRECTORIO_DE_SALIDA</target>
-        <note />
-      </trans-unit>
-      <trans-unit id="ProjectArgumentDescription">
-        <source>The MSBuild project file to build. If a project file is not specified, MSBuild searches the current working directory for a file that has a file extension that ends in `proj` and uses that file.</source>
-        <target state="translated">Archivo del proyecto de MSBuild para compilar. Si no se especifica un archivo del proyecto, MSBuild busca en el directorio de trabajo actual un archivo que tenga una extensión de archivo que acabe en “proj” y utiliza ese archivo.</target>
-        <note />
-      </trans-unit>
-      <trans-unit id="ProjectArgumentValueName">
-        <source>PROJECT</source>
-        <target state="translated">PROYECTO</target>
-        <note />
-      </trans-unit>
-      <trans-unit id="RuntimeOptionDescription">
-        <source>Target runtime to build for. The default is to build a portable application.</source>
-        <target state="translated">Entorno de tiempo de ejecución para el que se compila. La opción predeterminada es compilar una aplicación móvil.</target>
-        <note />
-      </trans-unit>
-      <trans-unit id="RuntimeOptionName">
-        <source>RUNTIME_IDENTIFIER</source>
-        <target state="translated">ID_DEL_ENTORNO_DE_TIEMPO_DE_EJECUCIÓN</target>
-        <note />
-      </trans-unit>
-      <trans-unit id="VersionSuffixOptionDescription">
-        <source>Defines the value for the $(VersionSuffix) property in the project</source>
-        <target state="translated">Define el valor para la propiedad $(VersionSuffix) del proyecto</target>
-        <note />
-      </trans-unit>
-      <trans-unit id="VersionSuffixOptionName">
-        <source>VERSION_SUFFIX</source>
-        <target state="translated">SUFIJO_DE_VERSIÓN</target>
         <note />
       </trans-unit>
     </body>

@@ -4,10 +4,12 @@
 using FluentAssertions;
 using Microsoft.Build.Construction;
 using Microsoft.DotNet.Cli.Sln.Internal;
+using Microsoft.DotNet.Tools;
 using Microsoft.DotNet.Tools.Test.Utilities;
 using System;
 using System.IO;
 using System.Linq;
+using System.Text;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -15,19 +17,30 @@ namespace Microsoft.DotNet.Cli.Sln.Add.Tests
 {
     public class GivenDotnetSlnAdd : TestBase
     {
-        private string HelpText = @".NET Add project(s) to a solution file Command
-
-Usage: dotnet sln <SLN_FILE> add [options] [args]
+        private string HelpText = @"Usage: dotnet sln <SLN_FILE> add [options] <args>
 
 Arguments:
-  <SLN_FILE>  Solution file to operate on. If not specified, the command will search the current directory for one.
+  <SLN_FILE>   Solution file to operate on. If not specified, the command will search the current directory for one.
+  <args>       Add one or more specified projects to the solution.
 
 Options:
-  -h|--help  Show help information
-
-Additional Arguments:
- Add one or more specified projects to the solution.
+  -h, --help   Show help information.
 ";
+
+        private const string SlnCommandHelpText = @"Usage: dotnet sln [options] <SLN_FILE> [command]
+
+Arguments:
+  <SLN_FILE>   Solution file to operate on. If not specified, the command will search the current directory for one.
+
+Options:
+  -h, --help   Show help information.
+
+Commands:
+  add <args>      .NET Add project(s) to a solution file Command
+  list            .NET List project(s) in a solution file Command
+  remove <args>   .NET Remove project(s) from a solution file Command
+";
+
         private ITestOutputHelper _output;
 
         public GivenDotnetSlnAdd(ITestOutputHelper output)
@@ -68,16 +81,16 @@ Global
 		{7072A694-548F-4CAE-A58F-12D257D5F486}.Release|x86.Build.0 = Release|x86
 		__LIB_PROJECT_GUID__.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		__LIB_PROJECT_GUID__.Debug|Any CPU.Build.0 = Debug|Any CPU
-		__LIB_PROJECT_GUID__.Debug|x64.ActiveCfg = Debug|x64
-		__LIB_PROJECT_GUID__.Debug|x64.Build.0 = Debug|x64
-		__LIB_PROJECT_GUID__.Debug|x86.ActiveCfg = Debug|x86
-		__LIB_PROJECT_GUID__.Debug|x86.Build.0 = Debug|x86
+		__LIB_PROJECT_GUID__.Debug|x64.ActiveCfg = Debug|Any CPU
+		__LIB_PROJECT_GUID__.Debug|x64.Build.0 = Debug|Any CPU
+		__LIB_PROJECT_GUID__.Debug|x86.ActiveCfg = Debug|Any CPU
+		__LIB_PROJECT_GUID__.Debug|x86.Build.0 = Debug|Any CPU
 		__LIB_PROJECT_GUID__.Release|Any CPU.ActiveCfg = Release|Any CPU
 		__LIB_PROJECT_GUID__.Release|Any CPU.Build.0 = Release|Any CPU
-		__LIB_PROJECT_GUID__.Release|x64.ActiveCfg = Release|x64
-		__LIB_PROJECT_GUID__.Release|x64.Build.0 = Release|x64
-		__LIB_PROJECT_GUID__.Release|x86.ActiveCfg = Release|x86
-		__LIB_PROJECT_GUID__.Release|x86.Build.0 = Release|x86
+		__LIB_PROJECT_GUID__.Release|x64.ActiveCfg = Release|Any CPU
+		__LIB_PROJECT_GUID__.Release|x64.Build.0 = Release|Any CPU
+		__LIB_PROJECT_GUID__.Release|x86.ActiveCfg = Release|Any CPU
+		__LIB_PROJECT_GUID__.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -104,16 +117,16 @@ Global
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		__LIB_PROJECT_GUID__.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		__LIB_PROJECT_GUID__.Debug|Any CPU.Build.0 = Debug|Any CPU
-		__LIB_PROJECT_GUID__.Debug|x64.ActiveCfg = Debug|x64
-		__LIB_PROJECT_GUID__.Debug|x64.Build.0 = Debug|x64
-		__LIB_PROJECT_GUID__.Debug|x86.ActiveCfg = Debug|x86
-		__LIB_PROJECT_GUID__.Debug|x86.Build.0 = Debug|x86
+		__LIB_PROJECT_GUID__.Debug|x64.ActiveCfg = Debug|Any CPU
+		__LIB_PROJECT_GUID__.Debug|x64.Build.0 = Debug|Any CPU
+		__LIB_PROJECT_GUID__.Debug|x86.ActiveCfg = Debug|Any CPU
+		__LIB_PROJECT_GUID__.Debug|x86.Build.0 = Debug|Any CPU
 		__LIB_PROJECT_GUID__.Release|Any CPU.ActiveCfg = Release|Any CPU
 		__LIB_PROJECT_GUID__.Release|Any CPU.Build.0 = Release|Any CPU
-		__LIB_PROJECT_GUID__.Release|x64.ActiveCfg = Release|x64
-		__LIB_PROJECT_GUID__.Release|x64.Build.0 = Release|x64
-		__LIB_PROJECT_GUID__.Release|x86.ActiveCfg = Release|x86
-		__LIB_PROJECT_GUID__.Release|x86.Build.0 = Release|x86
+		__LIB_PROJECT_GUID__.Release|x64.ActiveCfg = Release|Any CPU
+		__LIB_PROJECT_GUID__.Release|x64.Build.0 = Release|Any CPU
+		__LIB_PROJECT_GUID__.Release|x86.ActiveCfg = Release|Any CPU
+		__LIB_PROJECT_GUID__.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
 ";
@@ -153,22 +166,157 @@ Global
 		{7072A694-548F-4CAE-A58F-12D257D5F486}.Release|x86.Build.0 = Release|x86
 		__LIB_PROJECT_GUID__.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		__LIB_PROJECT_GUID__.Debug|Any CPU.Build.0 = Debug|Any CPU
-		__LIB_PROJECT_GUID__.Debug|x64.ActiveCfg = Debug|x64
-		__LIB_PROJECT_GUID__.Debug|x64.Build.0 = Debug|x64
-		__LIB_PROJECT_GUID__.Debug|x86.ActiveCfg = Debug|x86
-		__LIB_PROJECT_GUID__.Debug|x86.Build.0 = Debug|x86
+		__LIB_PROJECT_GUID__.Debug|x64.ActiveCfg = Debug|Any CPU
+		__LIB_PROJECT_GUID__.Debug|x64.Build.0 = Debug|Any CPU
+		__LIB_PROJECT_GUID__.Debug|x86.ActiveCfg = Debug|Any CPU
+		__LIB_PROJECT_GUID__.Debug|x86.Build.0 = Debug|Any CPU
 		__LIB_PROJECT_GUID__.Release|Any CPU.ActiveCfg = Release|Any CPU
 		__LIB_PROJECT_GUID__.Release|Any CPU.Build.0 = Release|Any CPU
-		__LIB_PROJECT_GUID__.Release|x64.ActiveCfg = Release|x64
-		__LIB_PROJECT_GUID__.Release|x64.Build.0 = Release|x64
-		__LIB_PROJECT_GUID__.Release|x86.ActiveCfg = Release|x86
-		__LIB_PROJECT_GUID__.Release|x86.Build.0 = Release|x86
+		__LIB_PROJECT_GUID__.Release|x64.ActiveCfg = Release|Any CPU
+		__LIB_PROJECT_GUID__.Release|x64.Build.0 = Release|Any CPU
+		__LIB_PROJECT_GUID__.Release|x86.ActiveCfg = Release|Any CPU
+		__LIB_PROJECT_GUID__.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		__LIB_PROJECT_GUID__ = __SRC_FOLDER_GUID__
+	EndGlobalSection
+EndGlobal
+";
+
+        private const string ExpectedSlnFileAfterAddingProjectWithoutMatchingConfigs = @"
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26006.2
+MinimumVisualStudioVersion = 10.0.40219.1
+Project(""{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"") = ""ProjectWithoutMatchingConfigs"", ""ProjectWithoutMatchingConfigs\ProjectWithoutMatchingConfigs.csproj"", ""{C49B64DE-4401-4825-8A88-10DCB5950E57}""
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+		Foo Bar|Any CPU = Foo Bar|Any CPU
+		Foo Bar|x64 = Foo Bar|x64
+		Foo Bar|x86 = Foo Bar|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C49B64DE-4401-4825-8A88-10DCB5950E57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C49B64DE-4401-4825-8A88-10DCB5950E57}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C49B64DE-4401-4825-8A88-10DCB5950E57}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{C49B64DE-4401-4825-8A88-10DCB5950E57}.Debug|x64.Build.0 = Debug|Any CPU
+		{C49B64DE-4401-4825-8A88-10DCB5950E57}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C49B64DE-4401-4825-8A88-10DCB5950E57}.Debug|x86.Build.0 = Debug|Any CPU
+		{C49B64DE-4401-4825-8A88-10DCB5950E57}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C49B64DE-4401-4825-8A88-10DCB5950E57}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C49B64DE-4401-4825-8A88-10DCB5950E57}.Release|x64.ActiveCfg = Release|Any CPU
+		{C49B64DE-4401-4825-8A88-10DCB5950E57}.Release|x64.Build.0 = Release|Any CPU
+		{C49B64DE-4401-4825-8A88-10DCB5950E57}.Release|x86.ActiveCfg = Release|Any CPU
+		{C49B64DE-4401-4825-8A88-10DCB5950E57}.Release|x86.Build.0 = Release|Any CPU
+		{C49B64DE-4401-4825-8A88-10DCB5950E57}.Foo Bar|Any CPU.ActiveCfg = Debug|Any CPU
+		{C49B64DE-4401-4825-8A88-10DCB5950E57}.Foo Bar|Any CPU.Build.0 = Debug|Any CPU
+		{C49B64DE-4401-4825-8A88-10DCB5950E57}.Foo Bar|x64.ActiveCfg = Debug|Any CPU
+		{C49B64DE-4401-4825-8A88-10DCB5950E57}.Foo Bar|x64.Build.0 = Debug|Any CPU
+		{C49B64DE-4401-4825-8A88-10DCB5950E57}.Foo Bar|x86.ActiveCfg = Debug|Any CPU
+		{C49B64DE-4401-4825-8A88-10DCB5950E57}.Foo Bar|x86.Build.0 = Debug|Any CPU
+	EndGlobalSection
+EndGlobal
+";
+
+  private const string ExpectedSlnFileAfterAddingProjectWithMatchingConfigs = @"
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26006.2
+MinimumVisualStudioVersion = 10.0.40219.1
+Project(""{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"") = ""ProjectWithMatchingConfigs"", ""ProjectWithMatchingConfigs\ProjectWithMatchingConfigs.csproj"", ""{C9601CA2-DB64-4FB6-B463-368C7764BF0D}""
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+		Foo Bar|Any CPU = Foo Bar|Any CPU
+		Foo Bar|x64 = Foo Bar|x64
+		Foo Bar|x86 = Foo Bar|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C9601CA2-DB64-4FB6-B463-368C7764BF0D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C9601CA2-DB64-4FB6-B463-368C7764BF0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C9601CA2-DB64-4FB6-B463-368C7764BF0D}.Debug|x64.ActiveCfg = Debug|x64
+		{C9601CA2-DB64-4FB6-B463-368C7764BF0D}.Debug|x64.Build.0 = Debug|x64
+		{C9601CA2-DB64-4FB6-B463-368C7764BF0D}.Debug|x86.ActiveCfg = Debug|x86
+		{C9601CA2-DB64-4FB6-B463-368C7764BF0D}.Debug|x86.Build.0 = Debug|x86
+		{C9601CA2-DB64-4FB6-B463-368C7764BF0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C9601CA2-DB64-4FB6-B463-368C7764BF0D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C9601CA2-DB64-4FB6-B463-368C7764BF0D}.Release|x64.ActiveCfg = Release|x64
+		{C9601CA2-DB64-4FB6-B463-368C7764BF0D}.Release|x64.Build.0 = Release|x64
+		{C9601CA2-DB64-4FB6-B463-368C7764BF0D}.Release|x86.ActiveCfg = Release|x86
+		{C9601CA2-DB64-4FB6-B463-368C7764BF0D}.Release|x86.Build.0 = Release|x86
+		{C9601CA2-DB64-4FB6-B463-368C7764BF0D}.Foo Bar|Any CPU.ActiveCfg = FooBar|Any CPU
+		{C9601CA2-DB64-4FB6-B463-368C7764BF0D}.Foo Bar|Any CPU.Build.0 = FooBar|Any CPU
+		{C9601CA2-DB64-4FB6-B463-368C7764BF0D}.Foo Bar|x64.ActiveCfg = FooBar|x64
+		{C9601CA2-DB64-4FB6-B463-368C7764BF0D}.Foo Bar|x64.Build.0 = FooBar|x64
+		{C9601CA2-DB64-4FB6-B463-368C7764BF0D}.Foo Bar|x86.ActiveCfg = FooBar|x86
+		{C9601CA2-DB64-4FB6-B463-368C7764BF0D}.Foo Bar|x86.Build.0 = FooBar|x86
+	EndGlobalSection
+EndGlobal
+";
+
+    private const string ExpectedSlnFileAfterAddingProjectWithAdditionalConfigs = @"
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26006.2
+MinimumVisualStudioVersion = 10.0.40219.1
+Project(""{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"") = ""ProjectWithAdditionalConfigs"", ""ProjectWithAdditionalConfigs\ProjectWithAdditionalConfigs.csproj"", ""{A302325B-D680-4C0E-8680-7AE283981624}""
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+		Foo Bar|Any CPU = Foo Bar|Any CPU
+		Foo Bar|x64 = Foo Bar|x64
+		Foo Bar|x86 = Foo Bar|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A302325B-D680-4C0E-8680-7AE283981624}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A302325B-D680-4C0E-8680-7AE283981624}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A302325B-D680-4C0E-8680-7AE283981624}.Debug|x64.ActiveCfg = Debug|x64
+		{A302325B-D680-4C0E-8680-7AE283981624}.Debug|x64.Build.0 = Debug|x64
+		{A302325B-D680-4C0E-8680-7AE283981624}.Debug|x86.ActiveCfg = Debug|x86
+		{A302325B-D680-4C0E-8680-7AE283981624}.Debug|x86.Build.0 = Debug|x86
+		{A302325B-D680-4C0E-8680-7AE283981624}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A302325B-D680-4C0E-8680-7AE283981624}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A302325B-D680-4C0E-8680-7AE283981624}.Release|x64.ActiveCfg = Release|x64
+		{A302325B-D680-4C0E-8680-7AE283981624}.Release|x64.Build.0 = Release|x64
+		{A302325B-D680-4C0E-8680-7AE283981624}.Release|x86.ActiveCfg = Release|x86
+		{A302325B-D680-4C0E-8680-7AE283981624}.Release|x86.Build.0 = Release|x86
+		{A302325B-D680-4C0E-8680-7AE283981624}.Foo Bar|Any CPU.ActiveCfg = FooBar|Any CPU
+		{A302325B-D680-4C0E-8680-7AE283981624}.Foo Bar|Any CPU.Build.0 = FooBar|Any CPU
+		{A302325B-D680-4C0E-8680-7AE283981624}.Foo Bar|x64.ActiveCfg = FooBar|x64
+		{A302325B-D680-4C0E-8680-7AE283981624}.Foo Bar|x64.Build.0 = FooBar|x64
+		{A302325B-D680-4C0E-8680-7AE283981624}.Foo Bar|x86.ActiveCfg = FooBar|x86
+		{A302325B-D680-4C0E-8680-7AE283981624}.Foo Bar|x86.Build.0 = FooBar|x86
 	EndGlobalSection
 EndGlobal
 ";
@@ -183,7 +331,7 @@ EndGlobal
             var cmd = new DotnetCommand()
                 .ExecuteWithCapturedOutput($"sln add {helpArg}");
             cmd.Should().Pass();
-            cmd.StdOut.Should().BeVisuallyEquivalentTo(HelpText);
+            cmd.StdOut.Should().BeVisuallyEquivalentToIfNotLocalized(HelpText);
         }
 
         [Theory]
@@ -194,7 +342,8 @@ EndGlobal
             var cmd = new DotnetCommand()
                 .ExecuteWithCapturedOutput($"sln {commandName}");
             cmd.Should().Fail();
-            cmd.StdErr.Should().Be("Required command was not provided.");
+            cmd.StdErr.Should().Be(CommonLocalizableStrings.RequiredCommandNotPassed);
+            cmd.StdOut.Should().BeVisuallyEquivalentToIfNotLocalized(SlnCommandHelpText);
         }
 
         [Fact]
@@ -203,8 +352,9 @@ EndGlobal
             var cmd = new DotnetCommand()
                 .ExecuteWithCapturedOutput("sln one.sln two.sln three.sln add");
             cmd.Should().Fail();
-            cmd.StdErr.Should().Be("Unrecognized command or argument 'two.sln'");
-            cmd.StdOut.Should().Be("Specify --help for a list of available options and commands.");
+            cmd.StdErr.Should().BeVisuallyEquivalentTo($@"{string.Format(CommandLine.LocalizableStrings.UnrecognizedCommandOrArgument, "two.sln")}
+{string.Format(CommandLine.LocalizableStrings.UnrecognizedCommandOrArgument, "three.sln")}
+{CommonLocalizableStrings.SpecifyAtLeastOneProjectToAdd}");
         }
 
         [Theory]
@@ -218,8 +368,8 @@ EndGlobal
             var cmd = new DotnetCommand()
                 .ExecuteWithCapturedOutput($"sln {solutionName} add p.csproj");
             cmd.Should().Fail();
-            cmd.StdErr.Should().Be($"Could not find solution or directory `{solutionName}`.");
-            cmd.StdOut.Should().BeVisuallyEquivalentTo(HelpText);
+            cmd.StdErr.Should().Be(string.Format(CommonLocalizableStrings.CouldNotFindSolutionOrDirectory, solutionName));
+            cmd.StdOut.Should().BeVisuallyEquivalentToIfNotLocalized(HelpText);
         }
 
         [Fact]
@@ -237,8 +387,8 @@ EndGlobal
                 .WithWorkingDirectory(projectDirectory)
                 .ExecuteWithCapturedOutput($"sln InvalidSolution.sln add {projectToAdd}");
             cmd.Should().Fail();
-            cmd.StdErr.Should().Be("Invalid solution `InvalidSolution.sln`. Invalid format in line 1: File header is missing");
-            cmd.StdOut.Should().BeVisuallyEquivalentTo(HelpText);
+            cmd.StdErr.Should().Be(string.Format(CommonLocalizableStrings.InvalidSolutionFormatString, "InvalidSolution.sln", LocalizableStrings.FileHeaderMissingError));
+            cmd.StdOut.Should().BeVisuallyEquivalentToIfNotLocalized(HelpText);
         }
 
         [Fact]
@@ -257,8 +407,8 @@ EndGlobal
                 .WithWorkingDirectory(projectDirectory)
                 .ExecuteWithCapturedOutput($"sln add {projectToAdd}");
             cmd.Should().Fail();
-            cmd.StdErr.Should().Be($"Invalid solution `{solutionPath}`. Invalid format in line 1: File header is missing");
-            cmd.StdOut.Should().BeVisuallyEquivalentTo(HelpText);
+            cmd.StdErr.Should().Be(string.Format(CommonLocalizableStrings.InvalidSolutionFormatString, solutionPath, LocalizableStrings.FileHeaderMissingError));
+            cmd.StdOut.Should().BeVisuallyEquivalentToIfNotLocalized(HelpText);
         }
 
         [Fact]
@@ -275,14 +425,14 @@ EndGlobal
                 .WithWorkingDirectory(projectDirectory)
                 .ExecuteWithCapturedOutput(@"sln App.sln add");
             cmd.Should().Fail();
-            cmd.StdErr.Should().Be("You must specify at least one project to add.");
+            cmd.StdErr.Should().Be(CommonLocalizableStrings.SpecifyAtLeastOneProjectToAdd);
 
             _output.WriteLine("[STD OUT]");
             _output.WriteLine(cmd.StdOut);
             _output.WriteLine("[HelpText]");
             _output.WriteLine(HelpText);
 
-            cmd.StdOut.Should().BeVisuallyEquivalentTo(HelpText);
+            cmd.StdOut.Should().BeVisuallyEquivalentToIfNotLocalized(HelpText);
         }
 
         [Fact]
@@ -300,8 +450,8 @@ EndGlobal
                 .WithWorkingDirectory(solutionPath)
                 .ExecuteWithCapturedOutput(@"sln add App.csproj");
             cmd.Should().Fail();
-            cmd.StdErr.Should().Be($"Specified solution file {solutionPath + Path.DirectorySeparatorChar} does not exist, or there is no solution file in the directory.");
-            cmd.StdOut.Should().BeVisuallyEquivalentTo(HelpText);
+            cmd.StdErr.Should().Be(string.Format(CommonLocalizableStrings.SolutionDoesNotExist, solutionPath + Path.DirectorySeparatorChar));
+            cmd.StdOut.Should().BeVisuallyEquivalentToIfNotLocalized(HelpText);
         }
 
         [Fact]
@@ -319,8 +469,8 @@ EndGlobal
                 .WithWorkingDirectory(projectDirectory)
                 .ExecuteWithCapturedOutput($"sln add {projectToAdd}");
             cmd.Should().Fail();
-            cmd.StdErr.Should().Be($"Found more than one solution file in {projectDirectory + Path.DirectorySeparatorChar}. Please specify which one to use.");
-            cmd.StdOut.Should().BeVisuallyEquivalentTo(HelpText);
+            cmd.StdErr.Should().Be(string.Format(CommonLocalizableStrings.MoreThanOneSolutionInDirectory, projectDirectory + Path.DirectorySeparatorChar));
+            cmd.StdOut.Should().BeVisuallyEquivalentToIfNotLocalized(HelpText);
         }
 
         [Fact]
@@ -343,6 +493,81 @@ EndGlobal
             var expectedSlnContents = GetExpectedSlnContents(slnPath, ExpectedSlnFileAfterAddingNestedProj);
             File.ReadAllText(slnPath)
                 .Should().BeVisuallyEquivalentTo(expectedSlnContents);
+        }
+
+        [Fact]
+        public void WhenDirectoryContainingProjectIsGivenProjectIsAdded()
+        {
+            var projectDirectory = TestAssets
+                .Get("TestAppWithSlnAndCsprojFiles")
+                .CreateInstance()
+                .WithSourceFiles()
+                .Root
+                .FullName;
+
+            var cmd = new DotnetCommand()
+                .WithWorkingDirectory(projectDirectory)
+                .ExecuteWithCapturedOutput("sln add Lib");
+            cmd.Should().Pass();
+
+            var slnPath = Path.Combine(projectDirectory, "App.sln");
+            var expectedSlnContents = GetExpectedSlnContents(slnPath, ExpectedSlnFileAfterAddingLibProj);
+            File.ReadAllText(slnPath)
+                .Should().BeVisuallyEquivalentTo(expectedSlnContents);
+        }
+
+        [Fact]
+        public void WhenDirectoryContainsNoProjectsItCancelsWholeOperation()
+        {
+            var projectDirectory = TestAssets
+                .Get("TestAppWithSlnAndCsprojFiles")
+                .CreateInstance()
+                .WithSourceFiles()
+                .Root
+                .FullName;
+
+            var slnFullPath = Path.Combine(projectDirectory, "App.sln");
+            var contentBefore = File.ReadAllText(slnFullPath);
+            var directoryToAdd = "Empty";
+
+            var cmd = new DotnetCommand()
+                .WithWorkingDirectory(projectDirectory)
+                .ExecuteWithCapturedOutput($"sln add {directoryToAdd}");
+            cmd.Should().Fail();
+            cmd.StdErr.Should().Be(
+                string.Format(
+                    CommonLocalizableStrings.CouldNotFindAnyProjectInDirectory,
+                    Path.Combine(projectDirectory, directoryToAdd)));
+
+            File.ReadAllText(slnFullPath)
+                .Should().BeVisuallyEquivalentTo(contentBefore);
+        }
+
+        [Fact]
+        public void WhenDirectoryContainsMultipleProjectsItCancelsWholeOperation()
+        {
+            var projectDirectory = TestAssets
+                .Get("TestAppWithSlnAndCsprojFiles")
+                .CreateInstance()
+                .WithSourceFiles()
+                .Root
+                .FullName;
+
+            var slnFullPath = Path.Combine(projectDirectory, "App.sln");
+            var contentBefore = File.ReadAllText(slnFullPath);
+            var directoryToAdd = "Multiple";
+
+            var cmd = new DotnetCommand()
+                .WithWorkingDirectory(projectDirectory)
+                .ExecuteWithCapturedOutput($"sln add {directoryToAdd}");
+            cmd.Should().Fail();
+            cmd.StdErr.Should().Be(
+                string.Format(
+                    CommonLocalizableStrings.MoreThanOneProjectInDirectory,
+                    Path.Combine(projectDirectory, directoryToAdd)));
+
+            File.ReadAllText(slnFullPath)
+                .Should().BeVisuallyEquivalentTo(contentBefore);
         }
 
         [Fact]
@@ -461,8 +686,64 @@ EndGlobal
                 .WithWorkingDirectory(projectDirectory)
                 .ExecuteWithCapturedOutput($"sln App.sln add {projectToAdd}");
             cmd.Should().Pass();
-            cmd.StdOut.Should().Be($"Project `{projectPath}` added to the solution.");
+            cmd.StdOut.Should().Be(string.Format(CommonLocalizableStrings.ProjectAddedToTheSolution, projectPath));
             cmd.StdErr.Should().BeEmpty();
+        }
+
+        [Fact]
+        public void WhenProjectIsAddedSolutionHasUTF8BOM()
+        {
+            var projectDirectory = TestAssets
+                .Get("TestAppWithEmptySln")
+                .CreateInstance()
+                .WithSourceFiles()
+                .Root
+                .FullName;
+
+            var projectToAdd = "Lib/Lib.csproj";
+            var projectPath = Path.Combine("Lib", "Lib.csproj");
+            var cmd = new DotnetCommand()
+                .WithWorkingDirectory(projectDirectory)
+                .ExecuteWithCapturedOutput($"sln App.sln add {projectToAdd}");
+            cmd.Should().Pass();
+
+            var preamble = Encoding.UTF8.GetPreamble();
+            preamble.Length.Should().Be(3);
+            using (var stream = new FileStream(Path.Combine(projectDirectory, "App.sln"), FileMode.Open))
+            {
+                var bytes = new byte[preamble.Length];
+                stream.Read(bytes, 0, bytes.Length);
+                bytes.Should().BeEquivalentTo(preamble);
+            }
+        }
+
+        [Theory]
+        [InlineData("TestAppWithSlnAndCsprojFiles")]
+        [InlineData("TestAppWithSlnAndCsprojProjectGuidFiles")]
+        [InlineData("TestAppWithEmptySln")]
+        public void WhenInvalidProjectIsPassedItDoesNotGetAdded(string testAsset)
+        {
+            var projectDirectory = TestAssets
+                .Get(testAsset)
+                .CreateInstance()
+                .WithSourceFiles()
+                .Root
+                .FullName;
+
+            var projectToAdd = "Lib/Library.cs";
+            var projectPath = Path.Combine("Lib", "Library.cs");
+            var slnFile = SlnFile.Read(Path.Combine(projectDirectory, "App.sln"));
+            var expectedNumberOfProjects = slnFile.Projects.Count();
+
+            var cmd = new DotnetCommand()
+                .WithWorkingDirectory(projectDirectory)
+                .ExecuteWithCapturedOutput($"sln App.sln add {projectToAdd}");
+            cmd.Should().Pass();
+            cmd.StdOut.Should().BeEmpty();
+            cmd.StdErr.Should().Match(string.Format(CommonLocalizableStrings.InvalidProjectWithExceptionMessage, '*', '*'));
+
+            slnFile = SlnFile.Read(Path.Combine(projectDirectory, "App.sln"));
+            slnFile.Projects.Count().Should().Be(expectedNumberOfProjects);
         }
 
         [Theory]
@@ -532,7 +813,7 @@ EndGlobal
                 .WithWorkingDirectory(projectDirectory)
                 .ExecuteWithCapturedOutput($"sln App.sln add {projectToAdd}");
             cmd.Should().Pass();
-            cmd.StdOut.Should().Be($"Solution {solutionPath} already contains project {projectToAdd}.");
+            cmd.StdOut.Should().Be(string.Format(CommonLocalizableStrings.SolutionAlreadyContainsProject, solutionPath, projectToAdd));
             cmd.StdErr.Should().BeEmpty();
         }
 
@@ -554,7 +835,7 @@ EndGlobal
                 .WithWorkingDirectory(projectDirectory)
                 .ExecuteWithCapturedOutput($"sln App.sln add {projectToAdd} idonotexist.csproj");
             cmd.Should().Fail();
-            cmd.StdErr.Should().Be("Project `idonotexist.csproj` does not exist.");
+            cmd.StdErr.Should().Be(string.Format(CommonLocalizableStrings.CouldNotFindProjectOrDirectory, "idonotexist.csproj"));
 
             File.ReadAllText(slnFullPath)
                 .Should().BeVisuallyEquivalentTo(contentBefore);
@@ -586,10 +867,9 @@ EndGlobal
         }
 
         [Theory]
-        //ISSUE: https://github.com/dotnet/sdk/issues/522
-        //[InlineData("SlnFileWithNoProjectReferencesAndCSharpProject", "CSharpProject", "CSharpProject.csproj", ProjectTypeGuids.CSharpProjectTypeGuid)]
-        //[InlineData("SlnFileWithNoProjectReferencesAndFSharpProject", "FSharpProject", "FSharpProject.fsproj", "{F2A71F9B-5D33-465A-A702-920D77279786}")]
-        //[InlineData("SlnFileWithNoProjectReferencesAndVBProject", "VBProject", "VBProject.vbproj", "{F184B08F-C81C-45F6-A57F-5ABD9991F28F}")]
+        [InlineData("SlnFileWithNoProjectReferencesAndCSharpProject", "CSharpProject", "CSharpProject.csproj", ProjectTypeGuids.CSharpProjectTypeGuid)]
+        [InlineData("SlnFileWithNoProjectReferencesAndFSharpProject", "FSharpProject", "FSharpProject.fsproj", ProjectTypeGuids.FSharpProjectTypeGuid)]
+        [InlineData("SlnFileWithNoProjectReferencesAndVBProject", "VBProject", "VBProject.vbproj", ProjectTypeGuids.VBProjectTypeGuid)]
         [InlineData("SlnFileWithNoProjectReferencesAndUnknownProjectWithSingleProjectTypeGuid", "UnknownProject", "UnknownProject.unknownproj", "{130159A9-F047-44B3-88CF-0CF7F02ED50F}")]
         [InlineData("SlnFileWithNoProjectReferencesAndUnknownProjectWithMultipleProjectTypeGuids", "UnknownProject", "UnknownProject.unknownproj", "{130159A9-F047-44B3-88CF-0CF7F02ED50F}")]
         public void WhenPassedAProjectItAddsCorrectProjectTypeGuid(
@@ -610,14 +890,43 @@ EndGlobal
                 .WithWorkingDirectory(projectDirectory)
                 .ExecuteWithCapturedOutput($"sln App.sln add {projectToAdd}");
             cmd.Should().Pass();
-            cmd.StdOut.Should().Be($"Project `{projectToAdd}` added to the solution.");
             cmd.StdErr.Should().BeEmpty();
+            cmd.StdOut.Should().Be(string.Format(CommonLocalizableStrings.ProjectAddedToTheSolution, projectToAdd));
 
             var slnFile = SlnFile.Read(Path.Combine(projectDirectory, "App.sln"));
             var nonSolutionFolderProjects = slnFile.Projects.Where(
                 p => p.TypeGuid != ProjectTypeGuids.SolutionFolderGuid);
             nonSolutionFolderProjects.Count().Should().Be(1);
             nonSolutionFolderProjects.Single().TypeGuid.Should().Be(expectedTypeGuid);
+        }
+
+        [Fact]
+        public void WhenPassedAProjectWithoutATypeGuidItErrors()
+        {
+            var solutionDirectory = TestAssets
+                .Get("SlnFileWithNoProjectReferencesAndUnknownProjectType")
+                .CreateInstance()
+                .WithSourceFiles()
+                .Root
+                .FullName;
+
+            var solutionPath = Path.Combine(solutionDirectory, "App.sln");
+            var contentBefore = File.ReadAllText(solutionPath);
+
+            var projectToAdd = Path.Combine("UnknownProject", "UnknownProject.unknownproj");
+            var cmd = new DotnetCommand()
+                .WithWorkingDirectory(solutionDirectory)
+                .ExecuteWithCapturedOutput($"sln add {projectToAdd}");
+            cmd.Should().Pass();
+            cmd.StdErr.Should().Be(
+                string.Format(
+                    CommonLocalizableStrings.UnsupportedProjectType,
+                    Path.Combine(solutionDirectory, projectToAdd)));
+            cmd.StdOut.Should().BeEmpty();
+
+            File.ReadAllText(solutionPath)
+                .Should()
+                .BeVisuallyEquivalentTo(contentBefore);
         }
 
         [Fact]
@@ -640,6 +949,69 @@ EndGlobal
             var solutionFolderProjects = slnFile.Projects.Where(
                 p => p.TypeGuid == ProjectTypeGuids.SolutionFolderGuid);
             solutionFolderProjects.Count().Should().Be(1);
+        }
+
+        [Fact]
+        public void WhenProjectWithoutMatchingConfigurationsIsAddedSolutionMapsToFirstAvailable()
+        {
+            var slnDirectory = TestAssets
+                .Get("TestAppWithSlnAndProjectConfigs")
+                .CreateInstance()
+                .WithSourceFiles()
+                .Root
+                .FullName;
+
+            var slnFullPath = Path.Combine(slnDirectory, "App.sln");
+
+            var result = new DotnetCommand()
+                .WithWorkingDirectory(slnDirectory)
+                .ExecuteWithCapturedOutput($"sln add ProjectWithoutMatchingConfigs");
+            result.Should().Pass();
+
+            File.ReadAllText(slnFullPath)
+                .Should().BeVisuallyEquivalentTo(ExpectedSlnFileAfterAddingProjectWithoutMatchingConfigs);
+        }
+
+        [Fact]
+        public void WhenProjectWithMatchingConfigurationsIsAddedSolutionMapsAll()
+        {
+            var slnDirectory = TestAssets
+                .Get("TestAppWithSlnAndProjectConfigs")
+                .CreateInstance()
+                .WithSourceFiles()
+                .Root
+                .FullName;
+
+            var slnFullPath = Path.Combine(slnDirectory, "App.sln");
+
+            var result = new DotnetCommand()
+                .WithWorkingDirectory(slnDirectory)
+                .ExecuteWithCapturedOutput($"sln add ProjectWithMatchingConfigs");
+            result.Should().Pass();
+
+            File.ReadAllText(slnFullPath)
+                .Should().BeVisuallyEquivalentTo(ExpectedSlnFileAfterAddingProjectWithMatchingConfigs);
+        }
+
+        [Fact]
+        public void WhenProjectWithAdditionalConfigurationsIsAddedSolutionDoesNotMapThem()
+        {
+            var slnDirectory = TestAssets
+                .Get("TestAppWithSlnAndProjectConfigs")
+                .CreateInstance()
+                .WithSourceFiles()
+                .Root
+                .FullName;
+
+            var slnFullPath = Path.Combine(slnDirectory, "App.sln");
+
+            var result = new DotnetCommand()
+                .WithWorkingDirectory(slnDirectory)
+                .ExecuteWithCapturedOutput($"sln add ProjectWithAdditionalConfigs");
+            result.Should().Pass();
+
+            File.ReadAllText(slnFullPath)
+                .Should().BeVisuallyEquivalentTo(ExpectedSlnFileAfterAddingProjectWithAdditionalConfigs);
         }
 
         private string GetExpectedSlnContents(

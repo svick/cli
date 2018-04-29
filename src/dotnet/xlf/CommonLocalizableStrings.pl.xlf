@@ -1,8 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.2" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 xliff-core-1.2-transitional.xsd">
-  <file datatype="xml" source-language="en" target-language="pl" original="src/dotnet/CommonLocalizableStrings.resx">
+  <file datatype="xml" source-language="en" target-language="pl" original="../CommonLocalizableStrings.resx">
     <body>
-      <group id="src/dotnet/CommonLocalizableStrings.resx" />
       <trans-unit id="CouldNotFindAnyProjectInDirectory">
         <source>Could not find any project in `{0}`.</source>
         <target state="translated">Nie można odnaleźć żadnego projektu w lokalizacji „{0}”.</target>
@@ -96,11 +95,6 @@
       <trans-unit id="Application">
         <source>Application</source>
         <target state="translated">Aplikacja</target>
-        <note />
-      </trans-unit>
-      <trans-unit id="ReferenceDoesNotExist">
-        <source>Reference {0} does not exist.</source>
-        <target state="translated">Odwołanie {0} nie istnieje.</target>
         <note />
       </trans-unit>
       <trans-unit id="ReferenceAddedToTheProject">
@@ -368,11 +362,6 @@
         <target state="translated">Musisz określić co najmniej jedno odwołanie do dodania.</target>
         <note />
       </trans-unit>
-      <trans-unit id="ProjectAlreadyHasAReference">
-        <source>Project {0} already has a reference `{1}`.</source>
-        <target state="translated">Projekt {0} zawiera już odwołanie „{1}”.</target>
-        <note />
-      </trans-unit>
       <trans-unit id="PackageReferenceDoesNotExist">
         <source>Package reference `{0}` does not exist.</source>
         <target state="translated">Odwołanie do pakietu „{0}” nie istnieje.</target>
@@ -605,19 +594,19 @@
       </trans-unit>
       <trans-unit id="ProjectCouldNotBeEvaluated">
         <source>Project `{0}` could not be evaluated. Evaluation failed with following error:
-{1}</source>
+{1}.</source>
         <target state="translated">Nie można ocenić projektu „{0}”. Ocena nie powiodła się z powodu następującego błędu:
-{1}</target>
+{1}.</target>
         <note />
       </trans-unit>
       <trans-unit id="UnsupportedProjectType">
-        <source>Unsupported project type. Please check with your sdk provider.</source>
-        <target state="translated">Nieobsługiwany typ projektu. Skontaktuj się z dostawcą zestawu SDK.</target>
+        <source>Project '{0}' has an unknown project type and cannot be added to the solution file. Please contact your SDK provider for support.</source>
+        <target state="translated">Projekt „{0}” ma nieznany typ projektu i nie można go dodać do pliku rozwiązania. Skontaktuj się z dostawcą zestawu SDK w celu uzyskania pomocy technicznej.</target>
         <note />
       </trans-unit>
       <trans-unit id="InvalidSolutionFormatString">
-        <source>Invalid solution `{0}`. {1}</source>
-        <target state="translated">Nieprawidłowe rozwiązanie „{0}”. {1}</target>
+        <source>Invalid solution `{0}`. {1}.</source>
+        <target state="translated">Nieprawidłowe rozwiązanie „{0}”. {1}.</target>
         <note />
       </trans-unit>
       <trans-unit id="ArgumentsProjectDescription">
@@ -631,13 +620,277 @@
         <note />
       </trans-unit>
       <trans-unit id="CmdSlnFile">
-        <source>&lt;SLN_FILE&gt;</source>
-        <target state="translated">&lt;PLIK_SLN&gt;</target>
+        <source>SLN_FILE</source>
+        <target state="translated">PLIK_SLN</target>
         <note />
       </trans-unit>
       <trans-unit id="CmdProjectFile">
-        <source>&lt;PROJECT&gt;</source>
-        <target state="translated">&lt;PROJEKT&gt;</target>
+        <source>PROJECT</source>
+        <target state="translated">PROJEKT</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="InvalidProjectWithExceptionMessage">
+        <source>Invalid project `{0}`. {1}.</source>
+        <target state="translated">Nieprawidłowy projekt „{0}”. {1}.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="VerbosityOptionDescription">
+        <source>Set the verbosity level of the command. Allowed values are q[uiet], m[inimal], n[ormal], d[etailed], and diag[nostic].</source>
+        <target state="translated">Ustaw poziom szczegółowości polecenia. Dopuszczalne wartości to: q[uiet], m[inimal], n[ormal], d[etailed] i diag[nostic].</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="FrameworkOptionDescription">
+        <source>Target framework to publish for. The target framework has to be specified in the project file.</source>
+        <target state="translated">Docelowa platforma publikacji. Platforma docelowa musi być określona w pliku projektu.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="RuntimeOptionDescription">
+        <source>Publish the project for a given runtime. This is used when creating self-contained deployment. Default is to publish a framework-dependent app.</source>
+        <target state="translated">Opublikuj projekt dla danego środowiska uruchomieniowego. Ustawienie stosowane w przypadku tworzenia wdrożenia autonomicznego. Ustawieniem domyślnym jest opublikowanie aplikacji zależnej od platformy.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ConfigurationOptionDescription">
+        <source>Configuration to use for building the project.  Default for most projects is  "Debug".</source>
+        <target state="translated">Konfiguracja do użycia na potrzeby kompilacji projektu. W przypadku większości projektów ustawienie domyślne to „Debugowanie”.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="CmdVersionSuffixDescription">
+        <source>Defines the value for the $(VersionSuffix) property in the project.</source>
+        <target state="translated">Określa wartość właściwości $(VersionSuffix) w projekcie.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ShowHelpDescription">
+        <source>Show help information.</source>
+        <target state="translated">Wyświetl informacje pomocy.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="NoRestoreDescription">
+        <source>Does not do an implicit restore when executing the command.</source>
+        <target state="translated">Nie wykonuje niejawnego przywracania podczas wykonywania polecenia.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ProjectRemovedFromTheSolution">
+        <source>Project `{0}` removed from the solution.</source>
+        <target state="translated">Projekt „{0}” został skasowany z rozwiązania.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ToolSettingsInvalidXml">
+        <source>Invalid XML: {0}</source>
+        <target state="translated">Nieprawidłowy kod XML: {0}</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="EnvironmentPathLinuxNeedLogout">
+        <source>Since you just installed the .NET Core SDK, you will need to logout or restart your session before running the tool you installed.</source>
+        <target state="translated">Właśnie zainstalowano zestaw .NET Core SDK, dlatego należy wylogować się lub uruchomić ponownie sesję przed uruchomieniem zainstalowanego narzędzia.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="EnvironmentPathOSXNeedReopen">
+        <source>Since you just installed the .NET Core SDK, you will need to reopen terminal before running the tool you installed.</source>
+        <target state="translated">Właśnie zainstalowano zestaw .NET Core SDK, dlatego należy ponownie otworzyć terminal przed uruchomieniem zainstalowanego narzędzia.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="EnvironmentPathWindowsNeedReopen">
+        <source>Since you just installed the .NET Core SDK, you will need to reopen the Command Prompt window before running the tool you installed.</source>
+        <target state="translated">Właśnie zainstalowano zestaw .NET Core SDK, dlatego należy ponownie otworzyć okno wiersza polecenia przed uruchomieniem zainstalowanego narzędzia.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ToolSettingsMissingCommandName">
+        <source>Tool defines a command with a missing name setting.</source>
+        <target state="translated">Narzędzie definiuje polecenie z brakującym ustawieniem nazwy.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ToolSettingsMissingEntryPoint">
+        <source>Command '{0}' is missing an entry point setting.</source>
+        <target state="translated">W poleceniu „{0}” brakuje ustawienia punktu wejścia.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ToolSettingsInvalidCommandName">
+        <source>Command '{0}' contains one or more of the following invalid characters: {1}.</source>
+        <target state="translated">Polecenie „{0}” zawiera co najmniej jeden nieprawidłowy znak: {1}.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ToolSettingsMoreThanOneCommand">
+        <source>More than one command is defined for the tool.</source>
+        <target state="translated">Dla narzędzia zdefiniowano więcej niż jedno polecenie.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ToolSettingsUnsupportedRunner">
+        <source>Command '{0}' uses unsupported runner '{1}'."</source>
+        <target state="translated">Polecenie „{0}” używa nieobsługiwanego modułu uruchamiającego „{1}”.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ToolPackageConflictPackageId">
+        <source>Tool '{0}' (version '{1}') is already installed.</source>
+        <target state="translated">Narzędzie „{0}” (wersja: „{1}”) jest już zainstalowane.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ShellShimConflict">
+        <source>Command '{0}' conflicts with an existing command from another tool.</source>
+        <target state="translated">Wystąpił konflikt między poleceniem „{0}” i istniejącym poleceniem z innego narzędzia.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="CannotCreateShimForEmptyExecutablePath">
+        <source>Cannot create shell shim for an empty executable path.</source>
+        <target state="translated">Nie można utworzyć podkładki powłoki dla pustej ścieżki pliku wykonywalnego.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="CannotCreateShimForEmptyCommand">
+        <source>Cannot create shell shim for an empty command.</source>
+        <target state="translated">Nie można utworzyć podkładki powłoki dla pustego polecenia.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="FailedToRetrieveToolConfiguration">
+        <source>Failed to retrieve tool configuration: {0}</source>
+        <target state="translated">Nie można pobrać konfiguracji narzędzia: {0}</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="EnvironmentPathLinuxManualInstructions">
+        <source>Tools directory '{0}' is not currently on the PATH environment variable.
+If you are using bash, you can add it to your profile by running the following command:
+
+cat &lt;&lt; \EOF &gt;&gt; ~/.bash_profile
+# Add .NET Core SDK tools
+export PATH="$PATH:{0}"
+EOF
+
+You can add it to the current session by running the following command:
+
+export PATH="$PATH:{0}"
+</source>
+        <target state="translated">Katalogu narzędzi „{0}” nie ma obecnie w zmiennej środowiskowej PATH.
+Jeśli używasz powłoki bash, możesz dodać go do profilu przez uruchomienie następującego polecenia:
+
+cat &lt;&lt; \EOF &gt;&gt; ~/.bash_profile
+# Add .NET Core SDK tools
+export PATH="$PATH:{0}"
+EOF
+
+Możesz dodać go do bieżącej sesji przez uruchomienie następującego polecenia:
+
+export PATH="$PATH:{0}"
+</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="EnvironmentPathOSXManualInstructions">
+        <source>Tools directory '{0}' is not currently on the PATH environment variable.
+If you are using bash, you can add it to your profile by running the following command:
+
+cat &lt;&lt; \EOF &gt;&gt; ~/.bash_profile
+# Add .NET Core SDK tools
+export PATH="$PATH:{0}"
+EOF
+
+You can add it to the current session by running the following command:
+
+export PATH="$PATH:{0}"
+</source>
+        <target state="translated">Katalogu narzędzi „{0}” nie ma obecnie w zmiennej środowiskowej PATH.
+Jeśli używasz powłoki bash, możesz dodać go do profilu przez uruchomienie następującego polecenia:
+
+cat &lt;&lt; \EOF &gt;&gt; ~/.bash_profile
+# Add .NET Core SDK tools
+export PATH="$PATH:{0}"
+EOF
+
+Możesz dodać go do bieżącej sesji przez uruchomienie następującego polecenia:
+
+export PATH="$PATH:{0}"
+</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="EnvironmentPathWindowsManualInstructions">
+        <source>Tools directory '{0}' is not currently on the PATH environment variable.
+
+You can add the directory to the PATH by running the following command:
+
+setx PATH "%PATH%;{0}"
+</source>
+        <target state="translated">Katalogu narzędzi „{0}” nie ma obecnie w zmiennej środowiskowej PATH.
+
+Możesz dodać katalog do zmiennej PATH przez uruchomienie następującego polecenia:
+
+setx PATH "%PATH%;{0}"
+</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="FailedToCreateShellShim">
+        <source>Failed to create tool shim for command '{0}': {1}</source>
+        <target state="translated">Nie można utworzyć podkładki narzędzia dla polecenia „{0}”: {1}</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="FailedToRemoveShellShim">
+        <source>Failed to remove tool shim for command '{0}': {1}</source>
+        <target state="translated">Nie można usunąć podkładki narzędzia dla polecenia „{0}”: {1}</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="FailedSettingShimPermissions">
+        <source>Failed to set user executable permissions for shell shim: {0}</source>
+        <target state="translated">Nie można ustawić uprawnień pliku wykonywalnego użytkownika dla podkładki powłoki: {0}</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="FailedToInstallToolPackage">
+        <source>Failed to install tool package '{0}': {1}</source>
+        <target state="translated">Nie można zainstalować pakietu narzędzia „{0}”: {1}</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="FailedToUninstallToolPackage">
+        <source>Failed to uninstall tool package '{0}': {1}</source>
+        <target state="translated">Nie można odinstalować pakietu narzędzia „{0}”: {1}</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ColumnMaxWidthMustBeGreaterThanZero">
+        <source>Column maximum width must be greater than zero.</source>
+        <target state="translated">Maksymalna szerokość kolumny musi być większa niż zero.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="MissingToolEntryPointFile">
+        <source>Entry point file '{0}' for command '{1}' was not found in the package.</source>
+        <target state="translated">Nie znaleziono pliku punktu wejścia „{0}” polecenia „{1}” w pakiecie.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="MissingToolSettingsFile">
+        <source>Settings file 'DotnetToolSettings.xml' was not found in the package.</source>
+        <target state="translated">Nie znaleziono pliku ustawień „DotnetToolSettings.xml” w pakiecie.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="FailedToFindStagedToolPackage">
+        <source>Failed to find staged tool package '{0}'.</source>
+        <target state="translated">Nie można odnaleźć etapowego pakietu narzędzia „{0}”.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ToolSettingsInvalidLeadingDotCommandName">
+        <source>The command name '{0}' cannot begin with a leading dot (.).</source>
+        <target state="translated">Nazwa polecenia „{0}” nie może zaczynać się od kropki (.).</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="FormatVersionIsHigher">
+        <source>Format version is higher than supported. This tool may not be supported in this SDK version. Please update your SDK.</source>
+        <target state="new">Format version is higher than supported. This tool may not be supported in this SDK version. Please update your SDK.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="FormatVersionIsMalformed">
+        <source>Format version is malformed. This tool may not be supported in this SDK version. Please contact the author of the tool.</source>
+        <target state="new">Format version is malformed. This tool may not be supported in this SDK version. Please contact the author of the tool.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="FormatVersionIsMissing">
+        <source>Format version is missing. This tool may not be supported in this SDK version. Please contact the author of the tool.</source>
+        <target state="new">Format version is missing. This tool may not be supported in this SDK version. Please contact the author of the tool.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="FailedToSetToolsPathEnvironmentVariable">
+        <source>Failed to add '{0}' to the PATH environment variable. Please add this directory to your PATH to use tools installed with 'dotnet tool install'.</source>
+        <target state="new">Failed to add '{0}' to the PATH environment variable. Please add this directory to your PATH to use tools installed with 'dotnet tool install'.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="MoreThanOnePackagedShimAvailable">
+        <source>More than one packaged shim is available: {0}.</source>
+        <target state="new">More than one packaged shim is available: {0}.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="FailedToReadNuGetLockFile">
+        <source>Failed to read NuGet LockFile for tool package '{0}': {1}</source>
+        <target state="new">Failed to read NuGet LockFile for tool package '{0}': {1}</target>
         <note />
       </trans-unit>
     </body>

@@ -9,11 +9,11 @@ param(
 
 if($Help)
 {
-    Write-Host "Usage: .\update-dependencies.ps1"
-    Write-Host ""
-    Write-Host "Options:"
-    Write-Host "  -Help                 Display this help message"
-    Write-Host "  -Update               Update dependencies (but don't open a PR)"
+    Write-Output "Usage: .\update-dependencies.ps1"
+    Write-Output ""
+    Write-Output "Options:"
+    Write-Output "  -Help                 Display this help message"
+    Write-Output "  -Update               Update dependencies (but don't open a PR)"
     exit 0
 }
 
@@ -34,25 +34,17 @@ if (!$env:DOTNET_INSTALL_DIR)
     $env:DOTNET_INSTALL_DIR="$RepoRoot\.dotnet_stage0\$Architecture"
 }
 
+$env:DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
+
 # Install a stage 0
-Write-Host "Installing .NET Core CLI Stage 0"
+Write-Output "Installing .NET Core CLI Stage 0"
 & "$RepoRoot\scripts\obtain\dotnet-install.ps1" -Channel "master" -Architecture $Architecture
 if($LASTEXITCODE -ne 0) { throw "Failed to install stage0" }
 
 # Put the stage0 on the path
 $env:PATH = "$env:DOTNET_INSTALL_DIR;$env:PATH"
 
-# Generate some props files that are imported by update-dependencies
-Write-Host "Generating property files..."
-dotnet msbuild $RepoRoot\build.proj /p:Architecture=$Architecture /p:GeneratePropsFile=true /t:WriteDynamicPropsToStaticPropsFiles
-if($LASTEXITCODE -ne 0) { throw "Failed to generate intermidates" }
-
-# Restore the app
-Write-Host "Restoring $ProjectPath..."
-dotnet restore "$ProjectPath"
-if($LASTEXITCODE -ne 0) { throw "Failed to restore" }
-
 # Run the app
-Write-Host "Invoking App $ProjectPath..."
+Write-Output "Invoking App $ProjectPath..."
 dotnet run -p "$ProjectPath" "$ProjectArgs"
 if($LASTEXITCODE -ne 0) { throw "Build failed" }

@@ -16,20 +16,36 @@ param(
 
 if($Help)
 {
-    Write-Host "Usage: .\build.ps1 [-Configuration <CONFIGURATION>] [-Architecture <ARCHITECTURE>] [-NoPackage] [-Help]"
-    Write-Host ""
-    Write-Host "Options:"
-    Write-Host "  -Configuration <CONFIGURATION>     Build the specified Configuration (Debug or Release, default: Debug)"
-    Write-Host "  -Architecture <ARCHITECTURE>       Build the specified architecture (x64 or x86 (supported only on Windows), default: x64)"
-    Write-Host "  -NoPackage                         Skip packaging targets"
-    Write-Host "  -NoBuild                           Skip building the product"
-    Write-Host "  -Help                              Display this help message"
+    Write-Output "Usage: .\run-build.ps1 [-Configuration <CONFIGURATION>] [-Architecture <ARCHITECTURE>] [-NoPackage] [-NoBuild] [-Help]"
+    Write-Output ""
+    Write-Output "Options:"
+    Write-Output "  -Configuration <CONFIGURATION>     Build the specified Configuration (Debug or Release, default: Debug)"
+    Write-Output "  -Architecture <ARCHITECTURE>       Build the specified architecture (x64, x86, arm, or arm64 , default: x64)"
+    Write-Output "  -NoPackage                         Skip packaging targets"
+    Write-Output "  -NoBuild                           Skip building the product"
+    Write-Output "  -Help                              Display this help message"
     exit 0
+}
+
+# The first 'pass' call to "dotnet msbuild build.proj" has a hard-coded "WriteDynamicPropsToStaticPropsFiles" target
+#    therefore, this call should not have other targets defined. Remove all targets passed in as 'extra parameters'.
+if ($ExtraParameters)
+{
+    $ExtraParametersNoTargets = $ExtraParameters.GetRange(0,$ExtraParameters.Count)
+    foreach ($param in $ExtraParameters)
+    {
+        if(($param.StartsWith("/t:", [StringComparison]::OrdinalIgnoreCase)) -or ($param.StartsWith("/target:", [StringComparison]::OrdinalIgnoreCase)))
+        {
+            $ExtraParametersNoTargets.Remove("$param") | Out-Null
+        }
+    }
 }
 
 $env:CONFIGURATION = $Configuration;
 $RepoRoot = "$PSScriptRoot"
-$env:NUGET_PACKAGES = "$RepoRoot\.nuget\packages"
+if(!$env:NUGET_PACKAGES){
+  $env:NUGET_PACKAGES = "$RepoRoot\.nuget\packages"
+}
 
 if($NoPackage)
 {
@@ -40,18 +56,7 @@ else
     $env:DOTNET_BUILD_SKIP_PACKAGING=0
 }
 
-# Use a repo-local install directory (but not the artifacts directory because that gets cleaned a lot
-if (!$env:DOTNET_INSTALL_DIR_PJ)
-{
-    $env:DOTNET_INSTALL_DIR_PJ="$RepoRoot\.dotnet_stage0PJ\$Architecture"
-}
-
-if (!(Test-Path $env:DOTNET_INSTALL_DIR_PJ))
-{
-    mkdir $env:DOTNET_INSTALL_DIR_PJ | Out-Null
-}
-
-# Also create an install directory for a post-PJnistic CLI
+# Use a repo-local install directory for stage0 (but not the artifacts directory because that gets cleaned a lot
 if (!$env:DOTNET_INSTALL_DIR)
 {
     $env:DOTNET_INSTALL_DIR="$RepoRoot\.dotnet_stage0\$Architecture"
@@ -62,59 +67,50 @@ if (!(Test-Path $env:DOTNET_INSTALL_DIR))
     mkdir $env:DOTNET_INSTALL_DIR | Out-Null
 }
 
+
+
 # Disable first run since we want to control all package sources
 $env:DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
+
+# Don't resolve shared frameworks from user or global locations
+$env:DOTNET_MULTILEVEL_LOOKUP=0
+
+# Turn off MSBuild Node re-use
+$env:MSBUILDDISABLENODEREUSE=1
 
 # Enable vs test console logging
 $env:VSTEST_BUILD_TRACE=1
 $env:VSTEST_TRACE_BUILD=1
 
-# set the base tools directory
-$toolsLocalPath = Join-Path $PSScriptRoot "build_tools"
-$bootStrapperPath = Join-Path $toolsLocalPath "bootstrap.ps1"
-# if the boot-strapper script doesn't exist then download it
-if ((Test-Path $bootStrapperPath) -eq 0)
-{
-    if ((Test-Path $toolsLocalPath) -eq 0)
-    {
-        mkdir $toolsLocalPath | Out-Null
-    }
+# install a stage0
+$dotnetInstallPath = Join-Path $RepoRoot "scripts\obtain\dotnet-install.ps1"
 
-    # download boot-strapper script
-    Invoke-WebRequest "https://raw.githubusercontent.com/dotnet/buildtools/master/bootstrap/bootstrap.ps1" -OutFile $bootStrapperPath
+$InstallArchitecture = $Architecture
+if($Architecture.StartsWith("arm", [StringComparison]::OrdinalIgnoreCase))
+{
+    $InstallArchitecture = "x64"
 }
 
-# now execute it
-& $bootStrapperPath -DotNetInstallBranch master -RepositoryRoot (Get-Location) -ToolsLocalPath $toolsLocalPath -CliLocalPath $env:DOTNET_INSTALL_DIR_PJ -Architecture $Architecture | Out-File (Join-Path (Get-Location) "bootstrap.log")
-if ($LastExitCode -ne 0)
-{
-    Write-Output "Boot-strapping failed with exit code $LastExitCode, see bootstrap.log for more information."
-    exit $LastExitCode
-}
+Write-Output "$dotnetInstallPath -version ""2.2.0-preview1-007799"" -InstallDir $env:DOTNET_INSTALL_DIR -Architecture ""$InstallArchitecture"""
+Invoke-Expression "$dotnetInstallPath -version ""2.2.0-preview1-007799"" -InstallDir $env:DOTNET_INSTALL_DIR -Architecture ""$InstallArchitecture"""
 
-# install the post-PJnistic stage0
-$dotnetInstallPath = Join-Path $toolsLocalPath "dotnet-install.ps1"
-
-Write-Host "$dotnetInstallPath -Channel ""master"" -InstallDir $env:DOTNET_INSTALL_DIR -Architecture ""$Architecture"""
-Invoke-Expression "$dotnetInstallPath -Channel ""master"" -InstallDir $env:DOTNET_INSTALL_DIR -Architecture ""$Architecture"""
 if ($LastExitCode -ne 0)
 {
     Write-Output "The .NET CLI installation failed with exit code $LastExitCode"
     exit $LastExitCode
 }
 
-
 # Put the stage0 on the path
 $env:PATH = "$env:DOTNET_INSTALL_DIR;$env:PATH"
 
 if ($NoBuild)
 {
-    Write-Host "Not building due to --nobuild"
-    Write-Host "Command that would be run: 'dotnet msbuild build.proj /m /p:Architecture=$Architecture $ExtraParameters'"
+    Write-Output "Not building due to --nobuild"
+    Write-Output "Command that would be run: 'dotnet msbuild build.proj /m /p:Architecture=$Architecture $ExtraParameters'"
 }
 else
 {
-    dotnet msbuild build.proj /p:Architecture=$Architecture /p:GeneratePropsFile=true /t:WriteDynamicPropsToStaticPropsFiles
-    dotnet msbuild build.proj /m /v:diag /fl /flp:v=diag /p:Architecture=$Architecture $ExtraParameters
+    dotnet msbuild build.proj /p:Architecture=$Architecture /p:GeneratePropsFile=true /t:WriteDynamicPropsToStaticPropsFiles $ExtraParametersNoTargets
+    dotnet msbuild build.proj /m /v:normal /fl /flp:v=diag /p:Architecture=$Architecture $ExtraParameters
     if($LASTEXITCODE -ne 0) { throw "Failed to build" } 
 }

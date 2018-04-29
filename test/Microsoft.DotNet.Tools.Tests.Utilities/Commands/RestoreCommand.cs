@@ -5,14 +5,9 @@ using Microsoft.DotNet.Cli.Utils;
 
 namespace Microsoft.DotNet.Tools.Test.Utilities
 {
-    public sealed class RestoreCommand : TestCommand
+    public sealed class RestoreCommand : DotnetCommand
     {
         private string _runtime;
-
-        public RestoreCommand()
-            : base("dotnet")
-        {
-        }
 
         public RestoreCommand WithRuntime(string runtime)
         {
@@ -40,7 +35,7 @@ namespace Microsoft.DotNet.Tools.Test.Utilities
                 return null;
             }
 
-            return $"/p:RuntimeIdentifier={_runtime}";
+            return $"-property:RuntimeIdentifier={_runtime}";
         }
     }
 }

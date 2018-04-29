@@ -1,8 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.2" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 xliff-core-1.2-transitional.xsd">
-  <file datatype="xml" source-language="en" target-language="de" original="src/dotnet/commands/dotnet-sln/LocalizableStrings.resx">
+  <file datatype="xml" source-language="en" target-language="de" original="../LocalizableStrings.resx">
     <body>
-      <group id="src/dotnet/commands/dotnet-sln/LocalizableStrings.resx" />
       <trans-unit id="AppFullName">
         <source>.NET modify solution file command</source>
         <target state="translated">.NET-Befehl zum Ändern von Projektmappendateien</target>
@@ -24,8 +23,8 @@
         <note />
       </trans-unit>
       <trans-unit id="AddSubcommandHelpText">
-        <source>Add a specified project(s) to the solution.</source>
-        <target state="translated">Fügt der Projektmappe bestimmte Projekte hinzu.</target>
+        <source>Add one or more specified projects to the solution.</source>
+        <target state="translated">Fügt der Projektmappe mindestens ein angegebenes Projekt hinzu.</target>
         <note />
       </trans-unit>
       <trans-unit id="RemoveAppFullName">
@@ -35,7 +34,7 @@
       </trans-unit>
       <trans-unit id="RemoveSubcommandHelpText">
         <source>Remove the specified project(s) from the solution. The project is not impacted.</source>
-        <target state="translated">Entfernt bestimmte Projekte aus der Projektmappe. Dies hat keine Auswirkungen auf das Projekt.</target>
+        <target state="translated">Entfernt die angegebenen Projekte aus der Projektmappe. Dies hat keine Auswirkungen auf das Projekt.</target>
         <note />
       </trans-unit>
       <trans-unit id="ListAppFullName">

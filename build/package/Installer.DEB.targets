@@ -3,14 +3,13 @@
   <Target Name="SetupDebProps"
           DependsOnTargets="Init">
     <PropertyGroup>
-      <SdkDebianPackageName>dotnet-dev-$(SdkVersion)</SdkDebianPackageName>
+      <SdkDebianPackageName>dotnet-sdk-$(SdkVersion)</SdkDebianPackageName>
     </PropertyGroup>
 
     <!-- dotnet deb-tool -->
     <PropertyGroup>
-      <DotnetDebToolConsumerProjectName>dotnet-deb-tool-consumer.csproj</DotnetDebToolConsumerProjectName>
-      <DotnetDebToolDir>$(IntermediateDirectory)/$(DotnetDebToolConsumerProjectName)</DotnetDebToolDir>
-      <PackageTool>$(NuGetPackagesDir)/dotnet-deb-tool/2.0.0-beta-beta-001599/lib/netcoreapp1.0/tool/package_tool</PackageTool>
+      <DotnetDebToolDir>$(MSBuildThisFileDirectory)/dotnet-deb-tool-consumer</DotnetDebToolDir>
+      <PackageTool>$(NuGetPackagesDir)/dotnet-deb-tool/$(DotnetDebToolVersion)/lib/netcoreapp2.0/tool/package_tool</PackageTool>
     </PropertyGroup>
 
     <!-- constants -->
@@ -26,22 +25,19 @@
 
     <!-- Package Identities -->
     <PropertyGroup>
+      <RuntimeDepsPackageVersion>$(MicrosoftNETCoreAppPackageVersion)</RuntimeDepsPackageVersion>
+      <RuntimeDepsPackageName>dotnet-runtime-deps-$(RuntimeDepsPackageVersion)</RuntimeDepsPackageName>
       <SdkDebianPackageVersion>$(SdkVersion)</SdkDebianPackageVersion>
-      <SdkDebianPackageName>dotnet-dev-$(SdkDebianPackageVersion)</SdkDebianPackageName>
-      <SharedFxDebianPackageVersion>$(SharedFrameworkVersion)</SharedFxDebianPackageVersion>
-      <SharedFxDebianPackageName>dotnet-sharedframework-$(SharedFrameworkName)-$(SharedFxDebianPackageVersion)</SharedFxDebianPackageName>
+      <SdkDebianPackageName>dotnet-sdk-$(SdkDebianPackageVersion)</SdkDebianPackageName>
+      <SharedFxDebianPackageVersion>$(MicrosoftNETCoreAppPackageVersion)</SharedFxDebianPackageVersion>
+      <SharedFxDebianPackageName>dotnet-runtime-$(SharedFxDebianPackageVersion)</SharedFxDebianPackageName>
       <SharedFxDebianPackageName>$(SharedFxDebianPackageName.ToLower())</SharedFxDebianPackageName>
       <HostFxrDebianPackageVersion>$(HostFxrVersion)</HostFxrDebianPackageVersion>
       <HostFxrDebianPackageName>dotnet-hostfxr-$(HostFxrDebianPackageVersion)</HostFxrDebianPackageName>
       <HostFxrDebianPackageName>$(HostFxrDebianPackageName.ToLower())</HostFxrDebianPackageName>
       <HostDebianPackageName>dotnet-host</HostDebianPackageName>
-
-      <AdditionalSharedFxDebianPackageVersion>$(AdditionalSharedFrameworkVersion)</AdditionalSharedFxDebianPackageVersion>
-      <AdditionalSharedFxDebianPackageName>dotnet-sharedframework-$(SharedFrameworkName)-$(AdditionalSharedFxDebianPackageVersion)</AdditionalSharedFxDebianPackageName>
-      <AdditionalSharedFxDebianPackageName>$(AdditionalSharedFxDebianPackageName.ToLower())</AdditionalSharedFxDebianPackageName>
-      <AdditionalHostFxrDebianPackageVersion>$(AdditionalHostFxrVersion)</AdditionalHostFxrDebianPackageVersion>
-      <AdditionalHostFxrDebianPackageName>dotnet-hostfxr-$(AdditionalHostFxrDebianPackageVersion)</AdditionalHostFxrDebianPackageName>
-      <AdditionalHostFxrDebianPackageName>$(AdditionalHostFxrDebianPackageName.ToLower())</AdditionalHostFxrDebianPackageName>
+      <AspNetCoreSharedFxDebianPackageName>aspnetcore-runtime-$(AspNetCoreVersion)</AspNetCoreSharedFxDebianPackageName>
+      <AspNetCoreSharedFxDebianPackageName>$(AspNetCoreSharedFxDebianPackageName.ToLower())</AspNetCoreSharedFxDebianPackageName>
     </PropertyGroup>
 
     <!-- Inputs -->
@@ -59,8 +55,7 @@
     <!-- Output Directories -->
     <PropertyGroup>
       <InstallerOutputDirectory>$(PackagesDirectory)</InstallerOutputDirectory>
-      <SdkInstallerFile>$(InstallerOutputDirectory)/$(ArtifactNameWithVersionSdk)$(InstallerExtension)</SdkInstallerFile>
-
+      <SdkInstallerFile>$(InstallerOutputDirectory)/$(DistroSpecificArtifactNameWithVersionCombinedHostHostFxrFrameworkSdk)$(InstallerExtension)</SdkInstallerFile>
       <SdkDebianIntermediateDirectory>$(IntermediateDirectory)/debian/sdk</SdkDebianIntermediateDirectory>
       <DotNetDebToolOutputDirectory>$(SdkDebianIntermediateDirectory)/deb-tool-output</DotNetDebToolOutputDirectory>
       <DebianTestResultsXmlFile>$(SdkDebianIntermediateDirectory)/debian-testResults.xml</DebianTestResultsXmlFile>
@@ -82,9 +77,17 @@
       <DebianConfigJsonFile>$(LayoutDirectory)/debian_config.json</DebianConfigJsonFile>
     </PropertyGroup>
 
+    <PropertyGroup>
+      <DebianPostinstTemplateFile>$(RepoRoot)/packaging/deb/postinst</DebianPostinstTemplateFile>
+      <DebianPostinstFile>$(LayoutDirectory)/debian/postinst</DebianPostinstFile>
+    </PropertyGroup>
+
     <ItemGroup>
       <DebianConfigTokenValues Include="%SHARED_FRAMEWORK_DEBIAN_PACKAGE_NAME%">
         <ReplacementString>$(SharedFxDebianPackageName)</ReplacementString>
+      </DebianConfigTokenValues>
+      <DebianConfigTokenValues Include="%ASPNETCORE_SHAREDFX_DEBIAN_PACKAGE_NAME%">
+        <ReplacementString>$(AspNetCoreSharedFxDebianPackageName)</ReplacementString>
       </DebianConfigTokenValues>
       <DebianConfigTokenValues Include="%SHARED_FRAMEWORK_DEBIAN_PACKAGE_ADDITIONAL_DEPENDENCY%"
                                Condition="'$(IncludeAdditionalSharedFrameworks)' == 'true'">
@@ -101,10 +104,17 @@
       <DebianConfigTokenValues Include="%CLI_SDK_BRAND_NAME%">
         <ReplacementString>$(SdkBrandName)</ReplacementString>
       </DebianConfigTokenValues>
+
+      <DebianPostInstTokenValues Include="%SDK_VERSION%">
+        <ReplacementString>$(SdkVersion)</ReplacementString>
+      </DebianPostInstTokenValues>
     </ItemGroup>
 
     <ItemGroup>
       <TestSdkDebTaskEnvironmentVariables Include="PATH=$(DebianInstalledDirectory)$(PathListSeparator)$(PATH)" />
+      <TestSdkDebTaskEnvironmentVariables Include="TEST_ARTIFACTS=$(TestArtifactsDir)" />
+      <TestSdkDebTaskEnvironmentVariables Include="TEST_PACKAGES=$(TestPackagesDir)" />
+      <TestSdkDebTaskEnvironmentVariables Include="PreviousStageProps=$(NextStagePropsPath)" />
 
       <!-- Consumed By Publish -->
       <GeneratedInstallers Include="$(SdkInstallerFile)" />
